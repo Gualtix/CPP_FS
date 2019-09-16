@@ -20,7 +20,8 @@
         "stdio.h": "c",
         "stdlib.h": "c",
         "doublygenericlist.h": "c",
-        "f2_rep.h": "c"
+        "f2_rep.h": "c",
+        "types.h": "c"
     },
     "workbench.colorCustomizations": {
         //"activityBar.background": "#06011b",
@@ -30,12 +31,12 @@
          "editor.background": "#00071c"
      },
      "editor.tokenColorCustomizations": {
-         "functions": "#25ff00",
+         "functions": "#fd9800",
          "keywords": "#FF0046",
          "variables": "#00fe5a",
          "types": "#9e14ff",
-         "strings": "#126fff",
-         "comments": "#b3f800",
+         "strings": "#0997f5",
+         "comments": "#99f800",
  
              "textMateRules": [
                  {

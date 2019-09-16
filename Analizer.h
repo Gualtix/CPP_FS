@@ -11,10 +11,22 @@
 #include "Container.h"
 #include "F1_do.h"
 #include "Rep/F1_Rep.h"
+#include "Validate.h"
 
 //(^< ............ ............ ............ ............ ............ ............ ............ ............ ............ ............
 //(^< ............ ............ ............ ............ ............ T O O L S
 //(^< ............ ............ ............ ............ ............ ............ ............ ............ ............ ............
+
+int isLogged(char* CMD){
+
+    if(Omni->LoggedUser ==  NULL){
+        printf("\n");
+        printf("%s ERROR: No Hay Ninguna Sesion Iniciada...\n",CMD);
+        return 0;
+    }
+    return 1;
+    
+}
 
 InfoCatcher* fillInfoCatcher(DoublyGenericList* CommandList,InfoCatcher** nwInf){
 
@@ -26,7 +38,7 @@ InfoCatcher* fillInfoCatcher(DoublyGenericList* CommandList,InfoCatcher** nwInf)
         Prm_Izq = (char*)DeQueue(CommandList);
         Prm_Der = (char*)DeQueue(CommandList);
 
-        if(strcmp(Prm_Izq,"-path") != 0){
+        if(strcasecmp(Prm_Izq,"-path") != 0 && strcasecmp(Prm_Izq,"-name") != 0 && strcasecmp(Prm_Izq,"-usr") != 0 && strcasecmp(Prm_Izq,"-pwd") != 0 && strcasecmp(Prm_Izq,"-cont") != 0 && strcasecmp(Prm_Izq,"-ruta") != 0){
             if(Prm_Der != NULL){
                 String_ByRef_toLower(&Prm_Der);
             }
@@ -88,128 +100,64 @@ InfoCatcher* fillInfoCatcher(DoublyGenericList* CommandList,InfoCatcher** nwInf)
             continue;
         }
 
-        /*
-        if(strcasecmp(Prm_Izq,"-path") && strcasecmp(Prm_Izq,"-cont")){
-            if(Prm_Der != NULL){
-                String_To_Lower(&Prm_Der);
-            }
+        //(^< ............ ............ ............   _fs
+        if(strcasecmp(Prm_Izq,"-fs") == 0){
+            (*nwInf)->_fs = newString(Prm_Der);
+            continue;
         }
 
-        //(^< ............ ............ ............   _filen
-        //if(!strcasecmp(Prm_Izq,"-filen")){
-        //    if(Prm_Der != NULL){
-        //        (*nwInf)->_filen = New_Char_Init_Loaded(Prm_Der);
-        //    }
-        //    continue;
-        //}
+        //(^< ............ ............ ............   _usr
+        if(strcasecmp(Prm_Izq,"-usr") == 0){
+            (*nwInf)->_usr = newString(Prm_Der);
+            continue;
+        }
 
-        //(^< ............ ............ ............   _size
-        if(!strcasecmp(Prm_Izq,"-size")){
-            if(IsString_a_Number(Prm_Der) == 1){
-                (*nwInf)->_size =  atoi(Prm_Der);
-            }
+        //(^< ............ ............ ............   _pwd
+        if(strcasecmp(Prm_Izq,"-pwd") == 0){
+            (*nwInf)->_pwd = newString(Prm_Der);
+            continue;
+        }
+
+        //(^< ............ ............ ............   _grp
+        if(strcasecmp(Prm_Izq,"-grp") == 0){
+            (*nwInf)->_grp= newString(Prm_Der);
             continue;
         }
 
         //(^< ............ ............ ............   _P
         if(!strcasecmp(Prm_Izq,"-P")){
-            (*nwInf)->_P = 'p';
+            (*nwInf)->_P = 1;
             if(Prm_Der != NULL){
                 FrontInsert(CommandList,Prm_Der);
             }
-            
             continue;
         }
 
         //(^< ............ ............ ............   _R
         if(!strcasecmp(Prm_Izq,"-R")){
-            (*nwInf)->_R = 'r';
+            (*nwInf)->_R = 1;
             FrontInsert(CommandList,Prm_Der);
-            continue;
-        }
-
-        //(^< ............ ............ ............   _filen
-        //if(!strcasecmp(Prm_Izq,"-file")){
-        //    (*nwInf)->_R = 'r';
-        //    FrontInsert(CommandList,Prm_Der);
-        //}
-
-        //(^< ............ ............ ............   _id
-        if(!strcasecmp(Prm_Izq,"-id")){
-            (*nwInf)->_id = New_Char_Init_Loaded(Prm_Der);
-            continue;
-        }
-
-        //(^< ............ ............ ............   _grp
-        if(!strcasecmp(Prm_Izq,"-grp")){
-            (*nwInf)->_grp = New_Char_Init_Loaded(Prm_Der);
-            continue;
-        }
-
-        //(^< ............ ............ ............   _pws
-        if(!strcasecmp(Prm_Izq,"-pwd")){
-            (*nwInf)->_pwd = New_Char_Init_Loaded(Prm_Der);
-            continue;
-        }
-
-        //(^< ............ ............ ............   _path
-        if(!strcasecmp(Prm_Izq,"-path")){
-            (*nwInf)->_path = New_Char_Init_Loaded(Prm_Der);
-            continue;
-        }
-
-        //(^< ............ ............ ............   _dest
-        if(!strcasecmp(Prm_Izq,"-dest")){
-            (*nwInf)->_dest = New_Char_Init_Loaded(Prm_Der);
-            continue;
-        }
-
-        //(^< ............ ............ ............   _ugo
-        if(!strcasecmp(Prm_Izq,"-ugo")){
-            (*nwInf)->_ugo = New_Char_Init_Loaded(Prm_Der);
-            continue;
-        }
-
-        //(^< ............ ............ ............   _usr
-        if(!strcasecmp(Prm_Izq,"-usr")){
-            (*nwInf)->_usr = New_Char_Init_Loaded(Prm_Der);
-            continue;
-        }
-
-        //(^< ............ ............ ............   _name
-        if(!strcasecmp(Prm_Izq,"-name")){
-            (*nwInf)->_name = New_Char_Init_Loaded(Prm_Der);
-            continue;
-        }
-
-        //(^< ............ ............ ............   _ruta
-        if(!strcasecmp(Prm_Izq,"-ruta")){
-            (*nwInf)->_ruta = New_Char_Init_Loaded(Prm_Der);
             continue;
         }
 
         //(^< ............ ............ ............   _cont
         if(!strcasecmp(Prm_Izq,"-cont")){
-            (*nwInf)->_cont = New_Char_Init_Loaded(Prm_Der);
+            (*nwInf)->_cont = newString(Prm_Der);
             continue;
         }
 
-        //(^< ............ ............ ............   _type
-        if(!strcasecmp(Prm_Izq,"-type")){
-            (*nwInf)->_type = New_Char_Init_Loaded(Prm_Der);
+        //(^< ............ ............ ............   _ruta
+        if(!strcasecmp(Prm_Izq,"-ruta")){
+            (*nwInf)->_ruta = newString(Prm_Der);
             continue;
         }
 
-        //(^< ............ ............ ............   _fs
-        if(!strcasecmp(Prm_Izq,"-fs")){
-            (*nwInf)->_fs = New_Char_Init_Loaded(Prm_Der);
+        //(^< ............ ............ ............   _dest
+        if(!strcasecmp(Prm_Izq,"-dest")){
+            (*nwInf)->_dest = newString(Prm_Der);
             continue;
         }
-        */
     }
-
-
-    
 }
 
 void Exec_CMD(DoublyGenericList* CommandList){
@@ -586,41 +534,16 @@ void f_disk_cmd(InfoCatcher* nwInf){
 }
 
 void rep_cmd(InfoCatcher* nwInf){
-
-    Mounted_Part* mP = getPartMounted_By_vID(nwInf->_id);
-    
-    if(mP == NULL){
+    if(ErrorManager(nwInf,"REP") == 1){
+        if(strcasecmp(nwInf->_name,"mbr") != 0 && strcasecmp(nwInf->_name,"disk") != 0){
+            rep_F2_do(nwInf);
+        }
+        else{
+            rep_F1_do(nwInf);
+        }
+        char* RepName = Path_Get_FileName(nwInf->_path);
         printf("\n");
-        printf("REP ERROR: El ID de Montaje   -> %s <-   No Existe\n",nwInf->_id);
-        return;
-    } 
-
-    char* tmp = nwInf->_path;
-    int ln = strlen(tmp);
-    tmp[ln - 1] = 't';
-    tmp[ln - 2] = 'o';
-    tmp[ln - 3] = 'd';
-
-    char* RepName = Path_Get_FileName(newString(nwInf->_path));
-    char* RepPath = Path_Get_Isolated(newString(nwInf->_path));
-
-    Locat* lcat = vdTransform(nwInf->_id);
-    char*  Disk_Dir = UsingDisk_List[lcat->Letter].CompletePathDir;
-
-    if(strcasecmp(nwInf->_name,"mbr") == 0){
-        Generate_MBR_Report(Disk_Dir,RepPath,RepName);
-        printf("\n");
-        printf("REP SUCCESS: Reporte DISK   -> %s <-   Generado con Exito\n",RepName);
-    }
-    else if(strcasecmp(nwInf->_name,"disk") == 0){
-        GenerateDiskRender(Disk_Dir,RepPath,RepName);
-        printf("\n");
-        printf("REP SUCCESS: Reporte DISK   -> %s <-   Generado con Exito\n",RepName);
-    }
-    else{
-        printf("\n");
-        printf("REP ERROR: Parametro -name   -> %s <-   No Valido\n",nwInf->_name);
-        return;
+        printf("REP SUCCESS: Reporte:   -> %s <-   Generado con Exito\n",RepName);
     }
 }
 
@@ -680,13 +603,19 @@ void mount_cmd(InfoCatcher* nwInf){
 
 }
 
-
-
-
 //(^< ............ ............ ............ ............ ............ ............ ............ ............ ............ ............
 //(^< ............ ............ ............ ............ ............ F 2
 //(^< ............ ............ ............ ............ ............ ............ ............ ............ ............ ............
 
+void mkfs_cmd(InfoCatcher* nwInf){
+    // 0 = No Errors
+    if(ErrorManager(nwInf,"MKFS") == 0){
+        mkfs_do(nwInf);
+        char* PartName = (getPartMounted_By_vID(nwInf->_id))->ParName;
+        printf("\n");
+        printf("MKFS SUCCESS: Particion:   -> %s <-   ID:   -> %s <-   Formateada Exitosamente por %s\n",PartName,nwInf->_id,nwInf->_fs);
+    }
+}
 
 //(^< ............ ............ ............ ............ ............ ............ ............ ............ ............ ............
 //(^< ............ ............ ............ ............ ............ P H A S E S
@@ -696,7 +625,6 @@ int ScanF1(char* Bf,InfoCatcher* nwInf){
 
     if(strcasecmp(Bf, "mkdisk") == 0){
         mk_disk_cmd(nwInf);
-        //GenerateDiskRender("/home/archivos/fase1/Disco1.disk","/home/wrm/Desktop/","Ds.dot");
         return 0;
     }
     else if(strcasecmp(Bf, "rmdisk") == 0){
@@ -705,8 +633,6 @@ int ScanF1(char* Bf,InfoCatcher* nwInf){
     }
     else if(strcasecmp(Bf, "fdisk") == 0){
         f_disk_cmd(nwInf);
-        //GenerateDiskRender("/home/archivos/fase1/Disco1.disk","/home/wrm/Desktop/","Ds.dot");
-        //getchar();
         return 0;
     }
     else if(strcasecmp(Bf, "rep") == 0){
@@ -730,96 +656,67 @@ int ScanF1(char* Bf,InfoCatcher* nwInf){
 
 int ScanF2(char* Bf,InfoCatcher* nwInf){
 
-    /*
-    if (!strcasecmp(Bf, "mkfs")){
-        mkfs_cmd(CommandList);
-        return 0;
-    }
-    else if (!strcasecmp(Bf, "login")){
-        if(Usr_inUse != NULL){
-            printf("\n");
-            printf("LOGIN ERROR: Ya existe una Sesion Iniciada...\n");
-            return 0;
-        }
-        login_cmd(CommandList);
-        return 0;
-    }
-    else if (!strcasecmp(Bf, "logout")){
-        int lg = is_it_Logged();
-        if(lg == 0){
-            printf("\n");
-            printf("LOGOUT ERROR: No Hay Ninguna Sesion Iniciada...\n");
-            return 0;
-        }
-        logout_cmd();
-        return 0;
-    }
-    else if (!strcasecmp(Bf, "mkgrp")){
-        int lg = is_it_Logged();
-        if(lg == 0){
-            return 0;
-        }
-        mkgrp_cmd(CommandList);
-        return 0;
-    }
-    else if (!strcasecmp(Bf, "rmgrp")){
-        int lg = is_it_Logged();
-        if(lg == 0){
-            return 0;
-        }
-        rmgrp_cmd(CommandList);
-        return 0;
-    }
-    else if (!strcasecmp(Bf, "mkusr")){
-        int lg = is_it_Logged();
-        if(lg == 0){
-            return 0;
-        }
-        mkusr_cmd(CommandList);
-        return 0;
-    }
-    else if (!strcasecmp(Bf, "rmusr")){
-        int lg = is_it_Logged();
-        if(lg == 0){
-            return 0;
-        }
-        rmusr_cmd(CommandList);
-        return 0;
-    }
-    else if (!strcasecmp(Bf, "pause")){
-        getchar();
-        return 0;
-    }
-    else if (!strcasecmp(Bf, "mkdir")){
-        int lg = is_it_Logged();
-        if(lg == 0){
-            return 0;
-        }
-        mkdir_cmd(CommandList);
-        return 0;
-    }
-    else if (!strcasecmp(Bf, "mkfile")){
-        int lg = is_it_Logged();
-        if(lg == 0){
-            return 0;
-        }
-        mkfile_cmd(CommandList);
-        return 0;
-    }
-    else if (!strcasecmp(Bf, "rep")){
-        rep_cmd(CommandList);
-        return 0;
-    }
-    else if (!strcasecmp(Bf, "rem")){
-        rem_cmd(CommandList);
-        return 0;
-    }
     
-    return 1;
-    */
+    if (!strcasecmp(Bf, "MKFS")){
+        mkfs_cmd(nwInf);
+        return 0;
+    }
 
+    if (strcasecmp(Bf, "LOGIN") == 0){
+        if(Omni->LoggedUser !=  NULL){
+            printf("\n");
+            printf("LOGIN ERROR: Ya Hay Una Sesion Iniciada...\n");
+            return 0;
+        }
 
+        if(ErrorManager(nwInf,"LOGIN") == 1){
+            setOmni(nwInf->_id);
+            Print_Msg("LOGIN","SUCCESS","Sesion Iniciada Exitosamente");
+        }
 
+        return 0;
+    }
+
+    //(^< ............ ............ ............ Login Needed
+    
+    if(isLogged(Bf) == 0) return 0;
+
+    if (strcasecmp(Bf, "LOGOUT") == 0){
+        Omni = newGLS();
+        Print_Msg("LOGOUT","SUCCESS","Sesion Cerrada Exitosamente");
+        return 0;
+    }
+
+    if (strcasecmp(Bf, "MKGRP") == 0){
+        if(ErrorManager(nwInf,"MKGRP") == 1){
+            mkgrp_do(nwInf);
+            Print_Long_Msg("MKGRP","SUCCESS","Grupo",nwInf->_name,"Creado Exitosamente");
+        }
+        return 0;
+    }
+
+    if (strcasecmp(Bf, "RMGRP") == 0){
+        if(ErrorManager(nwInf,"RMGRP") == 1){
+            rmgrp_do(nwInf);
+            Print_Long_Msg("RMGRP","SUCCESS","Grupo",nwInf->_name,"Eliminado Exitosamente");
+        }
+        return 0;
+    }
+
+    if (strcasecmp(Bf, "MKUSR") == 0){
+        if(ErrorManager(nwInf,"MKUSR") == 1){
+            mkusr_do(nwInf);
+            Print_Long_Msg("MKUSR","SUCCESS","Usuario",nwInf->_name,"Creado Exitosamente");
+        }
+        return 0;
+    }
+    if (strcasecmp(Bf, "RMUSR") == 0){
+        if(ErrorManager(nwInf,"RMUSR") == 1){
+            rmusr_do(nwInf);
+            Print_Long_Msg("RMUSR","SUCCESS","Usuario",nwInf->_name,"Eliminado Exitosamente");
+        }
+        return 0;
+    }
    return 1;
 }
 
@@ -896,7 +793,7 @@ void ExecuteComand(char *InputString){
 
     unknownCMD = ScanF1(Main_CMD,nwInf);
 
-    if(unknownCMD != 0){
+    if(unknownCMD != 0 && strcasecmp(Main_CMD,"exec") != 0){
         unknownCMD = ScanF2(Main_CMD,nwInf);
     }
     

@@ -25,14 +25,14 @@ int main()
         printf("\n");        
         printf("(^< ............ ............ ............\n");
         printf("Ready to Execute:\n");
-        char *InputString = CatchCommandLine();
-        //char *InputString = newString("exec -path=/home/wrm/Desktop/EXEC_FILES/xoxo.sh");
-        int Rs = strcasecmp(InputString, "exit\n");
-        if (Rs == 0){
-            break;
-        }
+        //char *InputString = CatchCommandLine();
+        char *InputString = newString("exec -path=/home/wrm/Desktop/EXEC_FILES/Mera.sh");
+        //int Rs = strcasecmp(InputString, "exit\n");
+        //if (Rs == 0){
+            //break;
+        //}
         ExecuteComand(InputString);
-        //break;
+        break;
     }    
     
     printf("(^< ............ S A L I E N D O ............\n");

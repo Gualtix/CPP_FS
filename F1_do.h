@@ -5,6 +5,7 @@
 #include "Fw/Helper.h"
 #include "Belong.h"
 #include "Rep/F1_Rep.h"
+#include "Rep/F2_Rep.h"
 
 //(^< ............ ............ ............ ............ ............ ............ ............ ............ ............ ............
 //(^< ............ ............ ............ ............ ............ M K D I S K
@@ -339,30 +340,178 @@ void fdisk_do(InfoCatcher* nwInf, MBR* Disk){
     }
 }
 
-
 //(^< ............ ............ ............ ............ ............ ............ ............ ............ ............ ............
-//(^< ............ ............ ............ ............ ............ M O U N T
+//(^< ............ ............ ............ ............ ............ F 2
 //(^< ............ ............ ............ ............ ............ ............ ............ ............ ............ ............
 
-void mount_do(InfoCatcher* nwInf){
+void mkfs_do(InfoCatcher* nwInf){
 
+    setOmni(nwInf->_id);
+
+    if(strcasecmp(nwInf->_type,"fast") == 0){
+        Fast_PartFormat();
+    }
+
+    if(strcasecmp(nwInf->_type,"full") == 0){
+        Full_PartFormat();
+    }
+
+    if(strcasecmp(nwInf->_fs,"2fs") == 0){
+        Format_to_EXT2();
+    }
+
+    if(strcasecmp(nwInf->_fs,"3fs") == 0){
+        Format_to_EXT3();
+        Load_Defaut_txt(nwInf);
+        //FullViewRender("/home/wrm/Desktop/Todito.dot","tree");   
+    }
+
+    Omni = newGLS();
 }
 
-//(^< ............ ............ ............ ............ ............ ............ ............ ............ ............ ............
-//(^< ............ ............ ............ ............ ............ U N M O U N T
-//(^< ............ ............ ............ ............ ............ ............ ............ ............ ............ ............
+void mkgrp_do(InfoCatcher* nwInf){
 
+    DoublyGenericList*  grpList = getGroupsList();
+    DoublyGenericList*  usrList = getUsersList();
+    GroupUserInfo* gu = newGrus();
 
-void unmount_do(InfoCatcher* nwInf){
-
+    if(grpList != NULL){
+        gu->ID = grpList->Length + 1;
+        gu->Type = 'g';
+        gu->GrpName = nwInf->_name;
+    }
+    EnQueue(grpList,gu);
+    txtUsers_Update(grpList,usrList);
 }
+
+void rmgrp_do(InfoCatcher* nwInf){
+
+    DoublyGenericList*  grpList = getGroupsList();
+    DoublyGenericList*  usrList = getUsersList();
+
+    int Lm = grpList->Length;
+    int cnt = 0;
+    int found = 0;
+    while(cnt < Lm){
+        GroupUserInfo* tmp = (GroupUserInfo*)getNodebyIndex(grpList,cnt)->Dt;
+        if(strcasecmp(nwInf->_name,tmp->GrpName) == 0){
+            tmp->ID = 0;
+            found++;
+            break;
+        }
+        cnt++;
+    }
+
+    txtUsers_Update(grpList,usrList);
+
+    grpList = getGroupsList();
+    usrList = getUsersList();
+
+    int ask = 554;
+}
+
+void mkusr_do(InfoCatcher* nwInf){
+
+    DoublyGenericList*  grpList = getGroupsList();
+    DoublyGenericList*  usrList = getUsersList();
+    GroupUserInfo* gu = newGrus();
+
+    int grpEx = grpExists(nwInf->_grp,grpList);
+    int usrEx = usrExists(nwInf->_usr,usrList);
+
+    if(usrList != NULL){
+        gu->ID = usrList->Length + 1;
+        gu->Type = 'u';
+        gu->GrpName = nwInf->_grp;
+        gu->UsrName = nwInf->_usr;
+        gu->Password = nwInf->_pwd;
+    }
+
+    EnQueue(usrList,gu);
+    txtUsers_Update(grpList,usrList);
+}
+
+void rmusr_do(InfoCatcher* nwInf){
+
+    DoublyGenericList*  grpList = getGroupsList();
+    DoublyGenericList*  usrList = getUsersList();
+
+    int Lm = usrList->Length;
+    int cnt = 0;
+    int found = 0;
+    while(cnt < Lm){
+        GroupUserInfo* tmp = (GroupUserInfo*)getNodebyIndex(usrList,cnt)->Dt;
+        if(strcasecmp(nwInf->_usr,tmp->UsrName) == 0){
+            tmp->ID = 0;
+            found++;
+            break;
+        }
+        cnt++;
+    }
+    txtUsers_Update(grpList,usrList);
+}
+
+
+
 
 //(^< ............ ............ ............ ............ ............ ............ ............ ............ ............ ............
 //(^< ............ ............ ............ ............ ............ R E P
 //(^< ............ ............ ............ ............ ............ ............ ............ ............ ............ ............
 
-void rep_do(InfoCatcher* nwInf){
 
+
+void rep_F1_do(InfoCatcher* nwInf){
+    Mounted_Part* mP = getPartMounted_By_vID(nwInf->_id);
+    
+    if(mP == NULL){
+        printf("\n");
+        printf("REP ERROR: El ID de Montaje   -> %s <-   No Existe\n",nwInf->_id);
+        return;
+    } 
+
+    char* tmp = nwInf->_path;
+    int ln = strlen(tmp);
+    tmp[ln - 1] = 't';
+    tmp[ln - 2] = 'o';
+    tmp[ln - 3] = 'd';
+
+    char* RepName = Path_Get_FileName(newString(nwInf->_path));
+    char* RepPath = Path_Get_Isolated(newString(nwInf->_path));
+
+    Locat* lcat = vdTransform(nwInf->_id);
+    char*  Disk_Dir = UsingDisk_List[lcat->Letter].CompletePathDir;
+
+    if(strcasecmp(nwInf->_name,"mbr") == 0){
+        Generate_MBR_Report(Disk_Dir,RepPath,RepName);
+        printf("\n");
+        printf("REP SUCCESS: Reporte DISK   -> %s <-   Generado con Exito\n",RepName);
+    }
+    else if(strcasecmp(nwInf->_name,"disk") == 0){
+        GenerateDiskRender(Disk_Dir,RepPath,RepName);
+        printf("\n");
+        printf("REP SUCCESS: Reporte DISK   -> %s <-   Generado con Exito\n",RepName);
+    }
+    else{
+        printf("\n");
+        printf("REP ERROR: Parametro -name   -> %s <-   No Valido\n",nwInf->_name);
+        return;
+    }
+}
+
+void rep_F2_do(InfoCatcher* nwInf){
+    setOmni(nwInf->_id);
+    if(strcasecmp(nwInf->_name,"file") == 0){
+        Generate_File_Rep(nwInf->_path,nwInf->_ruta);
+        Omni = newGLS();
+        return;
+    }
+    if(strcasecmp(nwInf->_name,"ls") == 0){
+        Generate_Ls_Rep(nwInf->_path,nwInf->_ruta);
+        Omni = newGLS();
+        return;
+    }
+    FullViewRender(newString(nwInf->_path),nwInf->_name);
+    Omni = newGLS();
 }
 
 #endif // F1_DO_H
