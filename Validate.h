@@ -57,21 +57,18 @@ int typeV(char* CMD,InfoCatcher* nwInf){
 int fsV(char* CMD,InfoCatcher* nwInf){
     //(^< ............ ............ ............ ............ ............ _fs: Optional
     if(nwInf->_fs == NULL){
-        nwInf->_fs == "ext3";
+        nwInf->_fs = newString("3fs");
         return 1;
     }
 
-    if(strcasecmp(nwInf->_fs,"fast") != 0 && strcasecmp(nwInf->_fs,"full")){
-        nwInf->_fs == "ext3";
-        return 1;
-    }
-
-    nwInf->_fs == "ext3";
+    nwInf->_fs = "3fs";
 
     return 1;
 }
 
 int usrV(char* CMD,InfoCatcher* nwInf){
+
+
     //(^< ............ ............ ............ ............ ............ _usr: Mandatory
     if(nwInf->_usr ==  NULL){
         ErrorPrinter(CMD,"ERROR","-usr","NULL","Es Obligatorio");
@@ -81,12 +78,37 @@ int usrV(char* CMD,InfoCatcher* nwInf){
     DoublyGenericList* usrList = getUsersList();
     int usr = usrExists(nwInf->_usr,usrList);
 
-    if(usr == -1){
-        ErrorPrinter(CMD,"ERROR","-usr",nwInf->_usr,"El Usuario no Existe");
-        return 0;
+    //(^< ............ ............ ............ ............ ............ ............ ............ ............ ............ ............
+    //(^< ............ ............ ............ ............ ............ MKUSR
+    //(^< ............ ............ ............ ............ ............ ............ ............ ............ ............ ............
+    if(strcasecmp(CMD,"MKUSR") == 0){
+        if(usr > -1){
+            ErrorPrinter(CMD,"ERROR","-usr",nwInf->_usr,"El Usuario Ya Existe");
+            return 0;
+        }
+        return 1;
     }
 
-    return 1;
+    //(^< ............ ............ ............ ............ ............ ............ ............ ............ ............ ............
+    //(^< ............ ............ ............ ............ ............ RMUSR
+    //(^< ............ ............ ............ ............ ............ ............ ............ ............ ............ ............
+    if(strcasecmp(CMD,"RMUSR") == 0){
+        if(usr == -1){
+            ErrorPrinter(CMD,"ERROR","-usr",nwInf->_usr,"El Usuario No Existe");
+            return 0;
+        }
+        return 1;
+    }
+    //(^< ............ ............ ............ ............ ............ ............ ............ ............ ............ ............
+    //(^< ............ ............ ............ ............ ............ LOGIN
+    //(^< ............ ............ ............ ............ ............ ............ ............ ............ ............ ............
+    if(strcasecmp(CMD,"LOGIN") == 0){
+        if(usr == -1){
+        ErrorPrinter(CMD,"ERROR","-usr",nwInf->_usr,"El Usuario no Existe");
+        return 0;
+        }
+        return 1;
+    }   
 }
 
 int pwdV(char* CMD,InfoCatcher* nwInf){
@@ -99,50 +121,93 @@ int pwdV(char* CMD,InfoCatcher* nwInf){
     DoublyGenericList* usrList = getUsersList();
     GroupUserInfo* gu = getUSR_by_Name(nwInf->_usr,usrList);
 
-    if(strcmp(nwInf->_pwd,gu->Password) != 0){
-        ErrorPrinter("LOGIN","ERROR","-pwd",nwInf->_pwd,"Password Incorrecto");
-        return 0;
+    //(^< ............ ............ ............ ............ ............ ............ ............ ............ ............ ............
+    //(^< ............ ............ ............ ............ ............ MKUSR
+    //(^< ............ ............ ............ ............ ............ ............ ............ ............ ............ ............
+    if(strcasecmp(CMD,"MKUSR") == 0){
+        return 1;
     }
 
-    return 1;
+    //(^< ............ ............ ............ ............ ............ ............ ............ ............ ............ ............
+    //(^< ............ ............ ............ ............ ............ LOGIN
+    //(^< ............ ............ ............ ............ ............ ............ ............ ............ ............ ............
+    if(strcasecmp(CMD,"LOGIN") == 0){
+        if(strcasecmp(nwInf->_pwd,gu->Password) != 0){
+        ErrorPrinter("LOGIN","ERROR","-pwd",nwInf->_pwd,"Password Incorrecto");
+            return 0;
+        }
+        return 1;
+    }
+
+    
 }
 
 int nameV(char* CMD,InfoCatcher* nwInf){
+
     //(^< ............ ............ ............ ............ ............ -name: Mandatory
     if(nwInf->_name == NULL){
         ErrorPrinter(CMD,"ERROR","-name","NULL","Es Obligatorio");
         return 0;
     }
 
+    
+
+    //(^< ............ ............ ............ ............ ............ ............ ............ ............ ............ ............
+    //(^< ............ ............ ............ ............ ............ REP
+    //(^< ............ ............ ............ ............ ............ ............ ............ ............ ............ ............
+
+    if(strcasecmp(CMD,"REP") == 0){
+        if(strcasecmp(nwInf->_name,"inode")      != 0 &&
+           strcasecmp(nwInf->_name,"journaling") != 0 &&
+           strcasecmp(nwInf->_name,"block")      != 0 &&
+           strcasecmp(nwInf->_name,"bm_inode")   != 0 &&
+           strcasecmp(nwInf->_name,"bm_block")   != 0 &&
+           strcasecmp(nwInf->_name,"tree")       != 0 &&
+           strcasecmp(nwInf->_name,"sb")         != 0 &&
+           strcasecmp(nwInf->_name,"file")       != 0 &&
+           strcasecmp(nwInf->_name,"ls")         != 0
+        ){
+            ErrorPrinter(CMD,"ERROR","-name",nwInf->_name,"Este Tipo de Reporte no Existe...");
+            return 0;
+        }
+        return 1;
+    }
+
     DoublyGenericList*  grpList = getGroupsList();
     GroupUserInfo* gu = newGrus();
     int grpEx = grpExists(nwInf->_name,grpList);
 
-    //(^< ............ ............ ............ ............ ............ -name: Exist
-    if(strcasecmp(CMD,"MKGRP") == 0){
-        if(grpEx > -1){
-        ErrorPrinter(CMD,"ERROR","-name",nwInf->_name,"Este Grupo ya Existe");
-        return 0;
-        }
-    }
+    //(^< ............ ............ ............ ............ ............ ............ ............ ............ ............ ............
+    //(^< ............ ............ ............ ............ ............ MKGRP
+    //(^< ............ ............ ............ ............ ............ ............ ............ ............ ............ ............
     
     //(^< ............ ............ ............ ............ ............ -name: Unique
+    if(strcasecmp(CMD,"MKGRP") == 0){
+        if(grpEx > -1){
+            ErrorPrinter(CMD,"ERROR","-name",nwInf->_name,"Este Grupo Ya Existe");
+            return 0;
+        }
+        return 1;
+    }
+    
+    //(^< ............ ............ ............ ............ ............ ............ ............ ............ ............ ............
+    //(^< ............ ............ ............ ............ ............ RMGRP
+    //(^< ............ ............ ............ ............ ............ ............ ............ ............ ............ ............
+    
+    //(^< ............ ............ ............ ............ ............ -name: Exist
     if(strcasecmp(CMD,"RMGRP") == 0){
         if(grpEx == -1){
-        ErrorPrinter(CMD,"ERROR","-name",nwInf->_name,"Este Grupo No Existe");
-        return 0;
+            ErrorPrinter(CMD,"ERROR","-name",nwInf->_name,"Este Grupo No Existe");
+            return 0;
         }
+        return 1;
     }
+
+    
     
 }
 
-int pathV(char* CMD,InfoCatcher* nwInf){
-    //(^< ............ ............ ............ ............ ............ -path: Mandatory
-    if(nwInf->_path == NULL){
-        ErrorPrinter(CMD,"ERROR","-path","NULL","Es Obligatorio");
-        return 0;
-    }
-}
+
 
 int rutaV(char* CMD,InfoCatcher* nwInf){
     //(^< ............ ............ ............ ............ ............ -ruta: Mandatory
@@ -206,6 +271,53 @@ int grpV(char* CMD,InfoCatcher* nwInf){
     }
 }
 
+int pathV(char* CMD,InfoCatcher* nwInf){
+    //(^< ............ ............ ............ ............ ............ -path: Mandatory
+    if(nwInf->_path == NULL){
+        ErrorPrinter(CMD,"ERROR","-path","NULL","Es Obligatorio");
+        return 0;
+    }
+
+    if(strcasecmp(CMD,"MKFILE") == 0){
+
+
+        return 1;
+    }
+}
+
+int contV(char* CMD,InfoCatcher* nwInf){
+    if(strcasecmp(CMD,"MKFILE") == 0){
+        //(^< ............ ............ ............ ............ ............ -cont: Optional
+        if(nwInf->_cont != NULL){
+            char* txtData = getString_from_File(nwInf->_cont);
+            if(txtData == NULL){
+                ErrorPrinter("MKFILE","ERROR","-cont",nwInf->_cont,"Archivo No Encontrado");
+                return 0;
+            }
+            nwInf->txtData = txtData;
+        }
+        return 1;
+    }
+}
+
+int sizeV(char* CMD,InfoCatcher* nwInf){
+    if(strcasecmp(CMD,"MKFILE") == 0){
+        if(nwInf->_size < 0){
+            ErrorPrinter(CMD,"ERROR","-size","Negativo","El Parametro -size No puede ser Negativo");
+            return 0;
+        }else{
+            char* txtData = getDefault_txtContent(nwInf->_size);
+            nwInf->txtData = txtData;
+        }
+        return 1;
+    }
+}
+
+//(^< ............ ............ ............ ............ ............ ............ ............ ............ ............ ............
+//(^< ............ ............ ............ ............ ............ Permissions
+//(^< ............ ............ ............ ............ ............ ............ ............ ............ ............ ............
+
+
 
 
 //(^< ............ ............ ............ ............ ............ ............ ............ ............ ............ ............
@@ -214,6 +326,8 @@ int grpV(char* CMD,InfoCatcher* nwInf){
 
 
 int ErrorManager(InfoCatcher* nwInf,char* CMD){
+
+    int a = 6;
     // 1 = No Error = Ok
 
     //MKFS   ****************************************************************************************************** 
@@ -225,10 +339,10 @@ int ErrorManager(InfoCatcher* nwInf,char* CMD){
     }
 
     //LOGIN   ****************************************************************************************************** 
-    if(strcasecmp(CMD,"LOGIN")       == 0){
+    if(strcasecmp(CMD,"LOGIN") == 0){
         if(usrV("LOGIN",nwInf) == 0) return 0;
-        if(pwdV("LOGIN",nwInf)       == 0) return 0;
-        if(idV("LOGIN",nwInf)   == 0) return 0;
+        if(pwdV("LOGIN",nwInf) == 0) return 0;
+        if(idV("LOGIN",nwInf)  == 0) return 0;
         return 1;
     }
 
@@ -270,17 +384,21 @@ int ErrorManager(InfoCatcher* nwInf,char* CMD){
 
     //RMUSR   ****************************************************************************************************** 
     if(strcasecmp(CMD,"RMUSR") == 0){
-        if(usrV("MKUSR",nwInf) == 0) return 0;
+        if(usrV("RMUSR",nwInf) == 0) return 0;
         return 1;
     }
 
     //MKFILE   ****************************************************************************************************** 
     if(strcasecmp(CMD,"MKFILE") == 0){
+        if(pathV("MKUSR",nwInf) == 0) return 0;
+        sizeV("MKUSR",nwInf);
+        contV("MKUSR",nwInf);
         return 1;
     }
 
     //MKDIR   ****************************************************************************************************** 
     if(strcasecmp(CMD,"MKDIR") == 0){
+
         return 1;
     }
 

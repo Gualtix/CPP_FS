@@ -356,16 +356,9 @@ void mkfs_do(InfoCatcher* nwInf){
         Full_PartFormat();
     }
 
-    if(strcasecmp(nwInf->_fs,"2fs") == 0){
-        Format_to_EXT2();
-    }
-
-    if(strcasecmp(nwInf->_fs,"3fs") == 0){
-        Format_to_EXT3();
-        Load_Defaut_txt(nwInf);
-        //FullViewRender("/home/wrm/Desktop/Todito.dot","tree");   
-    }
-
+    Format_to_EXT3();
+    Load_Defaut_txt(nwInf);
+    
     Omni = newGLS();
 }
 
@@ -451,8 +444,26 @@ void rmusr_do(InfoCatcher* nwInf){
     txtUsers_Update(grpList,usrList);
 }
 
+void login_do(InfoCatcher* nwInf){
+    DoublyGenericList* usrList = getUsersList();
+    GroupUserInfo* gu = getUSR_by_Name(nwInf->_usr,usrList);
+    Omni->LoggedUser = gu;
+}
 
 
+void mkfile_do(InfoCatcher* nwInf){
+    FileFolderInfo* ffInf = get_FFInfo(nwInf);
+    int Deepest_Bit_ID = make_newFolder(nwInf);
+    if(Deepest_Bit_ID > -1){
+        GroupUserInfo* ggs = getGRP_by_Name(Omni->LoggedUser->GrpName,getGroupsList());
+        int nwFL_Bit_ID = allocate_newFile(Deepest_Bit_ID,ffInf->FileName,ffInf->txtData,664,Omni->LoggedUser->ID,ggs->ID);
+        return nwFL_Bit_ID;
+    }
+}
+
+void mkdir_do(InfoCatcher* nwInf){
+    int Deepest_Bit_ID = make_newFolder(nwInf);
+}
 
 //(^< ............ ............ ............ ............ ............ ............ ............ ............ ............ ............
 //(^< ............ ............ ............ ............ ............ R E P

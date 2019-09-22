@@ -1939,7 +1939,7 @@ void Format_to_EXT3(){
 
     UpdateSuperBlock();
 
-    Add_FirstDefault_Journaling();
+    //Add_FirstDefault_Journaling();
 }
 
 //(^< ............ ............ ............ ............ ............ ............ ............ ............ ............ ............
@@ -2395,7 +2395,7 @@ int usrExists(char* Name,DoublyGenericList* Lst){
     int cnt = 0;
     while(cnt < Lm){
         GroupUserInfo* tmp = (GroupUserInfo*)getNodebyIndex(Lst,cnt)->Dt;
-        if(strcmp(Name,tmp->UsrName) == 0 && tmp->ID > 0){
+        if(strcasecmp(Name,tmp->UsrName) == 0 && tmp->ID > 0){
             return cnt;
         }
         cnt++;
@@ -2409,7 +2409,7 @@ int grpExists(char* Name,DoublyGenericList* Lst){
     int cnt = 0;
     while(cnt < Lm){
         GroupUserInfo* tmp = (GroupUserInfo*)getNodebyIndex(Lst,cnt)->Dt;
-        if(strcmp(Name,tmp->GrpName) == 0 && tmp->ID > 0){
+        if(strcasecmp(Name,tmp->GrpName) == 0 && tmp->ID > 0){
             return cnt;
         }
         cnt++;
@@ -2451,7 +2451,7 @@ void Load_Defaut_txt(InfoCatcher* nwInf){
 
     //Folder = 0
     rt->i_type = 0;
-    rt->i_perm = 664;
+    rt->i_perm = 777;
 
     //BitMap
     int InodeID = getFirst_InodeBit_Free();

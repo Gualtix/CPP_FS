@@ -20,13 +20,15 @@ int main()
         i++;
     }
 
+    Omni = newGLS();
+
     while (1){
         system("clear");
         printf("\n");        
         printf("(^< ............ ............ ............\n");
         printf("Ready to Execute:\n");
         //char *InputString = CatchCommandLine();
-        char *InputString = newString("exec -path=/home/wrm/Desktop/EXEC_FILES/Mera.sh");
+        char *InputString = newString("exec -path=/home/wrm/Desktop/CPP_FS/Mera.sh");
         //int Rs = strcasecmp(InputString, "exit\n");
         //if (Rs == 0){
             //break;

@@ -38,27 +38,34 @@ InfoCatcher* fillInfoCatcher(DoublyGenericList* CommandList,InfoCatcher** nwInf)
         Prm_Izq = (char*)DeQueue(CommandList);
         Prm_Der = (char*)DeQueue(CommandList);
 
-        if(strcasecmp(Prm_Izq,"-path") != 0 && strcasecmp(Prm_Izq,"-name") != 0 && strcasecmp(Prm_Izq,"-usr") != 0 && strcasecmp(Prm_Izq,"-pwd") != 0 && strcasecmp(Prm_Izq,"-cont") != 0 && strcasecmp(Prm_Izq,"-ruta") != 0){
+        if(strcasecmp(Prm_Izq,"-path") != 0 && 
+           strcasecmp(Prm_Izq,"-name") != 0 && 
+           strcasecmp(Prm_Izq,"-usr")  != 0 && 
+           strcasecmp(Prm_Izq,"-pwd")  != 0 && 
+           strcasecmp(Prm_Izq,"-cont") != 0 && 
+           strcasecmp(Prm_Izq,"-ruta") != 0 &&
+           strcasecmp(Prm_Izq,"-grp")  != 0
+        ){
             if(Prm_Der != NULL){
                 String_ByRef_toLower(&Prm_Der);
             }
         }
 
         //(^< ............ ............ ............   _size
-        if(strcmp(Prm_Izq,"-size") == 0){
+        if(strcasecmp(Prm_Izq,"-size") == 0){
             int Nm = atoi(Prm_Der);
             (*nwInf)->_size =  atoi(Prm_Der);
             continue;
         }
 
         //(^< ............ ............ ............   _fit
-        if(strcmp(Prm_Izq,"-fit") == 0){
+        if(strcasecmp(Prm_Izq,"-fit") == 0){
             (*nwInf)->_fit = newString(Prm_Der);
             continue;
         }
 
         //(^< ............ ............ ............   _unit
-        if(strcmp(Prm_Izq,"-unit") == 0){
+        if(strcasecmp(Prm_Izq,"-unit") == 0){
             (*nwInf)->_unit = newString(Prm_Der);
             continue;
         }
@@ -70,32 +77,32 @@ InfoCatcher* fillInfoCatcher(DoublyGenericList* CommandList,InfoCatcher** nwInf)
         }
 
         //(^< ............ ............ ............   _type
-        if(strcmp(Prm_Izq,"-type") == 0){
+        if(strcasecmp(Prm_Izq,"-type") == 0){
             (*nwInf)->_type = newString(Prm_Der);
             continue;
         }
 
         //(^< ............ ............ ............   _delete
-        if(strcmp(Prm_Izq,"-delete") == 0){
+        if(strcasecmp(Prm_Izq,"-delete") == 0){
             (*nwInf)->_delete = newString(Prm_Der);
             continue;
         }
 
         //(^< ............ ............ ............   _add
-        if(strcmp(Prm_Izq,"-add") == 0){
+        if(strcasecmp(Prm_Izq,"-add") == 0){
             int Nm = atoi(Prm_Der);
             (*nwInf)->_add =  atoi(Prm_Der);
             continue;
         }
 
         //(^< ............ ............ ............   _name
-        if(strcmp(Prm_Izq,"-name") == 0){
+        if(strcasecmp(Prm_Izq,"-name") == 0){
             (*nwInf)->_name = newString(Prm_Der);
             continue;
         }
 
         //(^< ............ ............ ............   _id
-        if(strcmp(Prm_Izq,"-id") == 0){
+        if(strcasecmp(Prm_Izq,"-id") == 0){
             (*nwInf)->_id = newString(Prm_Der);
             continue;
         }
@@ -608,8 +615,9 @@ void mount_cmd(InfoCatcher* nwInf){
 //(^< ............ ............ ............ ............ ............ ............ ............ ............ ............ ............
 
 void mkfs_cmd(InfoCatcher* nwInf){
+    int f = 0;
     // 0 = No Errors
-    if(ErrorManager(nwInf,"MKFS") == 0){
+    if(ErrorManager(nwInf,"MKFS") == 1){
         mkfs_do(nwInf);
         char* PartName = (getPartMounted_By_vID(nwInf->_id))->ParName;
         printf("\n");
@@ -669,8 +677,9 @@ int ScanF2(char* Bf,InfoCatcher* nwInf){
             return 0;
         }
 
+        setOmni(nwInf->_id);
         if(ErrorManager(nwInf,"LOGIN") == 1){
-            setOmni(nwInf->_id);
+            login_do(nwInf);
             Print_Msg("LOGIN","SUCCESS","Sesion Iniciada Exitosamente");
         }
 
@@ -706,14 +715,14 @@ int ScanF2(char* Bf,InfoCatcher* nwInf){
     if (strcasecmp(Bf, "MKUSR") == 0){
         if(ErrorManager(nwInf,"MKUSR") == 1){
             mkusr_do(nwInf);
-            Print_Long_Msg("MKUSR","SUCCESS","Usuario",nwInf->_name,"Creado Exitosamente");
+            Print_Long_Msg("MKUSR","SUCCESS","Usuario",nwInf->_usr,"Creado Exitosamente");
         }
         return 0;
     }
     if (strcasecmp(Bf, "RMUSR") == 0){
         if(ErrorManager(nwInf,"RMUSR") == 1){
             rmusr_do(nwInf);
-            Print_Long_Msg("RMUSR","SUCCESS","Usuario",nwInf->_name,"Eliminado Exitosamente");
+            Print_Long_Msg("RMUSR","SUCCESS","Usuario",nwInf->_usr,"Eliminado Exitosamente");
         }
         return 0;
     }
@@ -734,6 +743,10 @@ void ExecuteComand(char *InputString){
     //system("clear");
     printf("\n");
     printf("\n");
+    printf("\n");
+    printf("\n");
+    printf("\n");
+    printf("----------------------------------------------------------------------------------------------------------------------\n");
     printf("----------------------------------------------------------------------------------------------------------------------\n");
     printf("CommandLine->   %s\n",InputString);
 
@@ -813,7 +826,7 @@ void ExecuteComand(char *InputString){
         }
     }
     printf("----------------------------------------------------------------------------------------------------------------------\n");
-
+    printf("----------------------------------------------------------------------------------------------------------------------\n");
 
     //getchar();
 }
