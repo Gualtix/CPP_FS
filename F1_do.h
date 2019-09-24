@@ -453,7 +453,7 @@ void login_do(InfoCatcher* nwInf){
 void cat_do(InfoCatcher* nwInf){
     nwInf->_path = newString(nwInf->_file);
     Existence* ex = vFF_Exists(nwInf);
-    char* txt = ReadFile(ex->FFName);
+    char* txt = ReadFile(nwInf->_file);
     printf("\n");
     printf("Contenido del Archivo %s: %s\n",ex->FFName,txt);
 

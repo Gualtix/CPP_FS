@@ -1113,7 +1113,7 @@ void Generate_File_Rep(char* CompleteReportPathDir,char* _ruta){
     char* iName = Path_Get_FileName(_ruta);
 
     CreatePathDir(ReportPath);
-    char* txtContent = ReadFile(iName);
+    char* txtContent = ReadFile(_ruta);
     
     Write_txtFile(CompleteReportPathDir,txtContent);
 }

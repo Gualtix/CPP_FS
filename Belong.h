@@ -2113,6 +2113,53 @@ void CompleteTraversal_to_Erase(int iNode_Bit_ID,char* FatherFolderName){
         i++;
     }
 }
+Existence* vFF_Exists(InfoCatcher* nwInf){
+    //true  = is File
+    //false = is Folder
+
+    Existence* ex = newExistence();
+
+    FileFolderInfo* ffInf = get_FFInfo(nwInf);
+    char* tName = (char*)DeQueue(ffInf->PathPlacesList);
+
+    SeekInfo* nwSI = CompleteSeeker(0,tName);
+    int tmp = 0;
+    if(nwSI != NULL){
+        tmp = nwSI->iNode_Bit_ID;
+    }
+
+    while(ffInf->PathPlacesList->Length > 0){
+        if(nwSI == NULL){
+            if(ffInf->PathPlacesList->Length == 1){
+                ex->iNodeFather = tmp;
+                ex->iNode = -1;
+                ex->PrevOk = 1;
+                ex->FFName = tName;
+                return ex;
+            }
+            else{
+                ex->iNodeFather = -1;
+                ex->iNode = -1;
+                ex->PrevOk = 0;
+                ex->FFName = tName;
+                return ex;
+            }
+        }
+        else{
+            if(ffInf->PathPlacesList->Length == 1){
+                ex->iNodeFather = nwSI->iNodeFather_Bit_ID;
+                ex->iNode = tmp;
+                ex->PrevOk = 1;
+                ex->FFName = tName;
+                return ex;
+            }
+        }
+        tmp = nwSI->iNode_Bit_ID;
+        tName = (char*)DeQueue(ffInf->PathPlacesList);
+        nwSI = CompleteSeeker(tmp,tName);
+    }
+    return ex;
+}
 
 
 int EraseFolder(char* FolderName){
@@ -2127,16 +2174,25 @@ int EraseFolder(char* FolderName){
 
 }
 
-char* ReadFile(char* FileName){
+//char* ReadFile(int iNode_Bit_ID,char* FileName){
+char* ReadFile(char* Path){
 
-    SeekInfo* nwSI = CompleteSeeker(0,FileName);
+    //SeekInfo* nwSI = CompleteSeeker(iNode,FileName);
 
-    if(nwSI == NULL){
+    //if(nwSI == NULL){
+    //    return NULL;
+    //}
+
+    //int iNode_Bit_ID = nwSI->iNode_Bit_ID;
+    InfoCatcher* tnw = newInfoCatcher();
+    tnw->_path = newString(Path);
+    Existence* ex = vFF_Exists(tnw);
+
+    if(ex->iNode == -1){
         return NULL;
     }
 
-    int iNode_Bit_ID = nwSI->iNode_Bit_ID;
-    Inode* tInode = (Inode*)BinLoad_Str(iNode_Bit_ID,"Inode");
+    Inode* tInode = (Inode*)BinLoad_Str(ex->iNode,"Inode");
     char*  tmp = NULL;
 
     int cnt = 0;
@@ -2189,8 +2245,8 @@ int EditFile(char* FileName,char* txtNewContent){
 }
 
 DoublyGenericList* getGroupsList(){
-
-    char* txt = ReadFile("users.txt");
+    
+    char* txt = ReadFile("/users.txt");
 
     DoublyGenericList* grpList = new_DoublyGenericList();
     GroupUserInfo* gu = newGrus();
@@ -2222,7 +2278,7 @@ DoublyGenericList* getGroupsList(){
 
 DoublyGenericList* getUsersList(){
 
-    char* txt = ReadFile("users.txt");
+    char* txt = ReadFile("/users.txt");
 
     DoublyGenericList* usrList = new_DoublyGenericList();
     GroupUserInfo* gu = newGrus();
@@ -2337,50 +2393,7 @@ int make_newFile(InfoCatcher* nwInf){
     return - 1;
 }
 
-Existence* vFF_Exists(InfoCatcher* nwInf){
-    //true  = is File
-    //false = is Folder
 
-    Existence* ex = newExistence();
-
-    FileFolderInfo* ffInf = get_FFInfo(nwInf);
-    char* tName = (char*)DeQueue(ffInf->PathPlacesList);
-
-    SeekInfo* nwSI = CompleteSeeker(0,tName);
-    int tmp = 0;
-
-    while(ffInf->PathPlacesList->Length > 0){
-        if(nwSI == NULL){
-            if(ffInf->PathPlacesList->Length == 1){
-                ex->iNodeFather = tmp;
-                ex->iNode = -1;
-                ex->PrevOk = 1;
-                ex->FFName = tName;
-                return ex;
-            }
-            else{
-                ex->iNodeFather = -1;
-                ex->iNode = -1;
-                ex->PrevOk = 0;
-                ex->FFName = tName;
-                return ex;
-            }
-        }
-        else{
-            if(ffInf->PathPlacesList->Length == 1){
-                ex->iNodeFather = nwSI->iNodeFather_Bit_ID;
-                ex->iNode = tmp;
-                ex->PrevOk = 1;
-                ex->FFName = tName;
-                return ex;
-            }
-        }
-        tmp = nwSI->iNode_Bit_ID;
-        tName = (char*)DeQueue(ffInf->PathPlacesList);
-        nwSI = CompleteSeeker(tmp,tName);
-    }
-    return ex;
-}
 
 
 
