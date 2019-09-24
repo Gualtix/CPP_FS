@@ -719,11 +719,32 @@ int ScanF2(char* Bf,InfoCatcher* nwInf){
         }
         return 0;
     }
+
     if (strcasecmp(Bf, "RMUSR") == 0){
         if(ErrorManager(nwInf,"RMUSR") == 1){
             rmusr_do(nwInf);
             Print_Long_Msg("RMUSR","SUCCESS","Usuario",nwInf->_usr,"Eliminado Exitosamente");
         }
+        return 0;
+    }
+
+    if (strcasecmp(Bf, "MKDIR") == 0){
+        if(ErrorManager(nwInf,"MKDIR") == 1){
+            char* FolderName = Path_get_Last_FolderName(nwInf->_path);
+            Print_Long_Msg("MKDIR","SUCCESS","Directorio",FolderName,"Creado Exitosamente");
+            mkdir_do(nwInf);
+        }
+        
+        return 0;
+    }
+
+    if (strcasecmp(Bf, "MKFILE") == 0){
+        if(ErrorManager(nwInf,"MKFILE") == 1){
+            char* FileName = Path_Get_FileName(nwInf->_path);
+            Print_Long_Msg("MKFILE","SUCCESS","Directorio",FileName,"Creado Exitosamente");
+            mkfile_do(nwInf);
+        }
+        
         return 0;
     }
    return 1;

@@ -278,6 +278,12 @@ int pathV(char* CMD,InfoCatcher* nwInf){
         return 0;
     }
 
+    if(strcasecmp(CMD,"MKDIR") == 0){
+
+
+        return 1;
+    }
+
     if(strcasecmp(CMD,"MKFILE") == 0){
 
 
@@ -398,7 +404,7 @@ int ErrorManager(InfoCatcher* nwInf,char* CMD){
 
     //MKDIR   ****************************************************************************************************** 
     if(strcasecmp(CMD,"MKDIR") == 0){
-
+        if(pathV("MKDIR",nwInf) == 0) return 0;
         return 1;
     }
 

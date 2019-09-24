@@ -19,7 +19,7 @@ mkfs -type=fast -id=vda1 -fs=3fs
 
 #Reporte1 ::::(  ) 
 #rep -id=vda1 -Path="/home/wrm/Desktop/reports2/reporte1_vda1_sb.pdf" -name=sb
-rep -id=vda1 -Path="/home/wrm/Desktop/reports2/reporte1_vda1_tree.jpg" -name=tree
+
 
 
 #Creando Usuarios
@@ -58,152 +58,36 @@ Mkusr -usr="user2" -grp="Compi2" -pwd=user2
 #Da error porque no existe ese grupo
 Mkusr -usr="user2" -grp=Arqui -pwd=user2
 
-
 rmusr -usr=user3
 
+Mkdir -path=/home/wrm/Desktop/mia/fase1  -P  
+Mkdir -path=/home/wrm/Desktop/mia/fase2  -P  
+Mkdir -path=/home/wrm/Desktop/mia/carpeta2  -P  
 
-pause
-
-Mkdir -P  -path=/home/wrm/Desktop/mia/fase1
-Mkdir -P  -path=/home/wrm/Desktop/mia/carpeta2
-Mkdir -P  -path=/home/wrm/Desktop/mia/carpeta3/carpeta7/carpeta8/carpeta9/carpeta10/carpeta11
-Mkdir -P  -path=/home/wrm/Desktop/mia/carpeta4/carpeta7/carpeta8/carpeta9/carpeta10/carpeta11/carpeta7/carpeta8/carpeta9/carpeta10/carpeta11
 Mkdir  -path=/home/wrm/Desktop/mia/carpeta2/a1
 Mkdir  -path=/home/wrm/Desktop/mia/carpeta2/a2
-Mkdir  -path=/home/wrm/Desktop/mia/carpeta2/a3
-Mkdir  -path=/home/wrm/Desktop/mia/carpeta2/a4
-Mkdir  -path=/home/wrm/Desktop/mia/carpeta2/a5
-Mkdir  -path=/home/wrm/Desktop/mia/carpeta2/a6
-Mkdir  -path=/home/wrm/Desktop/mia/carpeta2/a7
-Mkdir  -path=/home/wrm/Desktop/mia/carpeta2/a8
-Mkdir  -path=/home/wrm/Desktop/mia/carpeta2/a9
-Mkdir  -path=/home/wrm/Desktop/mia/carpeta2/a10
-Mkdir  -path=/home/wrm/Desktop/mia/fase2/a1
-Mkdir  -path=/home/wrm/Desktop/mia/fase2/a2
-Mkdir  -path=/home/wrm/Desktop/mia/fase2/a3
-Mkdir  -path=/home/wrm/Desktop/mia/fase2/a4
-Mkdir  -path=/home/wrm/Desktop/mia/fase2/a5
-Mkdir  -path=/home/wrm/Desktop/mia/fase2/a6
-Mkdir  -path=/home/wrm/Desktop/mia/fase2/a7
-Mkdir  -path=/home/wrm/Desktop/mia/fase2/a8
-Mkdir  -path=/home/wrm/Desktop/mia/fase2/a9
-Mkdir  -path=/home/wrm/Desktop/mia/fase2/a10
-Mkdir  -path=/home/wrm/Desktop/mia/fase2/a11
-Mkdir  -path=/home/wrm/Desktop/mia/fase2/a12
-Mkdir  -path=/home/wrm/Desktop/mia/fase2/a13
-Mkdir  -path=/home/wrm/Desktop/mia/fase2/a14
-Mkdir  -path=/home/wrm/Desktop/mia/fase2/a15
-Mkdir  -path=/home/wrm/Desktop/mia/fase2/a16
-Mkdir  -path=/home/wrm/Desktop/mia/fase2/a17
-Mkdir  -path=/home/wrm/Desktop/mia/fase2/a18
-Mkdir  -path=/home/wrm/Desktop/mia/fase2/a19
-Mkdir  -path=/home/wrm/Desktop/mia/fase2/a20
-Mkdir  -path=/home/wrm/Desktop/mia/fase2/a21
-Mkdir  -path=/home/wrm/Desktop/mia/fase2/a22
-Mkdir  -path=/home/wrm/Desktop/mia/fase2/a23
-Mkdir  -path=/home/wrm/Desktop/mia/fase2/a24
-Mkdir  -path=/home/wrm/Desktop/mia/fase2/a25
-Mkdir  -path=/home/wrm/Desktop/mia/fase2/a26
-Mkdir  -path=/home/wrm/Desktop/mia/fase2/a27
-Mkdir  -path=/home/wrm/Desktop/mia/fase2/a28
-Mkdir  -path=/home/wrm/Desktop/mia/fase2/a29
-Mkdir  -path=/home/wrm/Desktop/mia/fase2/a30
-Mkdir  -path=/home/wrm/Desktop/mia/fase2/a31
-Mkdir  -path=/home/wrm/Desktop/mia/fase2/a32
-Mkdir  -path=/home/wrm/Desktop/mia/fase2/a33
-Mkdir  -path=/home/wrm/Desktop/mia/fase2/a34
-Mkdir  -path=/home/wrm/Desktop/mia/fase2/a35
-Mkdir  -path=/home/wrm/Desktop/mia/fase2/a36
-Mkdir  -path=/home/wrm/Desktop/mia/fase2/a37
-Mkdir  -path=/home/wrm/Desktop/mia/fase2/a38
-Mkdir  -path=/home/wrm/Desktop/mia/fase2/a39
-Mkdir  -path=/home/wrm/Desktop/mia/fase2/a40
-Mkdir  -path=/home/wrm/Desktop/mia/fase2/a41
-Mkdir  -path=/home/wrm/Desktop/mia/fase2/a42
-Mkdir  -path=/home/wrm/Desktop/mia/fase2/a43
-Mkdir  -path=/home/wrm/Desktop/mia/fase2/a44
-Mkdir  -path=/home/wrm/Desktop/mia/fase2/a45
 Mkdir  -path=/home/wrm/Desktop/mia/fase2/a46
 
 #Debe dar error porque ya existe a46
 Mkdir  -path=/home/wrm/Desktop/mia/fase2/a46
 
-#Primer indirecto
-mkdir  -path="/home/wrm/Desktop/mia/fase2/b1"
-mkdir  -path="/home/wrm/Desktop/mia/fase2/b2"
-mkdir  -path="/home/wrm/Desktop/mia/fase2/b3"
-mkdir  -path="/home/wrm/Desktop/mia/fase2/b4"
-mkdir  -path="/home/wrm/Desktop/mia/fase2/b5"
-mkdir  -path="/home/wrm/Desktop/mia/fase2/b6"
-mkdir  -path="/home/wrm/Desktop/mia/fase2/b7"
-mkdir  -path="/home/wrm/Desktop/mia/fase2/b8"
-mkdir  -path="/home/wrm/Desktop/mia/fase2/b9"
-mkdir  -path="/home/wrm/Desktop/mia/fase2/b10"
-mkdir  -path="/home/wrm/Desktop/mia/fase2/b11"
-mkdir  -path="/home/wrm/Desktop/mia/fase2/b12"
-mkdir  -path="/home/wrm/Desktop/mia/fase2/b13"
-mkdir  -path="/home/wrm/Desktop/mia/fase2/b14"
-mkdir  -path="/home/wrm/Desktop/mia/fase2/b15"
-mkdir  -path="/home/wrm/Desktop/mia/fase2/b16"
-mkdir  -path="/home/wrm/Desktop/mia/fase2/b17"
-mkdir  -path="/home/wrm/Desktop/mia/fase2/b18"
-mkdir  -path="/home/wrm/Desktop/mia/fase2/b19"
-mkdir  -path="/home/wrm/Desktop/mia/fase2/b20"
-mkdir  -path="/home/wrm/Desktop/mia/fase2/b21"
-mkdir  -path="/home/wrm/Desktop/mia/fase2/b22"
-mkdir  -path="/home/wrm/Desktop/mia/fase2/b23"
-mkdir  -path="/home/wrm/Desktop/mia/fase2/b24"
-mkdir  -path="/home/wrm/Desktop/mia/fase2/b25"
-mkdir  -path="/home/wrm/Desktop/mia/fase2/b26"
-mkdir  -path="/home/wrm/Desktop/mia/fase2/b27"
-mkdir  -path="/home/wrm/Desktop/mia/fase2/b28"
-mkdir  -path="/home/wrm/Desktop/mia/fase2/b29"
-mkdir  -path="/home/wrm/Desktop/mia/fase2/b30"
-mkdir  -path="/home/wrm/Desktop/mia/fase2/b31"
-mkdir  -path="/home/wrm/Desktop/mia/fase2/b32"
-mkdir  -path="/home/wrm/Desktop/mia/fase2/b33"
-mkdir  -path="/home/wrm/Desktop/mia/fase2/b34"
-mkdir  -path="/home/wrm/Desktop/mia/fase2/b35"
-mkdir  -path="/home/wrm/Desktop/mia/fase2/b36"
-mkdir  -path="/home/wrm/Desktop/mia/fase2/b37"
-mkdir  -path="/home/wrm/Desktop/mia/fase2/b38"
-mkdir  -path="/home/wrm/Desktop/mia/fase2/b39"
-mkdir  -path="/home/wrm/Desktop/mia/fase2/b40"
-mkdir  -path="/home/wrm/Desktop/mia/fase2/b41"
-mkdir  -path="/home/wrm/Desktop/mia/fase2/b42"
-mkdir  -path="/home/wrm/Desktop/mia/fase2/b43"
-mkdir  -path="/home/wrm/Desktop/mia/fase2/b44"
-mkdir  -path="/home/wrm/Desktop/mia/fase2/b45"
-mkdir  -path="/home/wrm/Desktop/mia/fase2/b46"
-mkdir  -path="/home/wrm/Desktop/mia/fase2/b47"
-mkdir  -path="/home/wrm/Desktop/mia/fase2/b48"
-mkdir  -path="/home/wrm/Desktop/mia/fase2/b49"
-mkdir  -path="/home/wrm/Desktop/mia/fase2/b50"
-
-#reporte2 ::::(  ) 
-rep -id=vda1 -Path="/home/wrm/Desktop/reports2/reporte2_vda1_sb.pdf" -name=sb
-rep -id=vda1 -Path="/home/wrm/Desktop/reports2/reporte2_vda1_tree.jpg" -name=tree
-
-pause
-
-logout
-loGin -usr=user1 -pwd=user1 -id=vda1
-#Archivo 
 mkfile -path="/home/b1.txt" -size=75
+
 #Debe dar error ruta no existe
 mkfile -path="/home/Noexiste/b1.txt" -size=75
+
 #Debe dar error size negativo
 mkfile -path="/home/b1.txt" -size=45
+
 #1er indirecto
 mkfile -path="/home/b1_1.txt" -size=1700
+
 #archivo con parametro -p 
 mkfile -path="/home/ahora/yaexiste/b1.txt" -size=640
 
-#reporte3 ::::(  ) 
-rep -id=vda1 -Path="/home/wrm/Desktop/reports2/reporte3_vda1_sb.pdf" -name=sb
-rep -id=vda1 -Path="/home/wrm/Desktop/reports2/reporte3_vda1_tree.jpg" -name=tree
-
+rep -id=vda1 -Path="/home/wrm/Desktop/reports2/reporte1_vda1_tree.jpg" -name=tree
 pause
+
 
 #REMOVER
 #Carpeta Directos

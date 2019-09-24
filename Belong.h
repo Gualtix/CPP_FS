@@ -2374,7 +2374,12 @@ char* UsersList_to_String(DoublyGenericList*  usrList){
     if(usrList->Length > 0){
         while(usrList->Length > 0){
             GroupUserInfo* gu = (GroupUserInfo*)DeQueue(usrList);
-            tmp = Concat_Izq_with_Der(tmp,&gu->ID,'s','i');
+            if(cnt == 0){
+                 tmp = Concat_Izq_with_Der(NULL,&gu->ID,'s','i');
+            }
+            else{
+                 tmp = Concat_Izq_with_Der(tmp,&gu->ID,'s','i');
+            }
             tmp = Concat_Izq_with_Der(tmp,newString(",u,"),'s','s');
             tmp = Concat_Izq_with_Der(tmp,gu->GrpName,'s','s');
             tmp = Concat_Izq_with_Der(tmp,newString(","),'s','s');
@@ -2424,7 +2429,13 @@ char* GroupsList_to_String(DoublyGenericList* grpList){
     if(grpList->Length > 0){
         while(grpList->Length > 0){
             GroupUserInfo* gu = (GroupUserInfo*)DeQueue(grpList);
-            tmp = Concat_Izq_with_Der(tmp,&gu->ID,'s','i');
+            if(cnt == 0){
+                tmp = Concat_Izq_with_Der(NULL,&gu->ID,'s','i');
+                //tmp = newString();
+            }
+            else{
+                tmp = Concat_Izq_with_Der(tmp,&gu->ID,'s','i');
+            }
             tmp = Concat_Izq_with_Der(tmp,newString(",g,"),'s','s');
             tmp = Concat_Izq_with_Der(tmp,gu->GrpName,'s','s');
             tmp = Concat_Izq_with_Der(tmp,newString("\n"),'s','s');

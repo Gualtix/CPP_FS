@@ -129,7 +129,7 @@ char* Path_get_Last_FolderName(char* CompletePathDir){
     }
 }
 
-
+/*
 char* Path_Get_LastDirName(char* CompletePathDir){
     DoublyGenericList* PathList = PathSeparate(CompletePathDir);
     
@@ -150,6 +150,7 @@ char* Path_Get_LastDirName(char* CompletePathDir){
         return LastDir;
     }
 }
+*/
 
 int CalcSize_in_Bytes(int PD_Size,char Unit){
 
