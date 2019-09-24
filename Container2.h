@@ -7,22 +7,41 @@
 #include <string.h>
 #include "Fw/DoublyGenericList.h"
 
+
+typedef struct Existence{
+    int iNodeFather;
+    int iNode;
+    int PrevOk;
+    char* FFName;
+}Existence;
+
+Existence* newExistence(){
+    Existence* ex = (Existence*)malloc(sizeof(Existence));
+    ex->iNodeFather = -1;
+    ex->iNode = -1;
+    ex->PrevOk = 0;
+    ex->FFName = NULL;
+    return ex;
+}
+
+
 typedef struct FileFolderInfo
 {
     DoublyGenericList* PathPlacesList;
     int   isRecursive;
-    char* FatherName;
+    //char* FatherName;
     char* FileName;
     char* txtData;
 
 }FileFolderInfo;
 
 FileFolderInfo* newFileFolderInfo(){
-    FileFolderInfo* Rs = (FileFolderInfo*)malloc(sizeof(FileFolderInfo));
 
+    FileFolderInfo* Rs = (FileFolderInfo*)malloc(sizeof(FileFolderInfo));
     Rs->PathPlacesList = new_DoublyGenericList();
     Rs->isRecursive    = 0;
     Rs->FileName       = NULL;
+    Rs->txtData = NULL;
 
     return Rs;
 
@@ -181,12 +200,15 @@ typedef struct Content
 Content newContent(){
     Content Cnt;
     Cnt.b_inodo = - 1;
+    memset(Cnt.b_name,'\0',12);
 
+    /*
     int i = 0;
     while(i < 12){
         Cnt.b_name[i] = '\0';
         i++;
     }
+    */
     return Cnt;    
 }
 

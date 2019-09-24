@@ -207,8 +207,6 @@ int nameV(char* CMD,InfoCatcher* nwInf){
     
 }
 
-
-
 int rutaV(char* CMD,InfoCatcher* nwInf){
     //(^< ............ ............ ............ ............ ............ -ruta: Mandatory
     if(strcasecmp(nwInf->_name,"ls") != 0 && strcasecmp(nwInf->_name,"file") != 0){
@@ -278,15 +276,28 @@ int pathV(char* CMD,InfoCatcher* nwInf){
         return 0;
     }
 
+    Existence* ex = vFF_Exists(nwInf);
+
+    if(nwInf->_P != 1){
+        if(ex->PrevOk == 0){
+            ErrorPrinter(CMD,"ERROR","-path",ex->FFName,"La Carpeta Raiz No Existe");
+            return 0;
+        }
+    }
+
     if(strcasecmp(CMD,"MKDIR") == 0){
-
-
+        if(ex->iNode > -1){
+            ErrorPrinter(CMD,"ERROR","-path",ex->FFName,"La Carpeta Ya Existe");
+            return 0;
+        }
         return 1;
     }
 
     if(strcasecmp(CMD,"MKFILE") == 0){
-
-
+        if(ex->iNode > -1){
+            ErrorPrinter(CMD,"ERROR","-path",ex->FFName,"El Archivo Ya Existe");
+            return 0;
+        }
         return 1;
     }
 }
@@ -396,9 +407,10 @@ int ErrorManager(InfoCatcher* nwInf,char* CMD){
 
     //MKFILE   ****************************************************************************************************** 
     if(strcasecmp(CMD,"MKFILE") == 0){
-        if(pathV("MKUSR",nwInf) == 0) return 0;
-        sizeV("MKUSR",nwInf);
-        contV("MKUSR",nwInf);
+        if(pathV("MKFILE",nwInf) == 0) return 0;
+        sizeV("MKFILE",nwInf);
+        contV("MKFILE",nwInf);
+        
         return 1;
     }
 

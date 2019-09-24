@@ -55,9 +55,11 @@ DoublyGenericList* PathSeparate(char* CompletePathDir){
     char* pch;
     pch = strchr(FileName,'.');
 
+    //NULL = false = is Folder
     if(pch == NULL){
         EnQueue(PathList,newString("false"));
     }
+    //true = is File
     else{
         EnQueue(PathList,newString("true"));
     }

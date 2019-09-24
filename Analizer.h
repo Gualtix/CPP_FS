@@ -730,9 +730,10 @@ int ScanF2(char* Bf,InfoCatcher* nwInf){
 
     if (strcasecmp(Bf, "MKDIR") == 0){
         if(ErrorManager(nwInf,"MKDIR") == 1){
+
+            mkdir_do(nwInf);
             char* FolderName = Path_get_Last_FolderName(nwInf->_path);
             Print_Long_Msg("MKDIR","SUCCESS","Directorio",FolderName,"Creado Exitosamente");
-            mkdir_do(nwInf);
         }
         
         return 0;

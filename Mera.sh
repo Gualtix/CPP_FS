@@ -60,16 +60,19 @@ Mkusr -usr="user2" -grp=Arqui -pwd=user2
 
 rmusr -usr=user3
 
-Mkdir -path=/home/wrm/Desktop/mia/fase1  -P  
-Mkdir -path=/home/wrm/Desktop/mia/fase2  -P  
+Mkdir -path=/home/wrm/Desktop/mia/fase1     -P  
+Mkdir -path=/home/wrm/Desktop/mia/fase2     -P  
 Mkdir -path=/home/wrm/Desktop/mia/carpeta2  -P  
 
 Mkdir  -path=/home/wrm/Desktop/mia/carpeta2/a1
 Mkdir  -path=/home/wrm/Desktop/mia/carpeta2/a2
-Mkdir  -path=/home/wrm/Desktop/mia/fase2/a46
+Mkdir  -path=/home/wrm/Desktop/mia/fase2/a46 
+
+
 
 #Debe dar error porque ya existe a46
 Mkdir  -path=/home/wrm/Desktop/mia/fase2/a46
+
 
 mkfile -path="/home/b1.txt" -size=75
 
@@ -85,7 +88,7 @@ mkfile -path="/home/b1_1.txt" -size=1700
 #archivo con parametro -p 
 mkfile -path="/home/ahora/yaexiste/b1.txt" -size=640
 
-rep -id=vda1 -Path="/home/wrm/Desktop/reports2/reporte1_vda1_tree.jpg" -name=tree
+#rep -id=vda1 -Path="/home/wrm/Desktop/reports2/reporte1_vda1_tree.jpg" -name=tree
 pause
 
 

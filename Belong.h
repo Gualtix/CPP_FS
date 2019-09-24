@@ -1884,11 +1884,6 @@ int Calc_iN(int PartSize){
     return iN;
 }
 
-void Format_to_EXT2(){
-}
-
-
-
 void Format_to_EXT3(){
 
     int iN = Calc_iN(Omni->PartBatch_inUse->Size);
@@ -2295,29 +2290,17 @@ int make_newFolder(InfoCatcher* nwInf){
     FileFolderInfo* ffInf = get_FFInfo(nwInf);
 
     char* tName = (char*)DeQueue(ffInf->PathPlacesList);
-
     if(strcasecmp(tName,"users.txt") == 0) return 0;
-
+    
     SeekInfo* nwSI = CompleteSeeker(0,tName);
     int tmp = 0;
 
     while(ffInf->PathPlacesList->Length > 0){
         if(nwSI == NULL){
-            if(ffInf->isRecursive == 0){
-                int aspx = 0;
-                if(ffInf->PathPlacesList->Length > 1){
-                    printf("\n");
-                    printf("MKDIR -Path ERROR: La carpeta raiz   -> %s <-   no existe\n",tName);
-                    return -1;
-                }
-            }
             GroupUserInfo* ggs = getGRP_by_Name(Omni->LoggedUser->GrpName,getGroupsList());
             int Op = Check_If_Is_txtFile(tName);
             if(Op == 0){
                 tmp = allocate_NewFolder(tmp,tName,664,Omni->LoggedUser->ID,ggs->ID);
-            }
-            else{
-
             }
         }
         else{
@@ -2325,20 +2308,6 @@ int make_newFolder(InfoCatcher* nwInf){
         }
         tName = (char*)DeQueue(ffInf->PathPlacesList);
         nwSI = CompleteSeeker(tmp,tName);
-
-    }
-
-
-
-    if(nwSI == NULL && strcasecmp(tName,"false") != 0 && strcasecmp(tName,"true")){
-        GroupUserInfo* ggs = getGRP_by_Name(Omni->LoggedUser->GrpName,getGroupsList());
-
-        tmp = allocate_NewFolder(tmp,tName,664,Omni->LoggedUser->ID,ggs->ID);
-    }
-
-    if(isRecovery == 0){
-        printf("\n");
-        printf("MKDIR SUCCESS: Arbol de Directorios   -> %s <-   Creado Exitosamente\n",nwInf->_path);
     }
     return tmp;
 }
@@ -2367,6 +2336,54 @@ int make_newFile(InfoCatcher* nwInf){
     }
     return - 1;
 }
+
+Existence* vFF_Exists(InfoCatcher* nwInf){
+    //true  = is File
+    //false = is Folder
+
+    Existence* ex = newExistence();
+
+    FileFolderInfo* ffInf = get_FFInfo(nwInf);
+    char* tName = (char*)DeQueue(ffInf->PathPlacesList);
+
+    SeekInfo* nwSI = CompleteSeeker(0,tName);
+    int tmp = 0;
+
+    while(ffInf->PathPlacesList->Length > 0){
+        if(nwSI == NULL){
+            if(ffInf->PathPlacesList->Length == 1){
+                ex->iNodeFather = tmp;
+                ex->iNode = -1;
+                ex->PrevOk = 1;
+                ex->FFName = tName;
+                return ex;
+            }
+            else{
+                ex->iNodeFather = -1;
+                ex->iNode = -1;
+                ex->PrevOk = 0;
+                ex->FFName = tName;
+                return ex;
+            }
+        }
+        else{
+            if(ffInf->PathPlacesList->Length == 1){
+                ex->iNodeFather = nwSI->iNodeFather_Bit_ID;
+                ex->iNode = tmp;
+                ex->PrevOk = 1;
+                ex->FFName = tName;
+                return ex;
+            }
+        }
+        tmp = nwSI->iNode_Bit_ID;
+        tName = (char*)DeQueue(ffInf->PathPlacesList);
+        nwSI = CompleteSeeker(tmp,tName);
+    }
+    return ex;
+}
+
+
+
 
 char* UsersList_to_String(DoublyGenericList*  usrList){
     char* tmp = newString(25);
