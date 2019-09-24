@@ -35,6 +35,9 @@ char* newString(int Ln){
 
 
 char* newString(char* Str){
+    if(Str == NULL){
+        return NULL;
+    }
     int Ln = strlen(Str);
     char* Rs = newString(Ln);
     int cnt = 0;

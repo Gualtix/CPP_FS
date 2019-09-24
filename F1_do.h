@@ -450,6 +450,15 @@ void login_do(InfoCatcher* nwInf){
     Omni->LoggedUser = gu;
 }
 
+void cat_do(InfoCatcher* nwInf){
+    nwInf->_path = newString(nwInf->_file);
+    Existence* ex = vFF_Exists(nwInf);
+    char* txt = ReadFile(ex->FFName);
+    printf("\n");
+    printf("Contenido del Archivo %s: %s\n",ex->FFName,txt);
+
+}
+
 
 int mkfile_do(InfoCatcher* nwInf){
     FileFolderInfo* ffInf = get_FFInfo(nwInf);

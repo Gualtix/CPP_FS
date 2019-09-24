@@ -276,6 +276,10 @@ int pathV(char* CMD,InfoCatcher* nwInf){
         return 0;
     }
 
+    if(strcasecmp(CMD,"REP") == 0){
+        return 1;
+    }
+
     Existence* ex = vFF_Exists(nwInf);
 
     if(nwInf->_P != 1){
@@ -283,6 +287,10 @@ int pathV(char* CMD,InfoCatcher* nwInf){
             ErrorPrinter(CMD,"ERROR","-path",ex->FFName,"La Carpeta Raiz No Existe");
             return 0;
         }
+    }
+
+    if(strcasecmp(CMD,"CAT") == 0){
+        return 1;
     }
 
     if(strcasecmp(CMD,"MKDIR") == 0){
@@ -422,6 +430,13 @@ int ErrorManager(InfoCatcher* nwInf,char* CMD){
 
     //REM   ****************************************************************************************************** 
     if(strcasecmp(CMD,"REM") == 0){
+        return 1;
+    }
+
+    //REM   ****************************************************************************************************** 
+    if(strcasecmp(CMD,"CAT") == 0){
+        nwInf->_path = newString(nwInf->_file);
+        if(pathV("CAT",nwInf) == 0) return 0;
         return 1;
     }
 }

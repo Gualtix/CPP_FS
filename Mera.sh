@@ -80,15 +80,19 @@ mkfile -path="/home/b1.txt" -size=75
 mkfile -path="/home/Noexiste/b1.txt" -size=75
 
 #Debe dar error size negativo
-mkfile -path="/home/b1.txt" -size=45
+mkfile -path="/home/sfe/eee/wwe/fff/b1.txt" -size=45
 
 #1er indirecto
-mkfile -path="/home/b1_1.txt" -size=1700
+#mkfile -path="/home/b1_1.txt" -size=1700
 
 #archivo con parametro -p 
-mkfile -path="/home/ahora/yaexiste/b1.txt" -size=640
+mkfile -path="/home/ahora/yaexiste/b1.txt" -size=640 -p
 
-#rep -id=vda1 -Path="/home/wrm/Desktop/reports2/reporte1_vda1_tree.jpg" -name=tree
+mkfile -path="/sisi.txt" -size=15
+
+cat -file="/users.txt"
+
+rep -id=vda1 -Path="/home/wrm/Desktop/reports2/reporte1_vda1_tree.jpg" -name=tree
 pause
 
 

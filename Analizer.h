@@ -38,13 +38,14 @@ InfoCatcher* fillInfoCatcher(DoublyGenericList* CommandList,InfoCatcher** nwInf)
         Prm_Izq = (char*)DeQueue(CommandList);
         Prm_Der = (char*)DeQueue(CommandList);
 
-        if(strcasecmp(Prm_Izq,"-path") != 0 && 
-           strcasecmp(Prm_Izq,"-name") != 0 && 
-           strcasecmp(Prm_Izq,"-usr")  != 0 && 
-           strcasecmp(Prm_Izq,"-pwd")  != 0 && 
-           strcasecmp(Prm_Izq,"-cont") != 0 && 
-           strcasecmp(Prm_Izq,"-ruta") != 0 &&
-           strcasecmp(Prm_Izq,"-grp")  != 0
+        if(strcasecmp(Prm_Izq,"-path")  != 0 && 
+           strcasecmp(Prm_Izq,"-name")  != 0 && 
+           strcasecmp(Prm_Izq,"-usr")   != 0 && 
+           strcasecmp(Prm_Izq,"-pwd")   != 0 && 
+           strcasecmp(Prm_Izq,"-cont")  != 0 && 
+           strcasecmp(Prm_Izq,"-ruta")  != 0 &&
+           strcasecmp(Prm_Izq,"-grp")   != 0 &&
+           strcasecmp(Prm_Izq,"-file")  != 0
         ){
             if(Prm_Der != NULL){
                 String_ByRef_toLower(&Prm_Der);
@@ -156,6 +157,12 @@ InfoCatcher* fillInfoCatcher(DoublyGenericList* CommandList,InfoCatcher** nwInf)
         //(^< ............ ............ ............   _ruta
         if(!strcasecmp(Prm_Izq,"-ruta")){
             (*nwInf)->_ruta = newString(Prm_Der);
+            continue;
+        }
+
+        //(^< ............ ............ ............   _file
+        if(!strcasecmp(Prm_Izq,"-file")){
+            (*nwInf)->_file = newString(Prm_Der);
             continue;
         }
 
@@ -742,10 +749,57 @@ int ScanF2(char* Bf,InfoCatcher* nwInf){
     if (strcasecmp(Bf, "MKFILE") == 0){
         if(ErrorManager(nwInf,"MKFILE") == 1){
             char* FileName = Path_Get_FileName(nwInf->_path);
-            Print_Long_Msg("MKFILE","SUCCESS","Directorio",FileName,"Creado Exitosamente");
             mkfile_do(nwInf);
+            Print_Long_Msg("MKFILE","SUCCESS","Archivo",FileName,"Creado Exitosamente");
         }
         
+        return 0;
+    }
+
+    if (strcasecmp(Bf, "CAT") == 0){
+        if(ErrorManager(nwInf,"CAT") == 1){
+            cat_do(nwInf);
+        }
+        return 0;
+    }
+
+    if (strcasecmp(Bf, "CHMOD") == 0){
+        return 0;
+    }
+
+    if (strcasecmp(Bf, "REM") == 0){
+        return 0;
+    }
+
+    if (strcasecmp(Bf, "EDIT") == 0){
+        return 0;
+    }
+
+    if (strcasecmp(Bf, "REN") == 0){
+        return 0;
+    }
+
+    if (strcasecmp(Bf, "CP") == 0){
+        return 0;
+    }
+
+    if (strcasecmp(Bf, "MV") == 0){
+        return 0;
+    }
+
+    if (strcasecmp(Bf, "CHOWN") == 0){
+        return 0;
+    }
+
+    if (strcasecmp(Bf, "CHGRP") == 0){
+        return 0;
+    }
+
+    if (strcasecmp(Bf, "LOSS") == 0){
+        return 0;
+    }
+
+    if (strcasecmp(Bf, "RECOVERY") == 0){
         return 0;
     }
    return 1;
