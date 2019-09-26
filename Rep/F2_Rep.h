@@ -1042,7 +1042,11 @@ void Add_LsRow(FILE* DotFl,int Bit_ID,char* Type,char* Name){
     fprintf(DotFl,"\t\t\t\t\t\t<TR><TD>%s</TD><TD>%s</TD><TD>%s</TD><TD>%s</TD><TD>%s</TD><TD>%s</TD><TD>%s</TD></TR>\n",Permision,Owner,Group,Size_in_Bytes,Date,Type,Name);
 }
 
-void LsTravel(FILE* DotFl,int Bit_ID){
+void LsTravel(FILE* DotFl,int iNode_Bit_ID){
+    Inode* i_Node = (Inode*)BinLoad_Str(iNode_Bit_ID,"Inode");
+
+    
+    /*
     Inode* i_Node = (Inode*)BinLoad_Str(Bit_ID,"Inode");
 
     int i = 0;
@@ -1128,9 +1132,10 @@ void LsTravel(FILE* DotFl,int Bit_ID){
         
             j++;
         }
-        */    
+        
         i++;
     }
+    */
     
 }
 
@@ -1171,16 +1176,24 @@ void Generate_Ls_Rep(char* CompleteReportPathDir,char* _ruta){
                 fprintf(DotFl,"\t\t\t\t\t<TABLE BGCOLOR = \"#99c2ff\" BORDER = \"0\" CELLBORDER = \"1\" CELLSPACING = \"0\">\n");
 
                 fprintf(DotFl,"\t\t\t\t\t\t<TR><TD>Permision</TD><TD>Owner</TD><TD>Group</TD><TD>Size_in_Bytes</TD><TD>Date</TD><TD>Type</TD><TD>Name</TD></TR>\n");
-                SeekInfo* nsk = NULL;
+                //SeekInfo* nsk = newSeekInfo();
+                //InfoCatcher* nwInf = newInfoCatcher();
+                int iNode_Bit_ID;
+                Existence* ex = vFF_Exists(_ruta);
                 if(strcasecmp(_ruta,"/") != 0){
-                    nsk = CompleteSeeker(0,Name);
+                    //nwInf->_ruta = _ruta;
+                    iNode_Bit_ID = ex->iNode;
                 }
                 else{
-                    nsk = newSeekInfo();
-                    nsk->iNode_Bit_ID = 0;
+                    iNode_Bit_ID = 0;
                 }
 
-                LsTravel(DotFl,nsk->iNode_Bit_ID);
+                if(Check_If_Is_txtFile(ex->FFName)){
+                    Add_LsRow(DotFl,ex->iNode,"Archivo",ex->FFName);
+                }
+                else{
+                    LsTravel(DotFl,iNode_Bit_ID);
+                }
                 fprintf(DotFl,"\t\t\t\t\t</TABLE>\n");
             fprintf(DotFl,"\t\t\t\t>\n");
         fprintf(DotFl,"\t\t\t]\n");

@@ -2080,14 +2080,24 @@ void CompleteTraversal_to_Erase(int iNode_Bit_ID,char* FatherFolderName){
         i++;
     }
 }
-Existence* vFF_Exists(InfoCatcher* nwInf){
+
+Existence* vFF_Exists(char* Rt){
     //true  = is File
     //false = is Folder
 
     Existence* ex = newExistence();
 
-    FileFolderInfo* ffInf = get_FFInfo(nwInf);
-    char* tName = (char*)DeQueue(ffInf->PathPlacesList);
+    if(strcasecmp(Rt,"/") == 0){
+        ex->FFName = newString("/");
+        ex->iNode = 0;
+        ex->iNodeFather = 0;
+        ex->PrevOk = 1;
+        return ex;
+    }
+    
+
+    DoublyGenericList* PathPlacesList = PathSeparate(newString(Rt));
+    char* tName = (char*)DeQueue(PathPlacesList);
 
     SeekInfo* nwSI = CompleteSeeker(0,tName);
     int tmp = 0;
@@ -2095,9 +2105,9 @@ Existence* vFF_Exists(InfoCatcher* nwInf){
         tmp = nwSI->iNode_Bit_ID;
     }
 
-    while(ffInf->PathPlacesList->Length > 0){
+    while(PathPlacesList->Length > 0){
         if(nwSI == NULL){
-            if(ffInf->PathPlacesList->Length == 1){
+            if(PathPlacesList->Length == 1){
                 ex->iNodeFather = tmp;
                 ex->iNode = -1;
                 ex->PrevOk = 1;
@@ -2113,7 +2123,7 @@ Existence* vFF_Exists(InfoCatcher* nwInf){
             }
         }
         else{
-            if(ffInf->PathPlacesList->Length == 1){
+            if(PathPlacesList->Length == 1){
                 ex->iNodeFather = nwSI->iNodeFather_Bit_ID;
                 ex->iNode = tmp;
                 ex->PrevOk = 1;
@@ -2122,7 +2132,7 @@ Existence* vFF_Exists(InfoCatcher* nwInf){
             }
         }
         tmp = nwSI->iNode_Bit_ID;
-        tName = (char*)DeQueue(ffInf->PathPlacesList);
+        tName = (char*)DeQueue(PathPlacesList);
         nwSI = CompleteSeeker(tmp,tName);
     }
     return ex;
@@ -2151,9 +2161,9 @@ char* ReadFile(char* Path){
     //}
 
     //int iNode_Bit_ID = nwSI->iNode_Bit_ID;
-    InfoCatcher* tnw = newInfoCatcher();
-    tnw->_path = newString(Path);
-    Existence* ex = vFF_Exists(tnw);
+    //InfoCatcher* tnw = newInfoCatcher();
+    //tnw->_path = newString(Path);
+    Existence* ex = vFF_Exists(Path);
 
     if(ex->iNode == -1){
         return NULL;

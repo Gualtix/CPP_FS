@@ -217,37 +217,28 @@ int rutaV(char* CMD,InfoCatcher* nwInf){
         return 0;
     }
 
+    //char* tmPath = newString(nwInf->_path);
+    //nwInf->_path = nwInf->_ruta;
+    Existence* ex = vFF_Exists(nwInf->_ruta);
+    //nwInf->_path = tmPath;
+    
+
     if(strcasecmp(nwInf->_name,"file") == 0){
-        char* FileName = Path_get_Last_FolderName(nwInf->_ruta);
-        setOmni(nwInf->_id);
-        SeekInfo* SF = CompleteSeeker(0,FileName);
-        Omni = newGLS();
-        if(SF == NULL){
-            ErrorPrinter(CMD,"ERROR","-ruta",FileName,"El Archivo No Existe");
+        if(ex->iNode == -1){
+            ErrorPrinter(CMD,"ERROR","-ruta",ex->FFName,"El Archivo No Existe");
             return 0;
         }
     }
 
     if(strcasecmp(nwInf->_name,"ls") == 0){
-
-        if(strcasecmp(nwInf->_ruta,"/") != 0){
-            DoublyGenericList* Ph = PathSeparate(nwInf->_ruta);
-            Pop(Ph);
-            char* tmp = (char*)Pop(Ph);
-            int  istxt = Check_If_Is_txtFile(tmp);
-            setOmni(nwInf->_id);
-            SeekInfo* SF = CompleteSeeker(0,tmp);
-            Omni = newGLS();
-            if(SF == NULL){
-                if(istxt == 1){
-                    ErrorPrinter(CMD,"ERROR","-ruta",tmp,"El Archivo No Existe");
-                    return 0;
-                }
-                else{
-                    ErrorPrinter(CMD,"ERROR","-ruta",tmp,"El Folder No Existe");
-                    return 0;
-                }
+        if(ex->iNode == -1){
+            if(Check_If_Is_txtFile(ex->FFName)){
+                ErrorPrinter(CMD,"ERROR","-ruta",ex->FFName,"El Archivo No Existe");
             }
+            else{
+                ErrorPrinter(CMD,"ERROR","-ruta",ex->FFName,"La Carpeta No Existe");
+            }
+            return 0;
         }
     }
     return 1;
@@ -280,7 +271,7 @@ int pathV(char* CMD,InfoCatcher* nwInf){
         return 1;
     }
 
-    Existence* ex = vFF_Exists(nwInf);
+    Existence* ex = vFF_Exists(nwInf->_path);
 
     if(nwInf->_P != 1){
         if(ex->PrevOk == 0){

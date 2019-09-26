@@ -92,14 +92,15 @@ mkfile -path="/sisi.txt" -size=15
 
 cat -file="/sisi.txt"
 
-rep -id=vda1 -Path="/home/wrm/Desktop/reports2/antestree.jpg"   -name=tree
-rep -id=vda1 -Path="/home/wrm/Desktop/reports2/antesjour.jpg" -name=journaling
+#rep -id=vda1 -Path="/home/wrm/Desktop/reports2/antestree.jpg"   -name=tree
+#rep -id=vda1 -Path="/home/wrm/Desktop/reports2/antesjour.jpg" -name=journaling
 
 loss     -id=vda1 
 recovery -id=vda1 
 
+rep -id=vda1 -ruta=/users.txt -Path="/home/wrm/Desktop/reports2/eles.jpg"   -name=ls
 rep -id=vda1 -Path="/home/wrm/Desktop/reports2/destree.jpg"   -name=tree
-rep -id=vda1 -Path="/home/wrm/Desktop/reports2/desjour.jpg" -name=journaling
+#rep -id=vda1 -Path="/home/wrm/Desktop/reports2/desjour.jpg" -name=journaling
 pause
 
 

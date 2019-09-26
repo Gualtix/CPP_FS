@@ -390,6 +390,7 @@ void f_disk_cmd(InfoCatcher* nwInf){
 }
 
 void rep_cmd(InfoCatcher* nwInf){
+    setOmni(nwInf->_id);
     if(ErrorManager(nwInf,"REP") == 1){
         if(strcasecmp(nwInf->_name,"mbr") != 0 && strcasecmp(nwInf->_name,"disk") != 0){
             rep_F2_do(nwInf);
@@ -401,6 +402,7 @@ void rep_cmd(InfoCatcher* nwInf){
         printf("\n");
         printf("REP SUCCESS: Reporte:   -> %s <-   Generado con Exito\n",RepName);
     }
+    Omni = newGLS();
 }
 
 void mount_cmd(InfoCatcher* nwInf){
