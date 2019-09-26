@@ -525,7 +525,6 @@ int ScanF2(char* Bf,InfoCatcher* nwInf){
                 AddJournal("LOGIN",COMMS,664,"users.txt","Archivo");
                 Print_Msg("LOGIN","SUCCESS","Sesion Iniciada Exitosamente");
             }
-            
         }
 
         return 0;
@@ -699,11 +698,11 @@ void recovery_do(InfoCatcher* nwInf){
         
         if(tmp->isOccupied != '0'){
             DoublyGenericList* CommandList = new_DoublyGenericList();
-            FillCommandList(CMD,CommandList);
+            Param = StringCloneWithOut(Param,'\n');
+            FillCommandListTwo(newString(Param),CommandList);
             InfoCatcher* tinf = newInfoCatcher();
             fillInfoCatcher(CommandList,&tinf);
             ScanF2(CMD,tinf);
-
         }
         if(strcasecmp(CMD,"logout") == 0) setOmni(nwInf->_id);
 
@@ -721,12 +720,6 @@ void recovery_do(InfoCatcher* nwInf){
 
 void ExecuteComand(char *InputString){
 
-    if(strcasecmp(InputString," ")== 0){
-        int okit = 52;
-        int okie = 52;
-        int okir = 52;
-    }
-
     //system("clear");
     printf("\n");
     printf("\n");
@@ -741,11 +734,16 @@ void ExecuteComand(char *InputString){
         return;
     }
 
+    if(strcasecmp(InputString,"mkgrp -name=\"Compi2\"\n") == 0){
+        int kis = 0;
+    }
+
     InputString = StringCloneWithOut(InputString,'\t');
     InputString = StringCloneWithOut(InputString,'\r');
     InputString = StringCloneWithOut(InputString,'\"');
     InputString = StringCloneWithOut(InputString,'\'');
     InputString = StringCloneWithOut(InputString,'\n');
+    
 
     if(strcasecmp(InputString, "Exit\n") == 0){
         printf("\n");
@@ -794,6 +792,11 @@ void ExecuteComand(char *InputString){
             {
                 char* NewCommand = (char*)DeQueue(CommandList);
                 COMMS = newString(NewCommand);
+                COMMS = StringCloneWithOut(COMMS,'\"');
+                COMMS = StringCloneWithOut(COMMS,'\t');
+                COMMS = StringCloneWithOut(COMMS,'\n');
+                COMMS = StringCloneWithOut(COMMS,'\r');
+                COMMS = StringCloneWithOut(COMMS,'\'');
                 ExecuteComand(NewCommand);
             }   
         }

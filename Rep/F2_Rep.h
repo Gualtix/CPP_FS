@@ -1,7 +1,6 @@
 #ifndef F2_REP
 #define F2_REP
 
-
 #include "../Fw/Helper.h"
 #include "../Fw/StringHandler.h"
 
@@ -14,6 +13,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+
 InfoCatcher* fillInfoCatcher(DoublyGenericList* CommandList,InfoCatcher** nwInf){
 
     char* Prm_Izq = NULL;
@@ -161,15 +161,24 @@ InfoCatcher* fillInfoCatcher(DoublyGenericList* CommandList,InfoCatcher** nwInf)
 }
 
 void FillCommandList(char* Bf,DoublyGenericList* CommandList){
-
+    int a = 3;
     while(1){
-
         Bf = strtok(NULL," =");
         if(Bf == NULL){
             break;
         }
-
         EnQueue(CommandList,Bf);
+    }    
+}
+
+void FillCommandListTwo(char* Pert,DoublyGenericList* CommandList){
+    Pert = strtok(Pert," =");
+    while(1){
+        Pert = strtok(NULL," =");
+        if(Pert == NULL){
+            break;
+        }
+        EnQueue(CommandList,Pert);
     }    
 }
 
