@@ -380,6 +380,18 @@ int ErrorManager(InfoCatcher* nwInf,char* CMD){
         return 1;
     }
 
+    //RECOVERY   ****************************************************************************************************** 
+    if(strcasecmp(CMD,"RECOVERY") == 0){
+        if(idV("RECOVERY",nwInf) == 0) return 0;
+        return 1;
+    }
+
+    //LOSS   ****************************************************************************************************** 
+    if(strcasecmp(CMD,"LOSS") == 0){
+        if(idV("LOSS",nwInf) == 0) return 0;
+        return 1;
+    }
+
     //(^< ............ ............ ............ ............ ............ root use only
     if (strcasecmp(Omni->LoggedUser->UsrName,"root") != 0){
         ErrorPrinter(CMD,"ERROR","Usuario",Omni->LoggedUser->UsrName,"Solo root puede usar este Comando");
@@ -433,12 +445,14 @@ int ErrorManager(InfoCatcher* nwInf,char* CMD){
         return 1;
     }
 
-    //REM   ****************************************************************************************************** 
+    //CAT   ****************************************************************************************************** 
     if(strcasecmp(CMD,"CAT") == 0){
         nwInf->_path = newString(nwInf->_file);
         if(pathV("CAT",nwInf) == 0) return 0;
         return 1;
     }
+
+    
 }
 
 

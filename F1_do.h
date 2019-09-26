@@ -459,6 +459,51 @@ void cat_do(InfoCatcher* nwInf){
 
 }
 
+void loss_do(InfoCatcher* nwInf){
+
+    Mounted_Part* mP = getPartMounted_By_vID(nwInf->_id);
+    char* Bf = newString(1024);
+    //memset(Bf,'x',1024);
+    setOmni(nwInf->_id);
+
+    int iN = Omni->SBinuse->s_inodes_count;
+
+    int Part_StartByte = Omni->PartBatch_inUse->StartByte;
+    int Part_EndByte   = Omni->PartBatch_inUse->EndByte;
+
+    int Jr_EndByte = Part_StartByte + (sizeof(SuperBlock) * iN) + sizeof(Journaling);
+
+    int LossSize = Part_EndByte - Jr_EndByte;
+
+    int Div = LossSize / 1024;
+    int Res = LossSize % 1024;
+
+    FILE* Fl = fopen(Omni->CompletePathDir_of_Disk_inUse,"rb+");
+    if(Fl){
+        int i = 0;
+        int Last = 0;
+        while(i < Div){
+            fseek(Fl,Jr_EndByte + (i * 1024),SEEK_SET);
+            fwrite(Bf,1024,1,Fl);
+            Last = Jr_EndByte + (i * 1024);
+            i++;
+        }
+        if(Res > 0){
+            Last = Last + 1024;
+            Bf = newString(Res);
+            fseek(Fl,Last,SEEK_SET);
+            fwrite(Bf,1024,1,Fl);
+            Last = Last + Res;
+            int ee = 0;
+        }
+
+        fclose(Fl);
+    }
+    Omni = newGLS();
+}
+
+
+
 
 int mkfile_do(InfoCatcher* nwInf){
     FileFolderInfo* ffInf = get_FFInfo(nwInf);

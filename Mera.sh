@@ -90,9 +90,13 @@ mkfile -path="/home/ahora/yaexiste/b1.txt" -size=640 -p
 
 mkfile -path="/sisi.txt" -size=15
 
-cat -file="/users.txt"
+cat -file="/sisi.txt"
 
-rep -id=vda1 -Path="/home/wrm/Desktop/reports2/reporte1_vda1_tree.jpg" -name=tree
+rep -id=vda1 -Path="/home/wrm/Desktop/reports2/ladvd.jpg"   -name=tree
+rep -id=vda1 -Path="/home/wrm/Desktop/reports2/vonjour.jpg" -name=journaling
+
+loss     -id=vda1 
+recovery -id=vda1 
 pause
 
 

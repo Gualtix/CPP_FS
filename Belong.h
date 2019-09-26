@@ -5,6 +5,7 @@
 #include "Fw/Helper.h"
 #include "Glovs.h"
 
+
 #pragma GCC diagnostic ignored "-Wwrite-strings"
 
 int MBRPartArray_ExtendedCounter(MBR* Bf){
@@ -1828,40 +1829,6 @@ void AddJournal(char* CMD,char* Content,int Permits,char* Name,char* Type){
     Jr->isFile_or_Folder = Tp;
 
     BinWrite_Struct(Jr,Available_Index,"Journaling");
-
-    //FullViewRender("/home/wrm/Desktop/VonJour.png","Journaling");
-
-    /*
-    //First
-    //int Jr_Start_Byte = Omni->PartBatch_inUse->StartByte + sizeof(SuperBlock);
-    Journaling* tmp = (Journaling*)BinLoad_Str(Dispo,"Journaling");
-
-    int Limit = Omni->SBinuse->s_bm_inode_start;
-
-    if(tmp->isOccupied == '0'){
-        BinWrite_Struct(Jr,Jr_Start_Byte,"Journaling");
-        return;
-    }
-
-    if(strcasecmp(Content,"mkfile -path~:~/home/wrm/Desktop/b1.txt -size~:~705 -p") == 0){
-        int ee = 5;
-
-    }
-
-    while(tmp->isOccupied == '1' && Jr_Start_Byte < Limit){
-        Jr_Start_Byte =  Jr_Start_Byte + sizeof(Journaling);
-        tmp = (Journaling*)BinLoad_Str(Jr_Start_Byte,"Journaling");
-         if(tmp->isOccupied == '1'){
-             continue;
-        }
-        else{
-            BinWrite_Struct(Jr,Jr_Start_Byte,"Journaling");
-            return;
-        }
-    }
-    */
-
-
 }
 
 
@@ -1934,7 +1901,7 @@ void Format_to_EXT3(){
 
     UpdateSuperBlock();
 
-    //Add_FirstDefault_Journaling();
+    Add_FirstDefault_Journaling();
 }
 
 //(^< ............ ............ ............ ............ ............ ............ ............ ............ ............ ............
@@ -2393,7 +2360,13 @@ int make_newFile(InfoCatcher* nwInf){
     return - 1;
 }
 
+char* Generate_CMDString(char* CMD,InfoCatcher* nwInf){
+    
+}
 
+InfoCatcher* Generate_nwInf(char* CMDString){
+    
+}
 
 
 

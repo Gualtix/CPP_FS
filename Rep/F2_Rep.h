@@ -14,7 +14,164 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+InfoCatcher* fillInfoCatcher(DoublyGenericList* CommandList,InfoCatcher** nwInf){
 
+    char* Prm_Izq = NULL;
+    char* Prm_Der = NULL;
+
+    while(CommandList->Length > 0){
+
+        Prm_Izq = (char*)DeQueue(CommandList);
+        Prm_Der = (char*)DeQueue(CommandList);
+
+        if(strcasecmp(Prm_Izq,"-path")  != 0 && 
+           strcasecmp(Prm_Izq,"-name")  != 0 && 
+           strcasecmp(Prm_Izq,"-usr")   != 0 && 
+           strcasecmp(Prm_Izq,"-pwd")   != 0 && 
+           strcasecmp(Prm_Izq,"-cont")  != 0 && 
+           strcasecmp(Prm_Izq,"-ruta")  != 0 &&
+           strcasecmp(Prm_Izq,"-grp")   != 0 &&
+           strcasecmp(Prm_Izq,"-file")  != 0
+        ){
+            if(Prm_Der != NULL){
+                String_ByRef_toLower(&Prm_Der);
+            }
+        }
+
+        //(^< ............ ............ ............   _size
+        if(strcasecmp(Prm_Izq,"-size") == 0){
+            int Nm = atoi(Prm_Der);
+            (*nwInf)->_size =  atoi(Prm_Der);
+            continue;
+        }
+
+        //(^< ............ ............ ............   _fit
+        if(strcasecmp(Prm_Izq,"-fit") == 0){
+            (*nwInf)->_fit = newString(Prm_Der);
+            continue;
+        }
+
+        //(^< ............ ............ ............   _unit
+        if(strcasecmp(Prm_Izq,"-unit") == 0){
+            (*nwInf)->_unit = newString(Prm_Der);
+            continue;
+        }
+
+        //(^< ............ ............ ............   _path
+        if(strcasecmp(Prm_Izq,"-path") == 0){
+            (*nwInf)->_path = newString(Prm_Der);
+            continue;
+        }
+
+        //(^< ............ ............ ............   _type
+        if(strcasecmp(Prm_Izq,"-type") == 0){
+            (*nwInf)->_type = newString(Prm_Der);
+            continue;
+        }
+
+        //(^< ............ ............ ............   _delete
+        if(strcasecmp(Prm_Izq,"-delete") == 0){
+            (*nwInf)->_delete = newString(Prm_Der);
+            continue;
+        }
+
+        //(^< ............ ............ ............   _add
+        if(strcasecmp(Prm_Izq,"-add") == 0){
+            int Nm = atoi(Prm_Der);
+            (*nwInf)->_add =  atoi(Prm_Der);
+            continue;
+        }
+
+        //(^< ............ ............ ............   _name
+        if(strcasecmp(Prm_Izq,"-name") == 0){
+            (*nwInf)->_name = newString(Prm_Der);
+            continue;
+        }
+
+        //(^< ............ ............ ............   _id
+        if(strcasecmp(Prm_Izq,"-id") == 0){
+            (*nwInf)->_id = newString(Prm_Der);
+            continue;
+        }
+
+        //(^< ............ ............ ............   _fs
+        if(strcasecmp(Prm_Izq,"-fs") == 0){
+            (*nwInf)->_fs = newString(Prm_Der);
+            continue;
+        }
+
+        //(^< ............ ............ ............   _usr
+        if(strcasecmp(Prm_Izq,"-usr") == 0){
+            (*nwInf)->_usr = newString(Prm_Der);
+            continue;
+        }
+
+        //(^< ............ ............ ............   _pwd
+        if(strcasecmp(Prm_Izq,"-pwd") == 0){
+            (*nwInf)->_pwd = newString(Prm_Der);
+            continue;
+        }
+
+        //(^< ............ ............ ............   _grp
+        if(strcasecmp(Prm_Izq,"-grp") == 0){
+            (*nwInf)->_grp= newString(Prm_Der);
+            continue;
+        }
+
+        //(^< ............ ............ ............   _P
+        if(!strcasecmp(Prm_Izq,"-P")){
+            (*nwInf)->_P = 1;
+            if(Prm_Der != NULL){
+                FrontInsert(CommandList,Prm_Der);
+            }
+            continue;
+        }
+
+        //(^< ............ ............ ............   _R
+        if(!strcasecmp(Prm_Izq,"-R")){
+            (*nwInf)->_R = 1;
+            FrontInsert(CommandList,Prm_Der);
+            continue;
+        }
+
+        //(^< ............ ............ ............   _cont
+        if(!strcasecmp(Prm_Izq,"-cont")){
+            (*nwInf)->_cont = newString(Prm_Der);
+            continue;
+        }
+
+        //(^< ............ ............ ............   _ruta
+        if(!strcasecmp(Prm_Izq,"-ruta")){
+            (*nwInf)->_ruta = newString(Prm_Der);
+            continue;
+        }
+
+        //(^< ............ ............ ............   _file
+        if(!strcasecmp(Prm_Izq,"-file")){
+            (*nwInf)->_file = newString(Prm_Der);
+            continue;
+        }
+
+        //(^< ............ ............ ............   _dest
+        if(!strcasecmp(Prm_Izq,"-dest")){
+            (*nwInf)->_dest = newString(Prm_Der);
+            continue;
+        }
+    }
+}
+
+void FillCommandList(char* Bf,DoublyGenericList* CommandList){
+
+    while(1){
+
+        Bf = strtok(NULL," =");
+        if(Bf == NULL){
+            break;
+        }
+
+        EnQueue(CommandList,Bf);
+    }    
+}
 
 void Add_Div(FILE* DotFl){
     fprintf(DotFl,"\t\t\t\t<TR>\n");
@@ -977,9 +1134,6 @@ void Generate_Ls_Rep(char* CompleteReportPathDir,char* _ruta){
         Name = (char*)Pop(Ph);
     }
 
-    
-    
-   
     char* DotPath = get_DotExt_Path(CompleteReportPathDir);
     int iN = Calc_iN(Omni->PartBatch_inUse->Size);
 
@@ -1028,7 +1182,7 @@ void Generate_Ls_Rep(char* CompleteReportPathDir,char* _ruta){
         //Generate_TypeFile_Rep(CompleteReportPathDir);
     }
 }
-/*
+
 void Add_Jr_Body(FILE* DotFl){
 
     int Jr_StartByte = Omni->PartBatch_inUse->StartByte + sizeof(SuperBlock);
@@ -1103,7 +1257,7 @@ void Add_Jr_Body(FILE* DotFl){
     }
 
 }
-*/
+
 
 void Generate_File_Rep(char* CompleteReportPathDir,char* _ruta){
 
@@ -1118,7 +1272,7 @@ void Generate_File_Rep(char* CompleteReportPathDir,char* _ruta){
     Write_txtFile(CompleteReportPathDir,txtContent);
 }
 
-/*
+
 void Generate_Journaling(FILE* DotFl){
     fprintf(DotFl,"\t\tLs_Report\n");
     fprintf(DotFl,"\t\t\t[label =\n");
@@ -1131,7 +1285,7 @@ void Generate_Journaling(FILE* DotFl){
     fprintf(DotFl,"\t\t\t]\n");
 
 }
-*/
+
 
 void FullViewRender(char* CompleteReportPathDir,char* Type){
 
@@ -1167,7 +1321,7 @@ void FullViewRender(char* CompleteReportPathDir,char* Type){
         fprintf(DotFl,"\trankdir = LR;\n");
         fprintf(DotFl,"\tnode [shape = plaintext];\n");
         fprintf(DotFl,"\t\tsubgraph cluster_OutLook {\n");
-        fprintf(DotFl,"\t\t\tlabel = \"Ext3 :: FileSystem\";\n");
+        fprintf(DotFl,"\t\t\tlabel = \"Ext3 :: %s\";\n",Type);
         fprintf(DotFl,"\t\t\tgraph[style = dotted];\n");
 
         //(^< ............ ............ ...........   SuperBlock
@@ -1177,9 +1331,9 @@ void FullViewRender(char* CompleteReportPathDir,char* Type){
     
         //(^< ............ ............ ...........   Journaling
         if(strcasecmp(Type,"journaling") == 0){
-            //int jStart = Omni->SBinuse->s_block_start + sizeof(SuperBlock);
-            //Journaling* Jr = (Journaling*)BinLoad_Str(jStart,"Journaling");
-            //Generate_Journaling(DotFl);
+            int jStart = Omni->SBinuse->s_block_start + sizeof(SuperBlock);
+            Journaling* Jr = (Journaling*)BinLoad_Str(jStart,"Journaling");
+            Generate_Journaling(DotFl);
         }
 
         //(^< ............ ............ ...........   FileSystemTree
