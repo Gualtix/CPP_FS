@@ -1044,6 +1044,42 @@ void Add_LsRow(FILE* DotFl,int Bit_ID,char* Type,char* Name){
 
 void LsTravel(FILE* DotFl,int iNode_Bit_ID){
     Inode* i_Node = (Inode*)BinLoad_Str(iNode_Bit_ID,"Inode");
+    int i = 0;
+    while (i < 12){
+        if(i_Node->i_block[i] == -1) {i++; continue;}
+
+        int FB_Bit_ID = i_Node->i_block[i];
+        FolderBlock* FolderB = (FolderBlock*)BinLoad_Str(FB_Bit_ID,"FolderBlock");
+
+        int j = 0;
+        int Empty = 0;
+        while (j < 4){
+            //Carpeta no Vacia solo con Empty carpeta4
+            if(FolderB->b_content[j].b_inodo == -1) {Empty++; j++; continue;}
+
+            int next_i_Node_Bit_ID = FolderB->b_content[j].b_inodo;
+            char* tName = FolderB->b_content[j].b_name;
+            Inode* next_i_Node = (Inode*)BinLoad_Str(next_i_Node_Bit_ID,"Inode");
+
+            int isFolder  = !next_i_Node->i_type; 
+            int isCurrent = strcasecmp(FolderB->b_content[j].b_name,"iNodeFather");
+            int isFather  = strcasecmp(FolderB->b_content[j].b_name,"iNodeCurent");
+            
+            if(isFolder && isCurrent != 0 && isFather != 0){
+                //Folder
+                Add_LsRow(DotFl,next_i_Node_Bit_ID,"Folder",tName);
+                //LsTravel(DotFl,next_i_Node_Bit_ID);
+            }
+            else{
+                //File
+                if(isFolder == 0){
+                    Add_LsRow(DotFl,next_i_Node_Bit_ID,"Archivo",tName);
+                }
+            }
+            j++;
+        }
+        i++;
+    }
 
     
     /*
@@ -1192,6 +1228,7 @@ void Generate_Ls_Rep(char* CompleteReportPathDir,char* _ruta){
                     Add_LsRow(DotFl,ex->iNode,"Archivo",ex->FFName);
                 }
                 else{
+                    Add_LsRow(DotFl,iNode_Bit_ID,"Folder",ex->FFName);
                     LsTravel(DotFl,iNode_Bit_ID);
                 }
                 fprintf(DotFl,"\t\t\t\t\t</TABLE>\n");

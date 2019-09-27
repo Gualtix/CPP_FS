@@ -2125,7 +2125,7 @@ Existence* vFF_Exists(char* Rt){
         else{
             if(PathPlacesList->Length == 1){
                 ex->iNodeFather = nwSI->iNodeFather_Bit_ID;
-                ex->iNode = tmp;
+                ex->iNode = nwSI->iNode_Bit_ID;
                 ex->PrevOk = 1;
                 ex->FFName = tName;
                 return ex;
