@@ -644,6 +644,20 @@ int ScanF2(char* Bf,InfoCatcher* nwInf){
     }
 
     if (strcasecmp(Bf, "REN") == 0){
+        if(ErrorManager(nwInf,"REN") == 1){
+            ren_do(nwInf);
+            if(isRecovery == 0){
+                char* FileName = Path_Get_FileName(nwInf->_path);
+                char* FolderName = Path_get_Last_FolderName(nwInf->_path);
+                if(FileName != NULL){
+                    Print_Long_Msg("REN","SUCCESS","Archivo",FileName,"Renombrado Exitosamente");
+                }
+                else{
+                    Print_Long_Msg("REN","SUCCESS","Folder",FolderName,"Renombrado Exitosamente");
+                }
+                AddJournal("REN",COMMS,664,FolderName,"Folder");
+            }
+        }
         return 0;
     }
 

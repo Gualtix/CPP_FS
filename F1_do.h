@@ -502,8 +502,14 @@ void loss_do(InfoCatcher* nwInf){
     Omni = newGLS();
 }
 
+void ren_do(InfoCatcher* nwInf){
+    Existence* ex = vFF_Exists(nwInf->_path);
+    SeekInfo* sk = CompleteSeeker(ex->iNodeFather,ex->FFName);
+    FolderBlock* Fb = (FolderBlock*)BinLoad_Str(sk->FB_Bit_ID,"FolderBlock");
 
-
+    strcpy(Fb->b_content[sk->FB_Index].b_name,newString(nwInf->_name));
+    BinWrite_Struct(Fb,sk->FB_Bit_ID,"FolderBlock");
+}
 
 int mkfile_do(InfoCatcher* nwInf){
     FileFolderInfo* ffInf = get_FFInfo(nwInf);

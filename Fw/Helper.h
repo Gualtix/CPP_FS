@@ -16,6 +16,23 @@
 #define Kilo 1024
 #define Mega (Kilo * 1024)
 
+typedef struct TheLast{
+    char* Name;
+    char* Type;
+    int istxt;
+}TheLast;
+
+TheLast* newTheLast(){
+
+    TheLast* tl = (TheLast*)malloc(sizeof(TheLast));
+    
+    tl->istxt = 0;
+    tl->Name = NULL;
+    tl->Type = NULL;
+
+    return tl;
+}
+
 char* getDateTime(){
     time_t Tmp = time(0);
     char ShapeDate[20];
@@ -153,6 +170,34 @@ char* Path_Get_LastDirName(char* CompletePathDir){
     }
 }
 */
+
+TheLast* getTheLast(char* Path){
+
+    
+    TheLast* tl = newTheLast();
+
+    if(strcasecmp(Path,"/") == 0){
+        tl->istxt = 0;
+        tl->Name = newString("/");
+        tl->Type = newString("Folder");
+        return tl;
+    }
+
+    char* FileName = Path_Get_FileName(Path);
+    char* FolderName = Path_get_Last_FolderName(Path);
+    if(FileName != NULL){
+        tl->istxt = 1;
+        tl->Name = FileName;
+        tl->Type = newString("Archivo");
+    }
+    else{
+        tl->istxt = 0;
+        tl->Name = FolderName;
+        tl->Type = newString("Folder");
+    }
+
+    return tl;
+}
 
 int CalcSize_in_Bytes(int PD_Size,char Unit){
 

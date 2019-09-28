@@ -150,7 +150,15 @@ int nameV(char* CMD,InfoCatcher* nwInf){
         return 0;
     }
 
-    
+    if(strcasecmp(CMD,"REN") == 0){
+        Existence* ex = vFF_Exists(nwInf->_path);
+        SeekInfo* sk = CompleteSeeker(ex->iNodeFather,nwInf->_name);
+        if(sk != NULL){
+            ErrorPrinter(CMD,"ERROR","-name",nwInf->_name,"Este Nombre ya Existe");
+            return 0;
+        }
+        return 1;
+    }
 
     //(^< ............ ............ ............ ............ ............ ............ ............ ............ ............ ............
     //(^< ............ ............ ............ ............ ............ REP
@@ -281,6 +289,31 @@ int pathV(char* CMD,InfoCatcher* nwInf){
     }
 
     if(strcasecmp(CMD,"CAT") == 0){
+        if(ex->iNode == -1){
+            TheLast* tl = getTheLast(nwInf->_path);
+            ErrorPrinter(CMD,"ERROR","-path",tl->Name,"El Archivo No Existe");
+            return 0;
+        }
+        return 1;
+    }
+
+    if(strcasecmp(CMD,"REN") == 0){
+
+        if(strcasecmp(nwInf->_path,"/") == 0){
+            ErrorPrinter(CMD,"ERROR","-path","/","La Carpeta Root No Puede Cambiar de Nombre");
+            return 0;
+        }
+
+        if(ex->iNode == -1){
+            TheLast* tl = getTheLast(nwInf->_path);
+            if(tl->istxt){
+                ErrorPrinter(CMD,"ERROR","-path",tl->Name,"El Archivo No Existe");
+            }
+            else{
+                ErrorPrinter(CMD,"ERROR","-path",tl->Name,"El Folder No Existe");
+            }
+            return 0;
+        }
         return 1;
     }
 
@@ -440,6 +473,13 @@ int ErrorManager(InfoCatcher* nwInf,char* CMD){
     if(strcasecmp(CMD,"CAT") == 0){
         nwInf->_path = newString(nwInf->_file);
         if(pathV("CAT",nwInf) == 0) return 0;
+        return 1;
+    }
+
+    //REN   ****************************************************************************************************** 
+    if(strcasecmp(CMD,"REN") == 0){
+        if(pathV("REN",nwInf) == 0) return 0;
+        if(nameV("REN",nwInf) == 0) return 0;
         return 1;
     }
 

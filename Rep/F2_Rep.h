@@ -385,9 +385,9 @@ void blockBitMapDot(FILE* DotFl,int iN){
     fprintf(DotFl,"\t\t\t]\n");
 }
 
-void AddInode(FILE* DotFl,int StartByte){
+void AddInode(FILE* DotFl,int ID){
 
-    int ID = StartByte_to_InodeBit(StartByte);
+    //int ID = StartByte_to_InodeBit(StartByte);
 
     char* tS = newString(20);
 
@@ -463,9 +463,9 @@ void AddInode(FILE* DotFl,int StartByte){
     fprintf(DotFl,"\t\t\t]\n");
 }
 
-void AddFileBlock(FILE* DotFl,int StartByte){
+void AddFileBlock(FILE* DotFl,int ID){
 
-    int ID = StartByte_to_BlockBit(StartByte);
+    //int ID = StartByte_to_BlockBit(StartByte);
 
     char* tS = newString(20);
 
@@ -487,9 +487,9 @@ void AddFileBlock(FILE* DotFl,int StartByte){
     fprintf(DotFl,"\t\t\t]\n");
 }
 
-void AddFolderBlock(FILE* DotFl,int StartByte){
+void AddFolderBlock(FILE* DotFl,int ID){
 
-    int ID = StartByte_to_BlockBit(StartByte);
+    //int ID = StartByte_to_BlockBit(StartByte);
     char* tS = newString(20);
 
     FolderBlock* Tmp = (FolderBlock*)BinLoad_Str(ID,"FolderBlock");
@@ -531,8 +531,8 @@ void AddFolderBlock(FILE* DotFl,int StartByte){
     
 }
 
-void AddPointerBlock(FILE* DotFl,int StartByte){
-    int ID = StartByte_to_BlockBit(StartByte);
+void AddPointerBlock(FILE* DotFl,int ID){
+    //int ID = StartByte_to_BlockBit(StartByte);
     char* tS = newString(20);
 
     PointerBlock* Tmp = (PointerBlock*)BinLoad_Str(ID,"PointerBlock");
@@ -575,177 +575,252 @@ char* getGraphStructName(char* Type,int ID){
     return tS;
 }
 
-void FileSystemTree(FILE* DotFl,int StartByte){
+void FileSystemTree(FILE* DotFl,char* FatherName,int iNode_Bit_ID,char* Type,char* Qt){
+    if(strcasecmp(Type,"Inode") == 0){
+
+        //Son Link Name
+        char* SonName = getGraphStructName("Inode",iNode_Bit_ID);
+
+        //Linking
+        if(FatherName != NULL){
+            AddLink(DotFl,FatherName,SonName);
+        }
+        
+        AddInode(DotFl,iNode_Bit_ID);
+
+        Inode* Rt = (Inode*)BinLoad_Str(iNode_Bit_ID,"Inode");
+
+        int cnt = 0;
+        while(cnt < 15){
+            if(Rt->i_block[cnt] == -1){cnt++; continue;}
+
+            int Grandson_ID_Bit = Rt->i_block[cnt];
+
+            if(cnt >= 12){  
+
+                //Folder
+                if(Rt->i_type == 0){
+                    FileSystemTree(DotFl,SonName,Grandson_ID_Bit,"PointerBlock","Folder");
+                }
+
+                //File
+                if(Rt->i_type == 1){
+                    FileSystemTree(DotFl,SonName,Grandson_ID_Bit,"PointerBlock","File");
+                }
+                
+                cnt++; 
+                continue;
+            }
+
+            //Folder
+            if(Rt->i_type == 0){
+                FileSystemTree(DotFl,SonName,Grandson_ID_Bit,"FolderBlock",NULL);
+            }
+
+            //File
+            if(Rt->i_type == 1){
+                FileSystemTree(DotFl,SonName,Grandson_ID_Bit,"FileBlock",NULL);
+            }
+            cnt++;
+        }
+    }
+
+    if(strcasecmp(Type,"FileBlock") == 0){
+        //Son Link Name
+        char* SonName = getGraphStructName("FileBlock",iNode_Bit_ID);
+
+        //Linking
+        AddLink(DotFl,FatherName,SonName);
+
+        AddFileBlock(DotFl,iNode_Bit_ID);
+    }
+
+    if(strcasecmp(Type,"FolderBlock") == 0){
+        AddFolderBlock(DotFl,iNode_Bit_ID);
+
+        //Son Link Name
+        char* SonName = getGraphStructName("FolderBlock",iNode_Bit_ID);
+
+        //Linking
+        AddLink(DotFl,FatherName,SonName);
+
+        //******* FolderBlock Tour ******
+        FolderBlock* Fb = (FolderBlock*)BinLoad_Str(iNode_Bit_ID,"FolderBlock");
+        int i = 0;
+        while(i < 4){
+            if(Fb->b_content[i].b_inodo == -1){i++; continue;}
+
+            char* iName  = newString(Fb->b_content[i].b_name);
+            int Next_ID_Bit = Fb->b_content[i].b_inodo; 
+            char* NextName = getGraphStructName("Inode",Next_ID_Bit);
+
+            if(Next_ID_Bit > 0 && strcasecmp(iName,"iNodeFather") != 0 && strcasecmp(iName,"iNodeCurent")){
+                FileSystemTree(DotFl,SonName,Next_ID_Bit,"Inode",NULL);
+            }
+            i++;
+        }
+    }
+
+    if(strcasecmp(Type,"PointerBlock") == 0){
+
+        AddPointerBlock(DotFl,iNode_Bit_ID);
+
+        //Son Link Name
+        char* SonName = getGraphStructName("PointerBlock",iNode_Bit_ID);
+
+        //Linking
+        AddLink(DotFl,FatherName,SonName);
+
+        //******* PointerBlock Tour ******
+        PointerBlock* Pb = (PointerBlock*)BinLoad_Str(iNode_Bit_ID,"PointerBlock");
+        int z = 0;
+        while(z < 16){
+            if(Pb->b_pointers[z] == -1){z++; continue;}
+
+            int Next_ID_Bit = Pb->b_pointers[z];
+
+            //Folder
+            if(strcasecmp(Qt,"Folder") == 0){
+                FileSystemTree(DotFl,SonName,Next_ID_Bit,"FolderBlock",NULL);
+            }
+
+            //File
+            if(strcasecmp(Qt,"File") == 0){
+                FileSystemTree(DotFl,SonName,Next_ID_Bit,"FileBlock",NULL);
+            }
+            z++;
+        }
+    }
+}
+
+
+/*
+void FileSystemTree(FILE* DotFl,int iNode_Bit_ID){
 
     //Type 0 ---> Folder
     //Type 1 ---> File
-    int Father_ID_Bit = StartByte_to_InodeBit(StartByte);
-    Inode* Rt = (Inode*)BinLoad_Str(Father_ID_Bit,"Inode");
-    AddInode(DotFl,StartByte);
+
+    Inode* Rt = (Inode*)BinLoad_Str(iNode_Bit_ID,"Inode");
+    AddInode(DotFl,iNode_Bit_ID);
 
     //Father Link Name
-    char* FatherName = getGraphStructName("Inode",Father_ID_Bit);
+    char* FatherName = getGraphStructName("Inode",iNode_Bit_ID);
 
     int cnt = 0;
     
     //Direct
     while(cnt < 12){
-        if(Rt->i_block[cnt] >= 0){
+        if(Rt->i_block[cnt] == -1){cnt++; continue;}
 
-            //Folder Type
-            if(Rt->i_type == 0){
-                
-                int Son_ID_Bit = Rt->i_block[cnt];
-                int Son_StartByte = Bit_to_StartByte(Son_ID_Bit,"Block");
-                AddFolderBlock(DotFl,Son_StartByte);
+        int Son_ID_Bit = Rt->i_block[cnt];
 
-                //Son Link Name
-                char* SonName = getGraphStructName("FolderBlock",Son_ID_Bit);
+        //Folder
+        if(Rt->i_type == 0){
+            AddFolderBlock(DotFl,Son_ID_Bit);
 
-                //Linking
-                AddLink(DotFl,FatherName,SonName);
+            //Son Link Name
+            char* SonName = getGraphStructName("FolderBlock",Son_ID_Bit);
 
-                //******* FolderBlock Tour ******
-                FolderBlock* Fb = (FolderBlock*)BinLoad_Str(Son_ID_Bit,"FolderBlock");
-                int i = 0;
-                while(i < 4){
+            //Linking
+            AddLink(DotFl,FatherName,SonName);
 
-                    char* iName  = newString(Fb->b_content[i].b_name);
-                    int Next_ID_Bit = Fb->b_content[i].b_inodo; 
-                    int Next_StartByte = Bit_to_StartByte(Next_ID_Bit,"Inode");
-                    char* NextName = getGraphStructName("Inode",Next_ID_Bit);
+            //******* FolderBlock Tour ******
+            FolderBlock* Fb = (FolderBlock*)BinLoad_Str(Son_ID_Bit,"FolderBlock");
+            int i = 0;
+            while(i < 4){
+                if(Fb->b_content[i].b_inodo == -1){i++; continue;}
 
-                    if(Next_ID_Bit > 0 && strcasecmp(iName,"iNodeFather") != 0 && strcasecmp(iName,"iNodeCurent")){
-                        //Next Linking
-                        AddLink(DotFl,SonName,NextName);
-                        FileSystemTree(DotFl,Next_StartByte);
-                    }
-                    i++;
+                char* iName  = newString(Fb->b_content[i].b_name);
+                int Next_ID_Bit = Fb->b_content[i].b_inodo; 
+                char* NextName = getGraphStructName("Inode",Next_ID_Bit);
+
+                if(Next_ID_Bit > 0 && strcasecmp(iName,"iNodeFather") != 0 && strcasecmp(iName,"iNodeCurent")){
+
+                    //Next Linking
+                    AddLink(DotFl,SonName,NextName);
+                    FileSystemTree(DotFl,Next_ID_Bit);
                 }
+                i++;
             }
-            
-            //File Type
-            if(Rt->i_type == 1){
-                
-                int Son_ID_Bit = Rt->i_block[cnt];
-                int Son_StartByte = Bit_to_StartByte(Son_ID_Bit,"Block");
-                AddFileBlock(DotFl,Son_StartByte);
+        }
 
-                //Son Link Name
-                char* SonName = getGraphStructName("FileBlock",Son_ID_Bit);
+        //File
+        if(Rt->i_type == 1){
+            AddFileBlock(DotFl,Son_ID_Bit);
 
-                //Linking
-                AddLink(DotFl,FatherName,SonName);
-            
-            }
+            //Son Link Name
+            char* SonName = getGraphStructName("FileBlock",Son_ID_Bit);
+
+            //Linking
+            AddLink(DotFl,FatherName,SonName);
         }
         cnt++;
     }
 
     //Indirect
     while(cnt < 15){
+        if(Rt->i_block[cnt] == -1){cnt++; continue;}
 
-        if(Rt->i_block[cnt] < 0){
-            cnt++;
-            continue;
-        }
+        int Son_ID_Bit = Rt->i_block[cnt];
+        AddPointerBlock(DotFl,Son_ID_Bit);
 
-        //Folder Type
-        if(Rt->i_type == 0){
-            int Son_ID_Bit = Rt->i_block[cnt];
-            int Son_StartByte = Bit_to_StartByte(Son_ID_Bit,"Block");
-            //AddFolderBlock(DotFl,Son_StartByte);
-            AddPointerBlock(DotFl,Son_StartByte);
+        //Son Link Name
+        char* SonName = getGraphStructName("PointerBlock",Son_ID_Bit);
 
-            //Son Link Name
-            char* SonName = getGraphStructName("PointerBlock",Son_ID_Bit);
+        //Linking
+        AddLink(DotFl,FatherName,SonName);
+        
+        //******* PointerBlock Tour ******
+        PointerBlock* Pb = (PointerBlock*)BinLoad_Str(Son_ID_Bit,"PointerBlock");
+        int z = 0;
+        while(z < 16){
+            if(Pb->b_pointers[z] == -1){z++; continue;}
 
-            //Linking
-            AddLink(DotFl,FatherName,SonName);
+            int Next_ID_Bit = Pb->b_pointers[z];
 
-            //******* PointerBlock Tour ******
-            PointerBlock* Pb = (PointerBlock*)BinLoad_Str(Son_ID_Bit,"PointerBlock");
-            int z = 0;
-            while(z < 16){
-                int Next_ID_Bit = Pb->b_pointers[z];
-                int Next_StartByte = Bit_to_StartByte(Next_ID_Bit,"Block");
-                char* NextName = getGraphStructName("FolderBlock",Next_ID_Bit);
-
-                //AddFolderBlock(DotFl,Next_StartByte);
-                //Linking
-                //AddLink(DotFl,SonName,NextName);
+            char* NextName;
             
-                if(Next_ID_Bit > 0){
 
-                    AddFolderBlock(DotFl,Next_StartByte);
-                    //Linking
-                    AddLink(DotFl,SonName,NextName);
-                    
-                    //******* FolderBlock Tour ******
-                    FolderBlock* Fb = (FolderBlock*)BinLoad_Str(Next_ID_Bit,"FolderBlock");
-                    int i = 0;
-                    while(i < 4){
-                        char* iName  = newString(Fb->b_content[i].b_name);
-                        int SuperNext_ID_Bit = Fb->b_content[i].b_inodo; 
-                        int SuperNext_StartByte = Bit_to_StartByte(SuperNext_ID_Bit,"Inode");
-                        char* SuperNextName = getGraphStructName("Inode",SuperNext_ID_Bit);
+            //Folder
+            if(Rt->i_type == 0){
+                AddFolderBlock(DotFl,Next_ID_Bit);
+                NextName = getGraphStructName("FolderBlock",Next_ID_Bit);
 
-                        if(SuperNext_ID_Bit > 0 && strcasecmp(iName,"iNodeFather") != 0 && strcasecmp(iName,"iNodeCurent")){
-                            //Next Linking
-                            AddLink(DotFl,NextName,SuperNextName);
-                            FileSystemTree(DotFl,SuperNext_StartByte);
-                        }
-                        i++;
+
+                //******* FolderBlock Tour ******
+                FolderBlock* Fb = (FolderBlock*)BinLoad_Str(Next_ID_Bit,"FolderBlock");
+                int i = 0;
+                while(i < 4){
+                    char* iName  = newString(Fb->b_content[i].b_name);
+                    int SuperNext_ID_Bit = Fb->b_content[i].b_inodo; 
+                    char* SuperNextName = getGraphStructName("Inode",SuperNext_ID_Bit);
+
+                    if(SuperNext_ID_Bit > 0 && strcasecmp(iName,"iNodeFather") != 0 && strcasecmp(iName,"iNodeCurent")){
+                        //Next Linking
+                        AddLink(DotFl,NextName,SuperNextName);
+                        FileSystemTree(DotFl,SuperNext_ID_Bit);
                     }
-
+                    i++;
                 }
-                z++;
             }
-        }
 
-        //File Type
-        if(Rt->i_type == 1){
-            
-            int Son_ID_Bit = Rt->i_block[cnt];
-            int Son_StartByte = Bit_to_StartByte(Son_ID_Bit,"Block");
-            AddPointerBlock(DotFl,Son_StartByte);
-
-            //Son Link Name
-            char* SonName = getGraphStructName("PointerBlock",Son_ID_Bit);
+            //File
+            if(Rt->i_type == 1){
+                AddFileBlock(DotFl,Next_ID_Bit);
+                NextName = getGraphStructName("FileBlock",Next_ID_Bit);
+            }
 
             //Linking
-            AddLink(DotFl,FatherName,SonName);
+            AddLink(DotFl,SonName,NextName);
 
-            //******* PointerBlock Tour ******
-            PointerBlock* Pb = (PointerBlock*)BinLoad_Str(Son_ID_Bit,"PointerBlock");
-            int z = 0;
-            while(z < 16){
-
-                int Next_ID_Bit = Pb->b_pointers[z];
-                if(Next_ID_Bit > 0){
-                    //******* FileBlock Tour ******
-                    int Next_StartByte = Bit_to_StartByte(Next_ID_Bit,"Block");
-                    char* NextName = getGraphStructName("FileBlock",Next_ID_Bit);
-                    AddFileBlock(DotFl,Next_StartByte);
-
-                    //Linking
-                    AddLink(DotFl,SonName,NextName);
-
-                    }
-                z++;
-            }   
+            z++;
         }
+
         cnt++;
-    }
-
-
-    
-    //AddInode(DotFl,5520);
-    //AddInode(DotFl,5522+112);
-    //AddFolderBlock(DotFl,9104);
-    //AddFileBlock(DotFl,9104+64);
-    
+    }    
 }
+*/
+
 
 void InodeOnlyDot(FILE* DotFl,int iN){
 
@@ -1397,8 +1472,10 @@ void FullViewRender(char* CompleteReportPathDir,char* Type){
 
         //(^< ............ ............ ...........   FileSystemTree
         if(strcasecmp(Type,"tree") == 0){
-            int StartByte = Bit_to_StartByte(0,"Inode");
-            FileSystemTree(DotFl,StartByte);            
+            //int StartByte = Bit_to_StartByte(0,"Inode");
+            FileSystemTree(DotFl,NULL,0,"Inode",NULL);       
+            //FileSystemTree(DotFl,0);       
+
         }
 
         //(^< ............ ............ ...........   InodeOnlyDot

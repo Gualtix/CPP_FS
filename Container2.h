@@ -7,7 +7,6 @@
 #include <string.h>
 #include "Fw/DoublyGenericList.h"
 
-
 typedef struct Existence{
     int iNodeFather;
     int iNode;
