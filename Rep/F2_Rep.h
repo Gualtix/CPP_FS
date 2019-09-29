@@ -654,7 +654,7 @@ void FileSystemTree(FILE* DotFl,char* FatherName,int iNode_Bit_ID,char* Type,cha
             int Next_ID_Bit = Fb->b_content[i].b_inodo; 
             char* NextName = getGraphStructName("Inode",Next_ID_Bit);
 
-            if(Next_ID_Bit > 0 && strcasecmp(iName,"iNodeFather") != 0 && strcasecmp(iName,"iNodeCurent")){
+            if(Next_ID_Bit > -1 && strcasecmp(iName,"iNodeFather") != 0 && strcasecmp(iName,"iNodeCurent") != 0){
                 FileSystemTree(DotFl,SonName,Next_ID_Bit,"Inode",NULL);
             }
             i++;
@@ -734,7 +734,7 @@ void FileSystemTree(FILE* DotFl,int iNode_Bit_ID){
                 int Next_ID_Bit = Fb->b_content[i].b_inodo; 
                 char* NextName = getGraphStructName("Inode",Next_ID_Bit);
 
-                if(Next_ID_Bit > 0 && strcasecmp(iName,"iNodeFather") != 0 && strcasecmp(iName,"iNodeCurent")){
+                if(Next_ID_Bit > -1 && strcasecmp(iName,"iNodeFather") != 0 && strcasecmp(iName,"iNodeCurent") != 0){
 
                     //Next Linking
                     AddLink(DotFl,SonName,NextName);
@@ -795,7 +795,7 @@ void FileSystemTree(FILE* DotFl,int iNode_Bit_ID){
                     int SuperNext_ID_Bit = Fb->b_content[i].b_inodo; 
                     char* SuperNextName = getGraphStructName("Inode",SuperNext_ID_Bit);
 
-                    if(SuperNext_ID_Bit > 0 && strcasecmp(iName,"iNodeFather") != 0 && strcasecmp(iName,"iNodeCurent")){
+                    if(SuperNext_ID_Bit > -1 && strcasecmp(iName,"iNodeFather") != 0 && strcasecmp(iName,"iNodeCurent") != 0){
                         //Next Linking
                         AddLink(DotFl,NextName,SuperNextName);
                         FileSystemTree(DotFl,SuperNext_ID_Bit);

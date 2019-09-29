@@ -107,8 +107,8 @@ cat -file="/home/wrazabi.txt"
 
 edit -Path=/home/wazabi.txt -cont=nomanchesmaxDlooljeje
 
-mv -path=/home/Noexiste -dest=/
-mv -path=/home/ziper    -dest=/
+#mv -path=/home/Noexiste -dest=/
+#mv -path=/home/ziper    -dest=/
 
 find -path=/ -name=wazabi.txt
 

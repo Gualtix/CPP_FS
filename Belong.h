@@ -1339,7 +1339,7 @@ void Tracker(SeekInfo* nwSI,char* Name,int iNode_Bit_ID,char* Type,char* Qt){
                 inC = Fb->b_content[1].b_inodo;
             }
 
-            if(Next_ID_Bit > 0 && strcasecmp(iName,"iNodeFather") != 0 && strcasecmp(iName,"iNodeCurent")){
+            if(Next_ID_Bit > -1 && strcasecmp(iName,"iNodeFather") != 0 && strcasecmp(iName,"iNodeCurent") != 0){
 
                 if(strcasecmp(Fb->b_content[i].b_name,Name) == 0){
                     nwSI->FB_Bit_ID = iNode_Bit_ID;
