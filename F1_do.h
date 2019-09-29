@@ -742,13 +742,35 @@ void find_do(InfoCatcher* nwInf){
     //SeekInfo* nwSI = CompleteSeeker(ex->iNode,nwInf->_name);
     SeekInfo* nwSI = SuperSeeker(ex->iNode,nwInf->_name);
 
-    //SeekInfo* nwSI  = CompleteSeeker(0,"b1r.txt");
-    //SeekInfo* nwSIr = SuperSeeker(0,"b1ws.txt");
+    SeekInfo* Ori = CompleteSeeker(0,"fase1");
+    SeekInfo* Niu = SuperSeeker(0,"fase1");
+
+    Ori = CompleteSeeker(0,"b1.txt");
+    Niu = SuperSeeker(0,"b1.txt");
+
+    Ori = CompleteSeeker(0,"Noexiste");
+    Niu = SuperSeeker(0,"Noexiste");
+
+    Ori = CompleteSeeker(0,"sisi.txt");
+    Niu = SuperSeeker(0,"sisi.txt");
+
+    Ori = CompleteSeeker(0,"wazabi.txt");
+    Niu = SuperSeeker(0,"wazabi.txt");
+
+    Ori = CompleteSeeker(0,"users.txt");
+    Niu = SuperSeeker(0,"users.txt");
+
+    Ori = CompleteSeeker(0,"home.txt");
+    Niu = SuperSeeker(0,"home.txt");
+
+
  
+    /*
     while(nwSI->Travel->Length > 0){
         char* tmp = (char*)DeQueue(nwSI->Travel);
         printf("%s\n",tmp);
     }
+    */
 }
 
 void chgrp_do(InfoCatcher* nwInf){

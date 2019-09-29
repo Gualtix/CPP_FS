@@ -1251,22 +1251,9 @@ char* getDefault_txtContent(int _size){
 }
 
 
-void Tracker(SeekInfo* nwSI,char* Name,int iNode_Bit_ID,char* Type,char* Qt){
-
-    int inF = -1;
-    int inC = -1;
+void Tracker(SeekInfo* nwSI,int inF,int inC,char* Name,int iNode_Bit_ID,char* Type,char* Qt){
 
     if(strcasecmp(Type,"Inode") == 0){
-
-        //Son Link Name
-        //char* SonName = getGraphStructName("Inode",iNode_Bit_ID);
-
-        //Linking
-        //if(FatherName != NULL){
-            //AddLink(DotFl,FatherName,SonName);
-        //}
-        
-        //AddInode(DotFl,iNode_Bit_ID);
 
         Inode* Rt = (Inode*)BinLoad_Str(iNode_Bit_ID,"Inode");
 
@@ -1280,12 +1267,12 @@ void Tracker(SeekInfo* nwSI,char* Name,int iNode_Bit_ID,char* Type,char* Qt){
 
                 //Folder
                 if(Rt->i_type == 0){
-                    Tracker(nwSI,Name,Grandson_ID_Bit,"PointerBlock","Folder");
+                    Tracker(nwSI,inF,inC,Name,Grandson_ID_Bit,"PointerBlock","Folder");
                 }
 
                 //File
                 if(Rt->i_type == 1){
-                    Tracker(nwSI,Name,Grandson_ID_Bit,"PointerBlock","File");
+                    Tracker(nwSI,inF,inC,Name,Grandson_ID_Bit,"PointerBlock","File");
                 }
                 
                 cnt++; 
@@ -1294,35 +1281,23 @@ void Tracker(SeekInfo* nwSI,char* Name,int iNode_Bit_ID,char* Type,char* Qt){
 
             //Folder
             if(Rt->i_type == 0){
-                Tracker(nwSI,Name,Grandson_ID_Bit,"FolderBlock",NULL);
+                Tracker(nwSI,inF,inC,Name,Grandson_ID_Bit,"FolderBlock",NULL);
             }
 
             //File
             if(Rt->i_type == 1){
-                Tracker(nwSI,Name,Grandson_ID_Bit,"FileBlock",NULL);
+                Tracker(nwSI,inF,inC,Name,Grandson_ID_Bit,"FileBlock",NULL);
             }
             cnt++;
         }
     }
 
     if(strcasecmp(Type,"FileBlock") == 0){
-        //Son Link Name
-        //char* SonName = getGraphStructName("FileBlock",iNode_Bit_ID);
-
-        //Linking
-        //AddLink(DotFl,FatherName,SonName);
-
-        //AddFileBlock(DotFl,iNode_Bit_ID);
+        return;
     }
 
     if(strcasecmp(Type,"FolderBlock") == 0){
-        //AddFolderBlock(nwSI,iNode_Bit_ID);
 
-        //Son Link Name
-        //char* SonName = getGraphStructName("FolderBlock",iNode_Bit_ID);
-
-        //Linking
-        //AddLink(DotFl,FatherName,SonName);
 
         //******* FolderBlock Tour ******
         FolderBlock* Fb = (FolderBlock*)BinLoad_Str(iNode_Bit_ID,"FolderBlock");
@@ -1334,10 +1309,16 @@ void Tracker(SeekInfo* nwSI,char* Name,int iNode_Bit_ID,char* Type,char* Qt){
             int Next_ID_Bit = Fb->b_content[i].b_inodo; 
             //char* NextName = getGraphStructName("Inode",Next_ID_Bit);
 
-            if(strcasecmp(Fb->b_content[0].b_name,"iNodeFather") == 0 && strcasecmp(Fb->b_content[1].b_name,"iNodeCurent") == 0){
+            
+
+            if(strcasecmp(Fb->b_content[i].b_name,"iNodeFather") == 0){
                 inF = Fb->b_content[0].b_inodo;
+            }
+
+            if(strcasecmp(Fb->b_content[i].b_name,"iNodeCurent") == 0){
                 inC = Fb->b_content[1].b_inodo;
             }
+            
 
             if(Next_ID_Bit > -1 && strcasecmp(iName,"iNodeFather") != 0 && strcasecmp(iName,"iNodeCurent") != 0){
 
@@ -1354,21 +1335,13 @@ void Tracker(SeekInfo* nwSI,char* Name,int iNode_Bit_ID,char* Type,char* Qt){
                 }
 
                 EnQueue(nwSI->Travel,newString(Fb->b_content[i].b_name));
-                Tracker(nwSI,Name,Next_ID_Bit,"Inode",NULL);                
+                Tracker(nwSI,inF,inC,Name,Next_ID_Bit,"Inode",NULL);                
             }
             i++;
         }
     }
 
     if(strcasecmp(Type,"PointerBlock") == 0){
-
-        //AddPointerBlock(DotFl,iNode_Bit_ID);
-
-        //Son Link Name
-        //char* SonName = getGraphStructName("PointerBlock",iNode_Bit_ID);
-
-        //Linking
-        //AddLink(DotFl,FatherName,SonName);
 
         //******* PointerBlock Tour ******
         PointerBlock* Pb = (PointerBlock*)BinLoad_Str(iNode_Bit_ID,"PointerBlock");
@@ -1380,12 +1353,12 @@ void Tracker(SeekInfo* nwSI,char* Name,int iNode_Bit_ID,char* Type,char* Qt){
 
             //Folder
             if(strcasecmp(Qt,"Folder") == 0){
-                Tracker(nwSI,Name,Next_ID_Bit,"FolderBlock",NULL);
+                Tracker(nwSI,inF,inC,Name,Next_ID_Bit,"FolderBlock",NULL);
             }
 
             //File
             if(strcasecmp(Qt,"File") == 0){
-                Tracker(nwSI,Name,Next_ID_Bit,"FileBlock",NULL);
+                Tracker(nwSI,inF,inC,Name,Next_ID_Bit,"FileBlock",NULL);
             }
             z++;
         }
@@ -1395,7 +1368,32 @@ void Tracker(SeekInfo* nwSI,char* Name,int iNode_Bit_ID,char* Type,char* Qt){
 
 SeekInfo* SuperSeeker(int iNode_Bit_ID,char* Name){
     SeekInfo* nwSI = newSeekInfo();
-    Tracker(nwSI,Name,iNode_Bit_ID,"Inode",NULL);
+    if(strcasecmp(Name,"/") == 0){
+        nwSI->iNode_Bit_ID = 0;
+        nwSI->FB_Bit_ID = -1;
+        nwSI->FB_Index = -1;
+        nwSI->iNodeFather_Bit_ID = -1;
+        nwSI->iCurent_Bit_ID = -1;
+        EnQueue(nwSI->Travel,newString("/"));
+        return nwSI;
+    }
+
+    if(iNode_Bit_ID == 0){
+        Tracker(nwSI,0,0,Name,iNode_Bit_ID,"Inode",NULL);
+    }
+    else{
+
+        Inode* Rt = (Inode*)BinLoad_Str(iNode_Bit_ID,"Inode");
+
+        int dpi = Rt->i_block[0];
+        FolderBlock* Fb = (FolderBlock*)BinLoad_Str(dpi,"FolderBlock");
+        int inF = Fb->b_content[0].b_inodo;
+        int inC = Fb->b_content[1].b_inodo;
+        Tracker(nwSI,inF,inC,Name,iNode_Bit_ID,"Inode",NULL);
+        
+    }
+
+    //Tracker(nwSI,Name,iNode_Bit_ID,"Inode",NULL);
     if(nwSI->iNode_Bit_ID == -1){
         return NULL;
     }
@@ -1411,11 +1409,7 @@ char* getFF_AbsolutePath_From_iNode(int iFather,int iSon){
 
 SeekInfo* CompleteSeeker(int iNodeCurent_Bit_ID,char* FileName){
 
-
-
     SeekInfo* nwSI = newSeekInfo();
-    Inode* tIn = (Inode*)BinLoad_Str(iNodeCurent_Bit_ID,"Inode");
-
     if(strcasecmp(FileName,"/") == 0){
         nwSI->iNode_Bit_ID = 0;
         nwSI->FB_Bit_ID = -1;
@@ -1426,8 +1420,7 @@ SeekInfo* CompleteSeeker(int iNodeCurent_Bit_ID,char* FileName){
         return nwSI;
     }
 
-    //EnQueue(nwSI->Travel,newString("/"));
-
+    Inode* tIn = (Inode*)BinLoad_Str(iNodeCurent_Bit_ID,"Inode");
     int i_tIn = 0;
     while(i_tIn < 12){
 
