@@ -136,6 +136,7 @@ typedef struct SeekInfo{
     int iNode_Bit_ID;
     int iCurent_Bit_ID;
     int iNodeFather_Bit_ID;
+    DoublyGenericList* Travel;
 }SeekInfo;
 
 SeekInfo* newSeekInfo(){
@@ -146,7 +147,7 @@ SeekInfo* newSeekInfo(){
     nwSI->FB_Index  = -1;
     nwSI->iCurent_Bit_ID = -1;
     nwSI->iNodeFather_Bit_ID = -1;
-
+    nwSI->Travel = new_DoublyGenericList();
     return nwSI;
 }
 

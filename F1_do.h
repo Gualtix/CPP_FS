@@ -397,10 +397,10 @@ void rmgrp_do(InfoCatcher* nwInf){
 
     txtUsers_Update(grpList,usrList);
 
-    grpList = getGroupsList();
-    usrList = getUsersList();
+    //grpList = getGroupsList();
+    //usrList = getUsersList();
 
-    int ask = 554;
+    //int ask = 554;
 }
 
 void mkusr_do(InfoCatcher* nwInf){
@@ -527,6 +527,89 @@ int mkfile_do(InfoCatcher* nwInf){
 int mkdir_do(InfoCatcher* nwInf){
     int Deepest_Bit_ID = make_newFolder(nwInf);
     return Deepest_Bit_ID;
+}
+
+void edit_do(InfoCatcher* nwInf){
+
+    TheLast* tl = getTheLast(nwInf->_path);
+    Existence* ex = vFF_Exists(nwInf->_path);
+
+    char* OldTxt = ReadFile(nwInf->_path);
+    char* NewTxt = Concat_Izq_with_Der(OldTxt,newString(nwInf->_cont),'s','s');
+    EditFile(nwInf->_path,NewTxt);
+}
+
+void mv_do(InfoCatcher* nwInf){
+
+    TheLast* tlSource = getTheLast(nwInf->_path);
+    Existence* exSource = vFF_Exists(nwInf->_path);
+
+    TheLast* tlDest = getTheLast(nwInf->_dest);
+    Existence* exDest = vFF_Exists(nwInf->_dest);
+
+
+    //-------------------------------------->Fuente
+
+    SeekInfo* Origin = CompleteSeeker(exSource->iNodeFather,tlSource->Name);
+    SeekInfo* Dest   = CompleteSeeker(exDest->iNodeFather,tlDest->Name);
+
+    FolderBlock* FolderB = (FolderBlock*)BinLoad_Str(Origin->FB_Bit_ID,"FolderBlock");
+    memset(FolderB->b_content[Origin->FB_Index].b_name,'\0',12);
+    FolderB->b_content[Origin->FB_Index].b_inodo = -1;
+
+    BinWrite_Struct(FolderB,Origin->FB_Bit_ID,"FolderBlock");
+
+    //-------------------------------------->Destino
+    pushMoved(Dest->iNode_Bit_ID,Origin->iNode_Bit_ID,tlSource->Name);
+}
+
+void find_do(InfoCatcher* nwInf){
+    //CompleteSeeker
+    //TheLast* tl = getTheLast(nwInf->_path);
+    Existence* ex = vFF_Exists(nwInf->_path);
+    //SeekInfo* nwSI = CompleteSeeker(ex->iNode,nwInf->_name);
+    SeekInfo* nwSI = SuperSeeker(ex->iNode,nwInf->_name);
+
+    //SeekInfo* nwSI  = CompleteSeeker(0,"b1r.txt");
+    //SeekInfo* nwSIr = SuperSeeker(0,"b1ws.txt");
+ 
+    while(nwSI->Travel->Length > 0){
+        char* tmp = (char*)DeQueue(nwSI->Travel);
+        printf("%s\n",tmp);
+    }
+}
+
+void chgrp_do(InfoCatcher* nwInf){
+
+    char* OldPassword= newString(Omni->LoggedUser->Password);
+    char* NewGRPName = newString(nwInf->_grp);
+    char* OldUser = newString(nwInf->_usr);
+    
+
+    DoublyGenericList*  grpList = getGroupsList();
+    DoublyGenericList*  usrList = getUsersList();
+
+    int Lm = grpList->Length;
+    int cnt = 0;
+    int found = 0;
+    while(cnt < Lm){
+        GroupUserInfo* tmp = (GroupUserInfo*)getNodebyIndex(usrList,cnt)->Dt;
+        if(strcasecmp(OldUser,tmp->UsrName) == 0){
+            tmp->GrpName = NewGRPName;
+            found++;
+            break;
+        }
+        cnt++;
+    }
+
+    txtUsers_Update(grpList,usrList);
+
+  
+
+    //rmusr_do(nwInf);
+    //nwInf->_pwd = OldPassword;
+    //mkusr_do(nwInf);
+
 }
 
 //(^< ............ ............ ............ ............ ............ ............ ............ ............ ............ ............

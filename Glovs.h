@@ -16,6 +16,8 @@ GLS*  Omni;
 char* COMMS;
 int   isRecovery;
 
+
+
 GLS* newGLS(){
     
     GLS* Omni = (GLS*)malloc(sizeof(GLS));

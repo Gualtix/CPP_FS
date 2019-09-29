@@ -78,6 +78,14 @@ int usrV(char* CMD,InfoCatcher* nwInf){
     DoublyGenericList* usrList = getUsersList();
     int usr = usrExists(nwInf->_usr,usrList);
 
+    if(strcasecmp(CMD,"CHGRP") == 0){
+        if(usr == -1){
+            ErrorPrinter(CMD,"ERROR","-usr",nwInf->_usr,"El Usuario No Existe");
+            return 0;
+        }
+        return 1;
+    }
+
     //(^< ............ ............ ............ ............ ............ ............ ............ ............ ............ ............
     //(^< ............ ............ ............ ............ ............ MKUSR
     //(^< ............ ............ ............ ............ ............ ............ ............ ............ ............ ............
@@ -148,6 +156,16 @@ int nameV(char* CMD,InfoCatcher* nwInf){
     if(nwInf->_name == NULL){
         ErrorPrinter(CMD,"ERROR","-name","NULL","Es Obligatorio");
         return 0;
+    }
+
+    if(strcasecmp(CMD,"FIND") == 0){
+        Existence* ex = vFF_Exists(nwInf->_path);
+        SeekInfo* sk = CompleteSeeker(ex->iNode,nwInf->_name);
+        if(sk == NULL){
+            ErrorPrinter(CMD,"ERROR","-name",nwInf->_name,"Este Archivo/Carpeta No Existe");
+            return 0;
+        }
+        return 1;
     }
 
     if(strcasecmp(CMD,"REN") == 0){
@@ -262,6 +280,7 @@ int grpV(char* CMD,InfoCatcher* nwInf){
     DoublyGenericList*  grpList = getGroupsList();
     GroupUserInfo* gu = newGrus();
     int grpEx = grpExists(nwInf->_grp,grpList);
+
     if(grpEx == -1){
         ErrorPrinter(CMD,"ERROR","-grp",nwInf->_grp,"Este Grupo No Existe");
         return 0;
@@ -286,6 +305,33 @@ int pathV(char* CMD,InfoCatcher* nwInf){
             ErrorPrinter(CMD,"ERROR","-path",ex->FFName,"La Carpeta Raiz No Existe");
             return 0;
         }
+    }
+
+    if(strcasecmp(CMD,"FIND") == 0){
+        if(ex->iNode == -1){
+            TheLast* tl = getTheLast(nwInf->_path);
+            ErrorPrinter(CMD,"ERROR","-path",nwInf->_path,"La Direccion de Busqueda No Existe");
+            return 0;
+        }
+        return 1;
+    }
+
+    if(strcasecmp(CMD,"MV") == 0){
+        if(ex->iNode == -1){
+            TheLast* tl = getTheLast(nwInf->_path);
+            ErrorPrinter(CMD,"ERROR","-path",nwInf->_path,"La Direccion de Origen No Existe");
+            return 0;
+        }
+        return 1;
+    }
+
+    if(strcasecmp(CMD,"EDIT") == 0){
+        if(ex->iNode == -1){
+            TheLast* tl = getTheLast(nwInf->_path);
+            ErrorPrinter(CMD,"ERROR","-path",tl->Name,"El Archivo No Existe");
+            return 0;
+        }
+        return 1;
     }
 
     if(strcasecmp(CMD,"CAT") == 0){
@@ -335,12 +381,21 @@ int pathV(char* CMD,InfoCatcher* nwInf){
 }
 
 int contV(char* CMD,InfoCatcher* nwInf){
+
+    if(strcasecmp(CMD,"EDIT") == 0){
+        if(nwInf->_cont == NULL){
+            ErrorPrinter(CMD,"ERROR","-cont",nwInf->_cont,"El Contenido No Puede ser NULL");
+            return 0;
+        }
+        return 1;
+    }
+
     if(strcasecmp(CMD,"MKFILE") == 0){
         //(^< ............ ............ ............ ............ ............ -cont: Optional
         if(nwInf->_cont != NULL){
             char* txtData = getString_from_File(nwInf->_cont);
             if(txtData == NULL){
-                ErrorPrinter("MKFILE","ERROR","-cont",nwInf->_cont,"Archivo No Encontrado");
+                ErrorPrinter(CMD,"ERROR","-cont",nwInf->_cont,"Archivo No Encontrado");
                 return 0;
             }
             nwInf->txtData = txtData;
@@ -357,6 +412,25 @@ int sizeV(char* CMD,InfoCatcher* nwInf){
         }else{
             char* txtData = getDefault_txtContent(nwInf->_size);
             nwInf->txtData = txtData;
+        }
+        return 1;
+    }
+}
+
+int destV(char* CMD,InfoCatcher* nwInf){
+
+    //(^< ............ ............ ............ ............ ............ -path: Mandatory
+    if(nwInf->_dest == NULL){
+        ErrorPrinter(CMD,"ERROR","-dest","NULL","Es Obligatorio");
+        return 0;
+    }
+
+    Existence* ex = vFF_Exists(nwInf->_dest);
+
+    if(strcasecmp(CMD,"MV") == 0){
+        if(ex->iNode == -1){
+            ErrorPrinter(CMD,"ERROR","-dest",ex->FFName,"La Carpeta Destino No Existe");
+            return 0;
         }
         return 1;
     }
@@ -416,39 +490,6 @@ int ErrorManager(InfoCatcher* nwInf,char* CMD){
         return 1;
     }
 
-    //(^< ............ ............ ............ ............ ............ root use only
-    if (strcasecmp(Omni->LoggedUser->UsrName,"root") != 0){
-        ErrorPrinter(CMD,"ERROR","Usuario",Omni->LoggedUser->UsrName,"Solo root puede usar este Comando");
-        return 0;
-    }
-
-    //MKGRP   ****************************************************************************************************** 
-    if(strcasecmp(CMD,"MKGRP") == 0){
-        if(nameV("MKGRP",nwInf) == 0) return 0;
-        return 1;
-    }
-
-    //RMGRP   ****************************************************************************************************** 
-    if(strcasecmp(CMD,"RMGRP") == 0){
-        if(nameV("RMGRP",nwInf) == 0) return 0;
-        return 1;
-    }
-
-    //MKUSR   ****************************************************************************************************** 
-    if(strcasecmp(CMD,"MKUSR") == 0){
-        if(usrV("MKUSR",nwInf) == 0) return 0;
-        if(pwdV("MKUSR",nwInf) == 0) return 0;
-        if(grpV("MKUSR",nwInf)     == 0) return 0;
-
-        return 1;
-    }
-
-    //RMUSR   ****************************************************************************************************** 
-    if(strcasecmp(CMD,"RMUSR") == 0){
-        if(usrV("RMUSR",nwInf) == 0) return 0;
-        return 1;
-    }
-
     //MKFILE   ****************************************************************************************************** 
     if(strcasecmp(CMD,"MKFILE") == 0){
         if(pathV("MKFILE",nwInf) == 0) return 0;
@@ -483,7 +524,66 @@ int ErrorManager(InfoCatcher* nwInf,char* CMD){
         return 1;
     }
 
-    
+    //EDIT   ****************************************************************************************************** 
+    if(strcasecmp(CMD,"EDIT") == 0){
+        if(pathV("EDIT",nwInf) == 0) return 0;
+        if(contV("EDIT",nwInf) == 0) return 0;
+        return 1;
+    }
+
+    //MV   ****************************************************************************************************** 
+    if(strcasecmp(CMD,"MV") == 0){
+        if(pathV("MV",nwInf) == 0) return 0;
+        if(destV("MV",nwInf) == 0) return 0;
+        return 1;
+    }
+
+    //FIND   ****************************************************************************************************** 
+    if(strcasecmp(CMD,"FIND") == 0){
+        if(pathV("FIND",nwInf) == 0) return 0;
+        if(nameV("FIND",nwInf) == 0) return 0;
+        return 1;
+    }
+
+    //(^< ............ ............ ............ ............ ............ root use only
+    if (strcasecmp(Omni->LoggedUser->UsrName,"root") != 0){
+        ErrorPrinter(CMD,"ERROR","Usuario",Omni->LoggedUser->UsrName,"Solo root puede usar este Comando");
+        return 0;
+    }
+
+    //MKGRP   ****************************************************************************************************** 
+    if(strcasecmp(CMD,"MKGRP") == 0){
+        if(nameV("MKGRP",nwInf) == 0) return 0;
+        return 1;
+    }
+
+    //RMGRP   ****************************************************************************************************** 
+    if(strcasecmp(CMD,"RMGRP") == 0){
+        if(nameV("RMGRP",nwInf) == 0) return 0;
+        return 1;
+    }
+
+    //MKUSR   ****************************************************************************************************** 
+    if(strcasecmp(CMD,"MKUSR") == 0){
+        if(usrV("MKUSR",nwInf) == 0) return 0;
+        if(pwdV("MKUSR",nwInf) == 0) return 0;
+        if(grpV("MKUSR",nwInf)     == 0) return 0;
+
+        return 1;
+    }
+
+    //RMUSR   ****************************************************************************************************** 
+    if(strcasecmp(CMD,"RMUSR") == 0){
+        if(usrV("RMUSR",nwInf) == 0) return 0;
+        return 1;
+    }
+
+    //CHGRP   ****************************************************************************************************** 
+    if(strcasecmp(CMD,"CHGRP") == 0){
+        if(usrV("CHGRP",nwInf) == 0) return 0;
+        if(grpV("CHGRP",nwInf) == 0) return 0;
+        return 1;
+    }
 }
 
 

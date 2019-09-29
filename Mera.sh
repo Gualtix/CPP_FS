@@ -43,6 +43,9 @@ mkgrp -name="Compi2"
 rmgrp -name="DB2"
 rmgrp -name=Arqui
 
+
+
+
 #Crearemos 3 usuarios llamados user1, user2, user3
 Mkusr -usr="user1" -grp=Archivos -pwd=user1
 Mkusr -usr="user2" -grp="Compi2" -pwd=user2
@@ -100,10 +103,20 @@ ren -Path=/home/wrm    -name=ziper
 ren -Path=/home/ziper    -name=ziper
 ren -Path=/home/b1.txt -name=wazabi.txt
 
-cat -file="/home/wrazabi.txt"               
+cat -file="/home/wrazabi.txt"     
+
+edit -Path=/home/wazabi.txt -cont=nomanchesmaxDlooljeje
+
+mv -path=/home/Noexiste -dest=/
+mv -path=/home/ziper    -dest=/
+
+find -path=/ -name=wazabi.txt
+
+chgrp -usr=user2 -grp=Archivos
 
 #rep -id=vda1 -ruta=/home/ahora/yaexiste -Path="/home/wrm/Desktop/reports2/eles.jpg"   -name=ls
-rep -id=vda1 -Path="/home/wrm/Desktop/reports2/destree.jpg"   -name=tree
+rep -id=vda1 -Path="/home/wrm/Desktop/reports2/destree.jpg"  -name=tree
+rep -id=vda1 -Path="/home/wrm/Desktop/reports2/users.txt" -ruta="users.txt" -name=file
 #rep -id=vda1 -Path="/home/wrm/Desktop/reports2/desjour.jpg" -name=journaling
 pause
 
@@ -113,6 +126,8 @@ pause
 rem -path=/home/wrm/Desktop/mia/fase2/a46
 #Carpeta indirectos
 rem -path="/home/wrm/Desktop/mia/fase2/b1"
+
+
 
 #Reporte4 ::::(  ) 
 rep -id=vda1 -Path="/home/wrm/Desktop/reports2/reporte4_vda1_sb.pdf" -name=sb

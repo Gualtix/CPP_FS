@@ -640,6 +640,15 @@ int ScanF2(char* Bf,InfoCatcher* nwInf){
     }
 
     if (strcasecmp(Bf, "EDIT") == 0){
+        if(ErrorManager(nwInf,"EDIT") == 1){
+            edit_do(nwInf);
+            if(isRecovery == 0){
+                char* FileName = Path_Get_FileName(nwInf->_path);
+                AddJournal("EDIT",COMMS,664,FileName,"Archivo");
+                Print_Long_Msg("EDIT","SUCCESS","Archivo",FileName,"Editado Exitosamente");
+            }
+            
+        }
         return 0;
     }
 
@@ -651,11 +660,13 @@ int ScanF2(char* Bf,InfoCatcher* nwInf){
                 char* FolderName = Path_get_Last_FolderName(nwInf->_path);
                 if(FileName != NULL){
                     Print_Long_Msg("REN","SUCCESS","Archivo",FileName,"Renombrado Exitosamente");
+                    AddJournal("REN",COMMS,664,FileName,"Folder");
                 }
                 else{
                     Print_Long_Msg("REN","SUCCESS","Folder",FolderName,"Renombrado Exitosamente");
+                    AddJournal("REN",COMMS,664,FolderName,"Folder");
                 }
-                AddJournal("REN",COMMS,664,FolderName,"Folder");
+                
             }
         }
         return 0;
@@ -666,6 +677,23 @@ int ScanF2(char* Bf,InfoCatcher* nwInf){
     }
 
     if (strcasecmp(Bf, "MV") == 0){
+        if(ErrorManager(nwInf,"MV") == 1){
+            mv_do(nwInf);
+            if(isRecovery == 0){
+                char* FileName = Path_Get_FileName(nwInf->_path);
+                char* FolderName = Path_get_Last_FolderName(nwInf->_path);
+                if(FileName != NULL){
+                    Print_Long_Msg("MV","SUCCESS","Archivo",FileName,"Movido Exitosamente");
+                    AddJournal("MV",COMMS,664,FileName,"Folder");
+                }
+                else{
+                    Print_Long_Msg("MV","SUCCESS","Folder",FolderName,"Movido Exitosamente");
+                    AddJournal("MV",COMMS,664,FolderName,"Folder");
+                }
+                
+            }
+        }
+
         return 0;
     }
 
@@ -674,6 +702,20 @@ int ScanF2(char* Bf,InfoCatcher* nwInf){
     }
 
     if (strcasecmp(Bf, "CHGRP") == 0){
+        if(ErrorManager(nwInf,"CHGRP") == 1){
+            chgrp_do(nwInf);
+            if(isRecovery == 0){
+                AddJournal("CHGRP",COMMS,664,"users.txt","Archivo");
+                Print_Long_Msg("CHGRP","SUCCESS","Usuario",nwInf->_usr,"El Usuario Ha Cambiado de Grupo Exitosamente");
+            }
+        }
+        return 0;
+    }
+
+    if (strcasecmp(Bf, "FIND") == 0){
+        if(ErrorManager(nwInf,"FIND") == 1){
+            find_do(nwInf);
+        }
         return 0;
     }
 

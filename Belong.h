@@ -1250,10 +1250,183 @@ char* getDefault_txtContent(int _size){
     return txtDefault;
 }
 
+
+void Tracker(SeekInfo* nwSI,char* Name,int iNode_Bit_ID,char* Type,char* Qt){
+
+    int inF = -1;
+    int inC = -1;
+
+    if(strcasecmp(Type,"Inode") == 0){
+
+        //Son Link Name
+        //char* SonName = getGraphStructName("Inode",iNode_Bit_ID);
+
+        //Linking
+        //if(FatherName != NULL){
+            //AddLink(DotFl,FatherName,SonName);
+        //}
+        
+        //AddInode(DotFl,iNode_Bit_ID);
+
+        Inode* Rt = (Inode*)BinLoad_Str(iNode_Bit_ID,"Inode");
+
+        int cnt = 0;
+        while(cnt < 15){
+            if(Rt->i_block[cnt] == -1){cnt++; continue;}
+
+            int Grandson_ID_Bit = Rt->i_block[cnt];
+
+            if(cnt >= 12){  
+
+                //Folder
+                if(Rt->i_type == 0){
+                    Tracker(nwSI,Name,Grandson_ID_Bit,"PointerBlock","Folder");
+                }
+
+                //File
+                if(Rt->i_type == 1){
+                    Tracker(nwSI,Name,Grandson_ID_Bit,"PointerBlock","File");
+                }
+                
+                cnt++; 
+                continue;
+            }
+
+            //Folder
+            if(Rt->i_type == 0){
+                Tracker(nwSI,Name,Grandson_ID_Bit,"FolderBlock",NULL);
+            }
+
+            //File
+            if(Rt->i_type == 1){
+                Tracker(nwSI,Name,Grandson_ID_Bit,"FileBlock",NULL);
+            }
+            cnt++;
+        }
+    }
+
+    if(strcasecmp(Type,"FileBlock") == 0){
+        //Son Link Name
+        //char* SonName = getGraphStructName("FileBlock",iNode_Bit_ID);
+
+        //Linking
+        //AddLink(DotFl,FatherName,SonName);
+
+        //AddFileBlock(DotFl,iNode_Bit_ID);
+    }
+
+    if(strcasecmp(Type,"FolderBlock") == 0){
+        //AddFolderBlock(nwSI,iNode_Bit_ID);
+
+        //Son Link Name
+        //char* SonName = getGraphStructName("FolderBlock",iNode_Bit_ID);
+
+        //Linking
+        //AddLink(DotFl,FatherName,SonName);
+
+        //******* FolderBlock Tour ******
+        FolderBlock* Fb = (FolderBlock*)BinLoad_Str(iNode_Bit_ID,"FolderBlock");
+        int i = 0;
+        while(i < 4){
+            if(Fb->b_content[i].b_inodo == -1){i++; continue;}
+
+            char* iName  = newString(Fb->b_content[i].b_name);
+            int Next_ID_Bit = Fb->b_content[i].b_inodo; 
+            //char* NextName = getGraphStructName("Inode",Next_ID_Bit);
+
+            if(strcasecmp(Fb->b_content[0].b_name,"iNodeFather") == 0 && strcasecmp(Fb->b_content[1].b_name,"iNodeCurent") == 0){
+                inF = Fb->b_content[0].b_inodo;
+                inC = Fb->b_content[1].b_inodo;
+            }
+
+            if(Next_ID_Bit > 0 && strcasecmp(iName,"iNodeFather") != 0 && strcasecmp(iName,"iNodeCurent")){
+
+                if(strcasecmp(Fb->b_content[i].b_name,Name) == 0){
+                    nwSI->FB_Bit_ID = iNode_Bit_ID;
+                    nwSI->FB_Index  = i;
+                    nwSI->iNode_Bit_ID = Fb->b_content[i].b_inodo;
+
+                    nwSI->iNodeFather_Bit_ID = inF;
+                    nwSI->iCurent_Bit_ID     = inC;
+                    
+                    EnQueue(nwSI->Travel,newString(Fb->b_content[i].b_name));
+                    return;
+                }
+
+                EnQueue(nwSI->Travel,newString(Fb->b_content[i].b_name));
+                Tracker(nwSI,Name,Next_ID_Bit,"Inode",NULL);                
+            }
+            i++;
+        }
+    }
+
+    if(strcasecmp(Type,"PointerBlock") == 0){
+
+        //AddPointerBlock(DotFl,iNode_Bit_ID);
+
+        //Son Link Name
+        //char* SonName = getGraphStructName("PointerBlock",iNode_Bit_ID);
+
+        //Linking
+        //AddLink(DotFl,FatherName,SonName);
+
+        //******* PointerBlock Tour ******
+        PointerBlock* Pb = (PointerBlock*)BinLoad_Str(iNode_Bit_ID,"PointerBlock");
+        int z = 0;
+        while(z < 16){
+            if(Pb->b_pointers[z] == -1){z++; continue;}
+
+            int Next_ID_Bit = Pb->b_pointers[z];
+
+            //Folder
+            if(strcasecmp(Qt,"Folder") == 0){
+                Tracker(nwSI,Name,Next_ID_Bit,"FolderBlock",NULL);
+            }
+
+            //File
+            if(strcasecmp(Qt,"File") == 0){
+                Tracker(nwSI,Name,Next_ID_Bit,"FileBlock",NULL);
+            }
+            z++;
+        }
+    }
+}
+
+
+SeekInfo* SuperSeeker(int iNode_Bit_ID,char* Name){
+    SeekInfo* nwSI = newSeekInfo();
+    Tracker(nwSI,Name,iNode_Bit_ID,"Inode",NULL);
+    if(nwSI->iNode_Bit_ID == -1){
+        return NULL;
+    }
+    return nwSI;
+}
+
+char* getFF_AbsolutePath_From_iNode(int iFather,int iSon){
+    
+}
+
+
+
+
 SeekInfo* CompleteSeeker(int iNodeCurent_Bit_ID,char* FileName){
+
+
 
     SeekInfo* nwSI = newSeekInfo();
     Inode* tIn = (Inode*)BinLoad_Str(iNodeCurent_Bit_ID,"Inode");
+
+    if(strcasecmp(FileName,"/") == 0){
+        nwSI->iNode_Bit_ID = 0;
+        nwSI->FB_Bit_ID = -1;
+        nwSI->FB_Index = -1;
+        nwSI->iNodeFather_Bit_ID = -1;
+        nwSI->iCurent_Bit_ID = -1;
+        EnQueue(nwSI->Travel,newString("/"));
+        return nwSI;
+    }
+
+    //EnQueue(nwSI->Travel,newString("/"));
 
     int i_tIn = 0;
     while(i_tIn < 12){
@@ -1286,6 +1459,7 @@ SeekInfo* CompleteSeeker(int iNodeCurent_Bit_ID,char* FileName){
                     if(nextIn->i_type == 0 && strcasecmp(tFB->b_content[i_tFB].b_name,"iNodeFather") != 0 && strcasecmp(tFB->b_content[i_tFB].b_name,"iNodeCurent") != 0){
                         SeekInfo* tmp = CompleteSeeker(nextIn_Bit_ID,FileName);
                         if(tmp != NULL){
+                            EnQueue(tmp->Travel,newString(FileName));
                             return tmp;
                         }
                         //return CompleteSeeker(nextIn_Bit_ID,FileName);
@@ -1907,12 +2081,70 @@ void Format_to_EXT3(){
 //(^< ............ ............ ............ ............ ............ ............ ............ ............ ............ ............
 //(^< ............ ............ ............ ............ ............ L O G I N
 //(^< ............ ............ ............ ............ ............ ............ ............ ............ ............ ............
+Existence* vFF_Exists(char* Rt){
+    //true  = is File
+    //false = is Folder
+
+    Existence* ex = newExistence();
+
+    if(strcasecmp(Rt,"/") == 0){
+        ex->FFName = newString("/");
+        ex->iNode = 0;
+        ex->iNodeFather = 0;
+        ex->PrevOk = 1;
+        return ex;
+    }
+    
+
+    DoublyGenericList* PathPlacesList = PathSeparate(newString(Rt));
+    char* tName = (char*)DeQueue(PathPlacesList);
+
+    SeekInfo* nwSI = CompleteSeeker(0,tName);
+    int tmp = 0;
+    if(nwSI != NULL){
+        tmp = nwSI->iNode_Bit_ID;
+    }
+
+    while(PathPlacesList->Length > 0){
+        if(nwSI == NULL){
+            if(PathPlacesList->Length == 1){
+                ex->iNodeFather = tmp;
+                ex->iNode = -1;
+                ex->PrevOk = 1;
+                ex->FFName = tName;
+                return ex;
+            }
+            else{
+                ex->iNodeFather = -1;
+                ex->iNode = -1;
+                ex->PrevOk = 0;
+                ex->FFName = tName;
+                return ex;
+            }
+        }
+        else{
+            if(PathPlacesList->Length == 1){
+                ex->iNodeFather = nwSI->iNodeFather_Bit_ID;
+                ex->iNode = nwSI->iNode_Bit_ID;
+                ex->PrevOk = 1;
+                ex->FFName = tName;
+                return ex;
+            }
+        }
+        tmp = nwSI->iNode_Bit_ID;
+        tName = (char*)DeQueue(PathPlacesList);
+        nwSI = CompleteSeeker(tmp,tName);
+    }
+    return ex;
+}
 
 
+int EraseFile(char* path){
 
-int EraseFile(char* FileName){
-    SeekInfo* nwSI = CompleteSeeker(0,FileName);
-
+    TheLast* tl = getTheLast(path);
+    Existence* ex = vFF_Exists(path);
+    SeekInfo* nwSI = CompleteSeeker(ex->iNodeFather,tl->Name);
+    
     if(nwSI != NULL){
         int iNode_Bit_ID = nwSI->iNode_Bit_ID;
         Inode* iNode = (Inode*)BinLoad_Str(iNode_Bit_ID,"Inode");
@@ -1994,7 +2226,7 @@ void Release_Folder(int Bit_ID,char* Name){
     BinWrite_Struct(Father,Father_Bit_ID,"FolderBlock");
 }
 
-
+/*
 void CompleteTraversal_to_Erase(int iNode_Bit_ID,char* FatherFolderName){
     Inode* i_Node = (Inode*)BinLoad_Str(iNode_Bit_ID,"Inode");
 
@@ -2080,65 +2312,8 @@ void CompleteTraversal_to_Erase(int iNode_Bit_ID,char* FatherFolderName){
         i++;
     }
 }
-
-Existence* vFF_Exists(char* Rt){
-    //true  = is File
-    //false = is Folder
-
-    Existence* ex = newExistence();
-
-    if(strcasecmp(Rt,"/") == 0){
-        ex->FFName = newString("/");
-        ex->iNode = 0;
-        ex->iNodeFather = 0;
-        ex->PrevOk = 1;
-        return ex;
-    }
-    
-
-    DoublyGenericList* PathPlacesList = PathSeparate(newString(Rt));
-    char* tName = (char*)DeQueue(PathPlacesList);
-
-    SeekInfo* nwSI = CompleteSeeker(0,tName);
-    int tmp = 0;
-    if(nwSI != NULL){
-        tmp = nwSI->iNode_Bit_ID;
-    }
-
-    while(PathPlacesList->Length > 0){
-        if(nwSI == NULL){
-            if(PathPlacesList->Length == 1){
-                ex->iNodeFather = tmp;
-                ex->iNode = -1;
-                ex->PrevOk = 1;
-                ex->FFName = tName;
-                return ex;
-            }
-            else{
-                ex->iNodeFather = -1;
-                ex->iNode = -1;
-                ex->PrevOk = 0;
-                ex->FFName = tName;
-                return ex;
-            }
-        }
-        else{
-            if(PathPlacesList->Length == 1){
-                ex->iNodeFather = nwSI->iNodeFather_Bit_ID;
-                ex->iNode = nwSI->iNode_Bit_ID;
-                ex->PrevOk = 1;
-                ex->FFName = tName;
-                return ex;
-            }
-        }
-        tmp = nwSI->iNode_Bit_ID;
-        tName = (char*)DeQueue(PathPlacesList);
-        nwSI = CompleteSeeker(tmp,tName);
-    }
-    return ex;
-}
-
-
+*/
+/*
 int EraseFolder(char* FolderName){
     SeekInfo* nsk = CompleteSeeker(0,FolderName);
     CompleteTraversal_to_Erase(nsk->iNode_Bit_ID,"/");
@@ -2150,6 +2325,7 @@ int EraseFolder(char* FolderName){
     BinWrite_Struct(Father,nsk->FB_Bit_ID,"FolderBlock");
 
 }
+*/
 
 //char* ReadFile(int iNode_Bit_ID,char* FileName){
 char* ReadFile(char* Path){
@@ -2211,11 +2387,15 @@ char* ReadFile(char* Path){
     return tmp;
 }
 
-int EditFile(char* FileName,char* txtNewContent){
-    SeekInfo* nwSI = CompleteSeeker(0,FileName);
+int EditFile(char* path,char* txtNewContent){
+
+    TheLast* tl = getTheLast(path);
+    Existence* ex = vFF_Exists(path);
+    SeekInfo* nwSI = CompleteSeeker(ex->iNodeFather,tl->Name);
+
     if(nwSI != NULL){
-        EraseFile(FileName);
-        allocate_newFile(nwSI->iNodeFather_Bit_ID,FileName,txtNewContent,664,1,1);
+        EraseFile(path);
+        allocate_newFile(nwSI->iNodeFather_Bit_ID,tl->Name,txtNewContent,664,1,1);
         return 1;
     }
     return -1;
@@ -2531,7 +2711,7 @@ void txtUsers_Update(DoublyGenericList*  grpList,DoublyGenericList*  usrList){
     char* tmp   = GroupsList_to_String(grpList);
     char* tmp_2 = UsersList_to_String(usrList);
     char* tmp_3 = Concat_Izq_with_Der(tmp,tmp_2,'s','s');
-    EditFile("users.txt",tmp_3);
+    EditFile("/users.txt",tmp_3);
     //Write_txtFile("/home/wrm/Desktop/users_view.txt",tmp_3);
 }
 #endif // BELONG_H
