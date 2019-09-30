@@ -834,7 +834,7 @@ void InodeOnlyDot(FILE* DotFl,int iN){
         Inode* tmp = (Inode*)BinLoad_Str(cnt,"Inode");
         if(chBit == '1'){
             Inode* tmp = (Inode*)BinLoad_Str(cnt,"Inode");
-            AddInode(DotFl,StartByte);
+            AddInode(DotFl,cnt);
             char* Izq_Name = getGraphStructName("Inode",cnt);
             if(lsName != NULL && (cnt + 1 != iN)){
                 AddLink(DotFl,lsName,Izq_Name);
@@ -902,7 +902,7 @@ void BlockOnlyDot(FILE* DotFl,int iN){
             if(isPointerBlock(cnt) == 1){
 
                 PointerBlock* tmp = (PointerBlock*)BinLoad_Str(cnt,"PointerBlock");
-                AddPointerBlock(DotFl,StartByte);
+                AddPointerBlock(DotFl,cnt);
                 char* Izq_Name = getGraphStructName("PointerBlock",cnt);
                 if(lsName != NULL && (cnt + 1 != iN)){
                     AddLink(DotFl,lsName,Izq_Name);
@@ -912,7 +912,7 @@ void BlockOnlyDot(FILE* DotFl,int iN){
             else if(isFolderBlock(cnt) == 1){
 
                 FolderBlock* tmp = (FolderBlock*)BinLoad_Str(cnt,"FolderBlock");
-                AddFolderBlock(DotFl,StartByte);
+                AddFolderBlock(DotFl,cnt);
                 char* Izq_Name = getGraphStructName("FolderBlock",cnt);
                 if(lsName != NULL && (cnt + 1 != iN)){
                     AddLink(DotFl,lsName,Izq_Name);
@@ -923,7 +923,7 @@ void BlockOnlyDot(FILE* DotFl,int iN){
             else{
 
                 FileBlock* tmp = (FileBlock*)BinLoad_Str(cnt,"FileBlock");
-                AddFileBlock(DotFl,StartByte);
+                AddFileBlock(DotFl,cnt);
                 char* Izq_Name = getGraphStructName("FileBlock",cnt);
                 if(lsName != NULL && (cnt + 1 != iN)){
                     AddLink(DotFl,lsName,Izq_Name);
@@ -937,7 +937,12 @@ void BlockOnlyDot(FILE* DotFl,int iN){
 }
 
 //(^< ............ ............ ...........   txt_InodeBitMap
-void txt_InodeBitMap(char* CompleteReportPathDir){
+void txt_InodeBitMap(char* CompleteReportPathDir,char* VD){
+
+    char* tim = newString("/*** -> InodeBitMap: ");
+    tim = Concat_Izq_with_Der(tim,VD,'s','s');
+    tim = Concat_Izq_with_Der(tim,newString(" <- ***/\n\n"),'s','s');
+
 
     int iN = Calc_iN(Omni->PartBatch_inUse->Size);
 
@@ -957,6 +962,7 @@ void txt_InodeBitMap(char* CompleteReportPathDir){
    
     char txtContent[900000];
     memset(txtContent,'\0',900000);
+    strcpy(txtContent,tim);
     
     
     while(cnt < iN){
@@ -985,6 +991,9 @@ void txt_InodeBitMap(char* CompleteReportPathDir){
         cnt++;
     }
 
+    char* pps = Concat_Izq_with_Der(tim,txtContent,'s','s');
+    strcpy(txtContent,pps);
+
     char* Ext_ReportName = Path_Get_FileName(CompleteReportPathDir);
     char* Ext_ReportPath = Path_Get_Isolated(CompleteReportPathDir);
 
@@ -994,28 +1003,17 @@ void txt_InodeBitMap(char* CompleteReportPathDir){
 }
 
 //(^< ............ ............ ...........   txt_BlockBitMap
-void txt_BlockBitMap(char* CompleteReportPathDir){
+void txt_BlockBitMap(char* CompleteReportPathDir,char* VD){
+
+    char* tim = newString("/*** -> BlockBitMap: ");
+    tim = Concat_Izq_with_Der(tim,VD,'s','s');
+    tim = Concat_Izq_with_Der(tim,newString(" <- ***/\n\n"),'s','s');
 
     int iN = Calc_iN(Omni->PartBatch_inUse->Size);
-    /*
-    int iN = -1;
-    if(Usr_inUse->SBinuse->s_filesystem_type == 3){
-        iN = Usr_inUse->Ext3_iN;
-    }
-    else{
-        iN = Usr_inUse->Ext2_iN;
-    }
-    */
 
     int Base = Omni->SBinuse->s_bm_block_start;
     int cnt = 0;
     int Fp  = 0;
-
-    //int Tot = (3 * iN) * 3;
-   
-    //char txtContent[Tot];
-    //char* txtContent = newString(Tot);
-    //memset(txtContent,'\0',Tot);
 
     char txtContent[900000];
     memset(txtContent,'\0',900000);
@@ -1045,6 +1043,9 @@ void txt_BlockBitMap(char* CompleteReportPathDir){
         }
         cnt++;
     }
+
+    char* pps = Concat_Izq_with_Der(tim,txtContent,'s','s');
+    strcpy(txtContent,pps);
 
     char* Ext_ReportName = Path_Get_FileName(CompleteReportPathDir);
     char* Ext_ReportPath = Path_Get_Isolated(CompleteReportPathDir);
@@ -1343,47 +1344,130 @@ void Add_Jr_Body(FILE* DotFl){
                 if(nwInf->_path == NULL){
 
                     if(strcasecmp(CMD,"mkgrp") == 0){
-                        Cnt = nwInf->_name;
+                        Cnt = Concat_Izq_with_Der(newString("name = "),nwInf->_name,'s','s');
                     }
 
                     if(strcasecmp(CMD,"rmgrp") == 0){
-                        Cnt = nwInf->_name;
+                        Cnt = Concat_Izq_with_Der(newString("name = "),nwInf->_name,'s','s');
                     }
 
                     if(strcasecmp(CMD,"mkusr") == 0){
-                        Cnt = Concat_Izq_with_Der(nwInf->_usr,newString(","),'s','s');
+                        Cnt = Concat_Izq_with_Der(newString("usr = "),nwInf->_usr,'s','s');
+                        Cnt = Concat_Izq_with_Der(Cnt,newString("<br/>\n"),'s','s');
+
+                        Cnt = Concat_Izq_with_Der(Cnt,newString("pwd = "),'s','s');
                         Cnt = Concat_Izq_with_Der(Cnt,nwInf->_pwd,'s','s');
-                        Cnt = Concat_Izq_with_Der(Cnt,newString(","),'s','s');
+                        Cnt = Concat_Izq_with_Der(Cnt,newString("<br/>\n"),'s','s');
+
+                        Cnt = Concat_Izq_with_Der(Cnt,newString("grp = "),'s','s');
                         Cnt = Concat_Izq_with_Der(Cnt,nwInf->_grp,'s','s');
                     }
 
                     if(strcasecmp(CMD,"rmusr") == 0){
-                        Cnt = nwInf->_usr;
+                        Cnt = Concat_Izq_with_Der(newString("usr = "),nwInf->_usr,'s','s');
                     }
+
+                    if(strcasecmp(CMD,"chgrp") == 0){
+                        Cnt = Concat_Izq_with_Der(newString("usr = "),nwInf->_usr,'s','s');
+                        Cnt = Concat_Izq_with_Der(Cnt,newString("<br/>\n"),'s','s');
+                        
+                        Cnt = Concat_Izq_with_Der(Cnt,newString("grp = "),'s','s');
+                        Cnt = Concat_Izq_with_Der(Cnt,nwInf->_grp,'s','s');
+                    }
+                }
+
+                if(strcasecmp(CMD,"rem") == 0){
+                    Cnt = Concat_Izq_with_Der(newString("path = "),nwInf->_path,'s','s');
+                }
+
+                if(strcasecmp(CMD,"mkdir") == 0){
+                    Cnt = Concat_Izq_with_Der(newString("path = "),nwInf->_path,'s','s');
+                    Cnt = Concat_Izq_with_Der(Cnt,newString("<br/>\n"),'s','s');
+
+                    Cnt = Concat_Izq_with_Der(Cnt,newString("p = "),'s','s');
+                    Cnt = Concat_Izq_with_Der(Cnt,&nwInf->_P,'s','i');
+                }
+
+                if(strcasecmp(CMD,"ren") == 0){
+                    Cnt = newString("path = ");
+                    Cnt = Concat_Izq_with_Der(Cnt,nwInf->_path,'s','s');
+                    Cnt = Concat_Izq_with_Der(Cnt,newString("<br/>\n"),'s','s');
+                    Cnt = Concat_Izq_with_Der(Cnt,newString("name = "),'s','s');
+                    Cnt = Concat_Izq_with_Der(Cnt,nwInf->_name,'s','s');
+                }
+
+                if(strcasecmp(CMD,"edit") == 0){
+                    Cnt = newString("path = ");
+                    Cnt = Concat_Izq_with_Der(Cnt,nwInf->_path,'s','s');
+                    Cnt = Concat_Izq_with_Der(Cnt,newString("<br/>\n"),'s','s');
+                    Cnt = Concat_Izq_with_Der(Cnt,newString("cont = "),'s','s');
+                    Cnt = Concat_Izq_with_Der(Cnt,nwInf->_cont,'s','s');
                 }
 
                 if(strcasecmp(CMD,"mkfile") == 0){
-                        Cnt = Concat_Izq_with_Der(nwInf->_path,newString(","),'s','s');
-                        Cnt = Concat_Izq_with_Der(Cnt,toString(&nwInf->_size,'i'),'s','s');
-                        Cnt = Concat_Izq_with_Der(Cnt,newString(","),'s','s');
-                        Cnt = Concat_Izq_with_Der(Cnt,nwInf->_cont,'s','s');
-                    }
+
+                    Cnt = Concat_Izq_with_Der(newString("path = "),nwInf->_path,'s','s');
+                    Cnt = Concat_Izq_with_Der(Cnt,newString("<br/>\n"),'s','s');
+
+                    Cnt = Concat_Izq_with_Der(Cnt,newString("p = "),'s','s');
+                    Cnt = Concat_Izq_with_Der(Cnt,&nwInf->_P,'s','i');
+                    Cnt = Concat_Izq_with_Der(Cnt,newString("<br/>\n"),'s','s');
+
+                    Cnt = Concat_Izq_with_Der(Cnt,newString("size = "),'s','s');
+                    Cnt = Concat_Izq_with_Der(Cnt,&nwInf->_size,'s','i');
+                    Cnt = Concat_Izq_with_Der(Cnt,newString("<br/>\n"),'s','s');
+
+                    Cnt = Concat_Izq_with_Der(Cnt,newString("cont = "),'s','s');
+                    Cnt = Concat_Izq_with_Der(Cnt,nwInf->_cont,'s','s');
+                }
 
                 if(strcasecmp(CMD,"mv") == 0){
-                    Cnt = Concat_Izq_with_Der(nwInf->_path,newString(","),'s','s');
+                    Cnt = Concat_Izq_with_Der(newString("path = "),nwInf->_path,'s','s');
+                    Cnt = Concat_Izq_with_Der(Cnt,newString("<br/>\n"),'s','s');
+
+                    Cnt = Concat_Izq_with_Der(Cnt,newString("dest = "),'s','s');
                     Cnt = Concat_Izq_with_Der(Cnt,nwInf->_dest,'s','s');
                 }
+
+                if(strcasecmp(CMD,"chmod") == 0){
+                    Cnt = Concat_Izq_with_Der(newString("path = "),nwInf->_path,'s','s');
+                    Cnt = Concat_Izq_with_Der(Cnt,newString("<br/>\n"),'s','s');
+                    
+                    Cnt = Concat_Izq_with_Der(Cnt,newString("ugo = "),'s','s');
+                    Cnt = Concat_Izq_with_Der(Cnt,&nwInf->_ugo,'s','i');
+                    Cnt = Concat_Izq_with_Der(Cnt,newString("<br/>\n"),'s','s');
+
+                    Cnt = Concat_Izq_with_Der(Cnt,newString("r = "),'s','s');
+                    Cnt = Concat_Izq_with_Der(Cnt,&nwInf->_R,'s','i');
+                }
+
+                char* cls = newString("\"#33ff33\"");
+                if(JourColor % 2 == 0){
+                    cls = newString("\"#00ace6\"");
+                    JourColor++;
+                }
+                else{
+                    cls = newString("\"#33ff33\"");
+                    JourColor++;
+                }
+
+                char* tps = newString("Archivo");
+                if(tmp->isFile_or_Folder == '0'){
+                    tps = newString("Folder");
+                }
                 
-                fprintf(DotFl,"\t\t\t\t\t\t<TR><TD colspan=\"2\">**************************************************************************************</TD></TR>\n");
+                fprintf(DotFl,"\t\t\t\t\t\t<TR><TD bgcolor=%s colspan=\"2\">-                                                           -</TD></TR>\n",cls);
                 //fprintf(DotFl,"\t\t\t\t\t\t<TR><TD>En Uso</TD><TD bgcolor=\"#ffffff\">%c</TD></TR>\n",tmp->isOccupied);
-                fprintf(DotFl,"\t\t\t\t\t\t<TR><TD>Operacion</TD><TD bgcolor=\"#ffffff\">%s</TD></TR>\n",tmp->CMD);
-                fprintf(DotFl,"\t\t\t\t\t\t<TR><TD>Nombre</TD><TD bgcolor=\"#ffffff\">%s</TD></TR>\n",tmp->File_of_FolderName);
-                fprintf(DotFl,"\t\t\t\t\t\t<TR><TD>Tipo</TD><TD bgcolor=\"#ffffff\">%c</TD></TR>\n",tmp->isFile_or_Folder);
-                fprintf(DotFl,"\t\t\t\t\t\t<TR><TD>Contenido</TD><TD bgcolor=\"#ffffff\">%s</TD></TR>\n",Cnt);
-                fprintf(DotFl,"\t\t\t\t\t\t<TR><TD>Fecha</TD><TD bgcolor=\"#ffffff\">%s</TD></TR>\n",tmp->Date);
-                fprintf(DotFl,"\t\t\t\t\t\t<TR><TD>Propietario</TD><TD bgcolor=\"#ffffff\">%s</TD></TR>\n",tmp->Owner);
-                fprintf(DotFl,"\t\t\t\t\t\t<TR><TD>Permisos</TD><TD bgcolor=\"#ffffff\">%i</TD></TR>\n",tmp->Permits);
-                fprintf(DotFl,"\t\t\t\t\t\t<TR><TD colspan=\"2\">**************************************************************************************</TD></TR>\n");
+                fprintf(DotFl,"\t\t\t\t\t\t<TR><TD bgcolor=%s>Operacion</TD><TD bgcolor=\"#ffffff\">%s</TD></TR>\n",cls,tmp->CMD);
+                fprintf(DotFl,"\t\t\t\t\t\t<TR><TD bgcolor=%s>Nombre</TD><TD bgcolor=\"#ffffff\">%s</TD></TR>\n",cls,tmp->File_of_FolderName);
+                fprintf(DotFl,"\t\t\t\t\t\t<TR><TD bgcolor=%s>Tipo</TD><TD bgcolor=\"#ffffff\">%s</TD></TR>\n",cls,tps);
+                fprintf(DotFl,"\t\t\t\t\t\t<TR><TD bgcolor=%s>Contenido</TD><TD bgcolor=\"#ffffff\">%s</TD></TR>\n",cls,Cnt);
+                fprintf(DotFl,"\t\t\t\t\t\t<TR><TD bgcolor=%s>Fecha</TD><TD bgcolor=\"#ffffff\">%s</TD></TR>\n",cls,tmp->Date);
+                //fprintf(DotFl,"\t\t\t\t\t\t<TR><TD bgcolor=%s>Propietario</TD><TD bgcolor=\"#ffffff\">%s</TD></TR>\n",cls,tmp->Owner);
+                //fprintf(DotFl,"\t\t\t\t\t\t<TR><TD bgcolor=%s>Permisos</TD><TD bgcolor=\"#ffffff\">%i</TD></TR>\n",cls,tmp->Permits);
+                fprintf(DotFl,"\t\t\t\t\t\t<TR><TD bgcolor=%s colspan=\"2\">-                                                           -</TD></TR>\n",cls);
+                //fprintf(DotFl,"\t\t\t\t\t\t<TR><TD> holas <br/> simonx</TD></TR>\n");
+                
             }
             
         }
@@ -1408,6 +1492,7 @@ void Generate_File_Rep(char* CompleteReportPathDir,char* _ruta){
 
 
 void Generate_Journaling(FILE* DotFl){
+    
     fprintf(DotFl,"\t\tLs_Report\n");
     fprintf(DotFl,"\t\t\t[label =\n");
     fprintf(DotFl,"\t\t\t\t<\n");
@@ -1417,22 +1502,21 @@ void Generate_Journaling(FILE* DotFl){
     fprintf(DotFl,"\t\t\t\t\t</TABLE>\n");
     fprintf(DotFl,"\t\t\t\t>\n");
     fprintf(DotFl,"\t\t\t]\n");
-
 }
 
 
-void FullViewRender(char* CompleteReportPathDir,char* Type){
+void FullViewRender(char* CompleteReportPathDir,char* Type,char* VD){
 
     //(^< ............ ............ ...........   InodeBitMap
     if(strcasecmp(Type,"bm_inode") == 0){
-        txt_InodeBitMap(CompleteReportPathDir);
+        txt_InodeBitMap(CompleteReportPathDir,VD);
         //inodeBitMapDot(DotFl,iN);
         return;
     }
 
     //(^< ............ ............ ...........   BlockBitMap
     if(strcasecmp(Type,"bm_block") == 0){
-        txt_BlockBitMap(CompleteReportPathDir);
+        txt_BlockBitMap(CompleteReportPathDir,VD);
         //blockBitMapDot(DotFl,iN);
         return;
     }
@@ -1455,7 +1539,7 @@ void FullViewRender(char* CompleteReportPathDir,char* Type){
         fprintf(DotFl,"\trankdir = LR;\n");
         fprintf(DotFl,"\tnode [shape = plaintext];\n");
         fprintf(DotFl,"\t\tsubgraph cluster_OutLook {\n");
-        fprintf(DotFl,"\t\t\tlabel = \"Ext3 :: %s\";\n",Type);
+        fprintf(DotFl,"\t\t\tlabel = \"Ext3 :: %s :: %s\";\n",VD,Type);
         fprintf(DotFl,"\t\t\tgraph[style = dotted];\n");
 
         //(^< ............ ............ ...........   SuperBlock
@@ -1467,6 +1551,7 @@ void FullViewRender(char* CompleteReportPathDir,char* Type){
         if(strcasecmp(Type,"journaling") == 0){
             int jStart = Omni->SBinuse->s_block_start + sizeof(SuperBlock);
             Journaling* Jr = (Journaling*)BinLoad_Str(jStart,"Journaling");
+            JourColor = 0;
             Generate_Journaling(DotFl);
         }
 

@@ -670,19 +670,19 @@ void rep_F1_do(InfoCatcher* nwInf){
 }
 
 void rep_F2_do(InfoCatcher* nwInf){
-    setOmni(nwInf->_id);
+    //setOmni(nwInf->_id);
     if(strcasecmp(nwInf->_name,"file") == 0){
         Generate_File_Rep(nwInf->_path,nwInf->_ruta);
-        Omni = newGLS();
+        //Omni = newGLS();
         return;
     }
     if(strcasecmp(nwInf->_name,"ls") == 0){
         Generate_Ls_Rep(nwInf->_path,nwInf->_ruta);
-        Omni = newGLS();
+        //Omni = newGLS();
         return;
     }
-    FullViewRender(newString(nwInf->_path),nwInf->_name);
-    Omni = newGLS();
+    FullViewRender(newString(nwInf->_path),nwInf->_name,nwInf->_id);
+    //Omni = newGLS();
 }
 
 #endif // F1_DO_H

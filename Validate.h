@@ -395,10 +395,18 @@ int contV(char* CMD,InfoCatcher* nwInf){
         if(nwInf->_cont != NULL){
             char* txtData = getString_from_File(nwInf->_cont);
             if(txtData == NULL){
-                ErrorPrinter(CMD,"ERROR","-cont",nwInf->_cont,"Archivo No Encontrado");
+                if(isRecovery == 0){
+                    ErrorPrinter(CMD,"ERROR","-cont",nwInf->_cont,"Archivo No Encontrado");
+                }
                 return 0;
             }
             nwInf->txtData = txtData;
+        }
+        else{
+            if(isRecovery == 0){
+                ErrorPrinter(CMD,"ERROR","-cont",nwInf->_cont,"Archivo No Encontrado");
+            }
+            return 0;
         }
         return 1;
     }
@@ -407,7 +415,9 @@ int contV(char* CMD,InfoCatcher* nwInf){
 int sizeV(char* CMD,InfoCatcher* nwInf){
     if(strcasecmp(CMD,"MKFILE") == 0){
         if(nwInf->_size < 0){
-            ErrorPrinter(CMD,"ERROR","-size","Negativo","El Parametro -size No puede ser Negativo");
+            if(isRecovery == 0){
+                ErrorPrinter(CMD,"ERROR","-size","Negativo","El Parametro -size No puede ser Negativo");
+            }
             return 0;
         }else{
             char* txtData = getDefault_txtContent(nwInf->_size);
@@ -440,30 +450,30 @@ int destV(char* CMD,InfoCatcher* nwInf){
 //(^< ............ ............ ............ ............ ............ Permissions
 //(^< ............ ............ ............ ............ ............ ............ ............ ............ ............ ............
 
-int permaV(char* CMD,char* usType,char* _perm,char*Act){
+int permaV(char* CMD,char* usType,char* _perm,char*Act,char* Name){
 
     if(_perm[0] == '-' && Act[0] != '-' ){
         printf("\n");
-        printf("%s ERROR: Permiso   -> Lectura = r <-   ,El Usuario como: %s NO Tiene Permiso de de Lectura\n",CMD,usType);
+        printf("%s ERROR: Permiso   -> Lectura = r <-   en   -> %s <-   El Usuario como: %s, NO Tiene Permiso de de Lectura\n",CMD,Name,usType);
         return 0;
     }
 
     if(_perm[1] == '-' && Act[1] != '-' ){
         printf("\n");
-        printf("%s ERROR: Permiso   -> Escritura = r <-   ,El Usuario como: %s NO Tiene Permiso de de Escritura\n",CMD,usType);
+        printf("%s ERROR: Permiso   -> Escritura = r <-   en   -> %s <-   El Usuario como: %s, NO Tiene Permiso de de Escritura\n",CMD,Name,usType);
         return 0;
     }
 
     if(_perm[2] == '-' && Act[2] != '-' ){
         printf("\n");
-        printf("%s ERROR: Permiso   -> Ejecucion = r <-   ,El Usuario como: %s NO Tiene Permiso de de Ejecucion\n",CMD,usType);
+        printf("%s ERROR: Permiso   -> Ejecucion = r <-   en   -> %s <-   El Usuario como: %s, NO Tiene Permiso de de Ejecucion\n",CMD,Name,usType);
         return 0;
     }
     return 1;
     
 }
 
-int permissionV(char* CMD,Inode* iN,int Action){
+int permissionV(char* CMD,Inode* iN,int Action,char* Name){
 
     int perm = iN->i_perm;
 
@@ -488,30 +498,44 @@ int permissionV(char* CMD,Inode* iN,int Action){
 
     //Is Owner
     if(Omni->LoggedUser->ID == iN->i_uid){
-        return permaV(CMD,"PROPIETARIO",_1,Act);
+        return permaV(CMD,"PROPIETARIO",_1,Act,Name);
     }
 
     //Belongs to Group
     if(Omni->LoggedUser->GrpID == iN->i_gid){
-        return permaV(CMD,"INTEGRANTE DEL GRUPO",_2,Act);
+        return permaV(CMD,"INTEGRANTE DEL GRUPO",_2,Act,Name);
     }
 
     //Is Other
-    return permaV(CMD,"OTROS",_3,Act);
+    return permaV(CMD,"OTROS",_3,Act,Name);
 }
 
-int onFatherV(char* CMD,InfoCatcher* nwInf,int Action){
+int onSonV(char* CMD,char* Path,int Action){
     if(strcasecmp(Omni->LoggedUser->UsrName,"root") == 0){
         return 1;
     }
 
-    //char* FatherPath = Path_Get_Father(nwInf->_path);
-    //TheLast* tl = getTheLast(FatherPath);
-    Existence* ex = vFF_Exists(nwInf->_path);
+    //char* FatherPath = Path_Get_Father(Path);
+    TheLast* tl = getTheLast(Path);
+    Existence* ex = vFF_Exists(Path);
+
+    Inode* iN = (Inode*)BinLoad_Str(ex->iNode,"Inode");
+
+    return permissionV(CMD,iN,Action,tl->Name);    
+}
+
+int onFatherV(char* CMD,char* Path,int Action){
+    if(strcasecmp(Omni->LoggedUser->UsrName,"root") == 0){
+        return 1;
+    }
+
+    char* FatherPath = Path_Get_Father(Path);
+    TheLast* tl = getTheLast(FatherPath);
+    Existence* ex = vFF_Exists(Path);
 
     Inode* iN = (Inode*)BinLoad_Str(ex->iNodeFather,"Inode");
 
-    return permissionV(CMD,iN,Action);    
+    return permissionV(CMD,iN,Action,tl->Name);    
 }
 
 
@@ -553,12 +577,20 @@ int ErrorManager(InfoCatcher* nwInf,char* CMD){
 
     //RECOVERY   ****************************************************************************************************** 
     if(strcasecmp(CMD,"RECOVERY") == 0){
+        if(Omni->LoggedUser != NULL){
+            printf("\n");
+            printf("RECOVERY ERROR: Debe hacer Logout para Iniciar la Recuperacion");
+        }
         if(idV("RECOVERY",nwInf) == 0) return 0;
         return 1;
     }
 
     //LOSS   ****************************************************************************************************** 
     if(strcasecmp(CMD,"LOSS") == 0){
+        if(Omni->LoggedUser != NULL){
+            printf("\n");
+            printf("LOSS ERROR: Debe hacer Logout para Simular la Perdida");
+        }
         if(idV("LOSS",nwInf) == 0) return 0;
         return 1;
     }
@@ -566,9 +598,13 @@ int ErrorManager(InfoCatcher* nwInf,char* CMD){
     //MKFILE   ****************************************************************************************************** 
     if(strcasecmp(CMD,"MKFILE") == 0){
         if(pathV("MKFILE",nwInf) == 0) return 0;
-        sizeV("MKFILE",nwInf);
-        contV("MKFILE",nwInf);
-        if(onFatherV("MKFILE",nwInf,2) == 0) return 0;
+        int sizeOk = sizeV("MKFILE",nwInf);
+        int contOk = contV("MKFILE",nwInf);
+        if(sizeOk == 0 && contOk == 0){
+
+            return 0;
+        }
+        if(onFatherV("MKFILE",nwInf->_path,2) == 0) return 0;
         
         return 1;
     }
@@ -576,6 +612,7 @@ int ErrorManager(InfoCatcher* nwInf,char* CMD){
     //MKDIR   ****************************************************************************************************** 
     if(strcasecmp(CMD,"MKDIR") == 0){
         if(pathV("MKDIR",nwInf) == 0) return 0;
+        if(onFatherV("MKDIR",nwInf->_path,2) == 0) return 0;
         return 1;
     }
 
@@ -588,6 +625,7 @@ int ErrorManager(InfoCatcher* nwInf,char* CMD){
     if(strcasecmp(CMD,"CAT") == 0){
         nwInf->_path = newString(nwInf->_file);
         if(pathV("CAT",nwInf) == 0) return 0;
+        if(onSonV("CAT",nwInf->_file,4) == 0) return 0;
         return 1;
     }
 
@@ -595,6 +633,7 @@ int ErrorManager(InfoCatcher* nwInf,char* CMD){
     if(strcasecmp(CMD,"REN") == 0){
         if(pathV("REN",nwInf) == 0) return 0;
         if(nameV("REN",nwInf) == 0) return 0;
+        if(onSonV("REN",nwInf->_path,2) == 0) return 0;
         return 1;
     }
 
@@ -602,6 +641,7 @@ int ErrorManager(InfoCatcher* nwInf,char* CMD){
     if(strcasecmp(CMD,"EDIT") == 0){
         if(pathV("EDIT",nwInf) == 0) return 0;
         if(contV("EDIT",nwInf) == 0) return 0;
+        if(onSonV("EDIT",nwInf->_path,6) == 0) return 0;
         return 1;
     }
 

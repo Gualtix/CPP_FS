@@ -2123,7 +2123,6 @@ void AddJournal(char* CMD,char* Content,int Permits,char* Name,char* Type){
     First_Jr->Available_Index = Available_Index + sizeof(Journaling);
     BinWrite_Struct(First_Jr,First_Index,"Journaling");
 
-
     Journaling* Jr = newJournaling();
     Jr->Available_Index = Available_Index + sizeof(Journaling);
     strcpy(Jr->CMD,CMD);
@@ -2526,9 +2525,14 @@ int EditFile(char* path,char* txtNewContent){
     Existence* ex = vFF_Exists(path);
     SeekInfo* nwSI = CompleteSeeker(ex->iNodeFather,tl->Name);
 
+    Inode* tm = (Inode*)BinLoad_Str(nwSI->iNode_Bit_ID,"Inode");
+    int us = tm->i_uid;
+    int gp = tm->i_gid;
+    int perm = tm->i_perm;
+
     if(nwSI != NULL){
         EraseFile(path);
-        allocate_newFile(nwSI->iNodeFather_Bit_ID,tl->Name,txtNewContent,664,1,1);
+        allocate_newFile(nwSI->iCurent_Bit_ID,tl->Name,txtNewContent,perm,us,gp);
         return 1;
     }
     return -1;
@@ -2677,7 +2681,7 @@ int make_newFile(InfoCatcher* nwInf){
 
     int DeepestFolder_Bit_ID = make_newFolder(nwInf);
     if(DeepestFolder_Bit_ID > -1){
-        int newFile_Bit_ID = allocate_newFile(DeepestFolder_Bit_ID,ffInf->FileName,ffInf->txtData,664,0,0);
+        int newFile_Bit_ID = allocate_newFile(DeepestFolder_Bit_ID,ffInf->FileName,ffInf->txtData,664,1,1);
         return newFile_Bit_ID;
     }
     return - 1;

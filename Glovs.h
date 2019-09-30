@@ -15,6 +15,7 @@ typedef struct GLS{
 GLS*  Omni;
 char* COMMS;
 int   isRecovery;
+int   JourColor;
 
 
 

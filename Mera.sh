@@ -35,6 +35,7 @@ lOgin -pwd=error -usr=error -id=vda1
 mkgrp -naMe=Archivos
 mkgrp -NamE=Arqui
 mkgrp -name="Compi2"
+mkgrp -name="Somax"
 #Error en el mkgrp grupo ya existente
 mkgrp -name="Compi2"
 
@@ -50,6 +51,7 @@ rmgrp -name=Arqui
 Mkusr -usr="user1" -grp=Archivos -pwd=user1
 Mkusr -usr="user2" -grp="Compi2" -pwd=user2
 Mkusr -usr="user3" -grp="Compi2" -pwd=user3
+Mkusr -usr="user4" -grp="Somax" -pwd=user4
 #Da error porque ya existe ese usuario
 Mkusr -usr="user2" -grp="Compi2" -pwd=user2
 #Da error porque no existe ese grupo
@@ -83,7 +85,7 @@ mkfile -path="/home/b1.txt" -size=75
 #Debe dar error ruta no existe
 mkfile -path="/home/Noexiste/b1.txt" -size=75 -P
 
-pause
+
 
 #Debe dar error size negativo
 #mkfile -path="/home/sfe/eee/wwe/fff/b1.txt" -size=45 -p
@@ -105,7 +107,14 @@ pause
 #recovery -id=vda1 
 
 mkfile -path="/sisi.txt" -size=15
+
+logout
+
+Login -pwd=user4 -usr=user4 -id=vda1
+
 cat -file="/sisi.txt"
+
+pause
 
 ren -Path=/home/wrm    -name=ziper
 ren -Path=/home/wrm    -name=ziper

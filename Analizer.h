@@ -390,7 +390,10 @@ void f_disk_cmd(InfoCatcher* nwInf){
 }
 
 void rep_cmd(InfoCatcher* nwInf){
-    setOmni(nwInf->_id);
+    if(Omni->LoggedUser == NULL){
+        setOmni(nwInf->_id);
+    }
+    
     if(ErrorManager(nwInf,"REP") == 1){
         if(strcasecmp(nwInf->_name,"mbr") != 0 && strcasecmp(nwInf->_name,"disk") != 0){
             rep_F2_do(nwInf);
@@ -402,7 +405,9 @@ void rep_cmd(InfoCatcher* nwInf){
         printf("\n");
         printf("REP SUCCESS: Reporte:   -> %s <-   Generado con Exito\n",RepName);
     }
-    Omni = newGLS();
+    if(Omni->LoggedUser == NULL){
+        Omni = newGLS();
+    }   
 }
 
 void mount_cmd(InfoCatcher* nwInf){
@@ -660,7 +665,7 @@ int ScanF2(char* Bf,InfoCatcher* nwInf){
                 char* FolderName = Path_get_Last_FolderName(nwInf->_path);
                 if(FileName != NULL){
                     Print_Long_Msg("REN","SUCCESS","Archivo",FileName,"Renombrado Exitosamente");
-                    AddJournal("REN",COMMS,664,FileName,"Folder");
+                    AddJournal("REN",COMMS,664,FileName,"Archivo");
                 }
                 else{
                     Print_Long_Msg("REN","SUCCESS","Folder",FolderName,"Renombrado Exitosamente");
