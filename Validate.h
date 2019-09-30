@@ -440,6 +440,79 @@ int destV(char* CMD,InfoCatcher* nwInf){
 //(^< ............ ............ ............ ............ ............ Permissions
 //(^< ............ ............ ............ ............ ............ ............ ............ ............ ............ ............
 
+int permaV(char* CMD,char* usType,char* _perm,char*Act){
+
+    if(_perm[0] == '-' && Act[0] != '-' ){
+        printf("\n");
+        printf("%s ERROR: Permiso   -> Lectura = r <-   ,El Usuario como: %s NO Tiene Permiso de de Lectura\n",CMD,usType);
+        return 0;
+    }
+
+    if(_perm[1] == '-' && Act[1] != '-' ){
+        printf("\n");
+        printf("%s ERROR: Permiso   -> Escritura = r <-   ,El Usuario como: %s NO Tiene Permiso de de Escritura\n",CMD,usType);
+        return 0;
+    }
+
+    if(_perm[2] == '-' && Act[2] != '-' ){
+        printf("\n");
+        printf("%s ERROR: Permiso   -> Ejecucion = r <-   ,El Usuario como: %s NO Tiene Permiso de de Ejecucion\n",CMD,usType);
+        return 0;
+    }
+    return 1;
+    
+}
+
+int permissionV(char* CMD,Inode* iN,int Action){
+
+    int perm = iN->i_perm;
+
+    /*int Owner = (perm / 100);
+
+    perm = perm - (Owner * 100);
+    int Grp   = (perm / 10);
+
+    perm = perm - (Grp * 10);
+    int Other = perm;
+
+    */
+
+    char* tS = newString(3);
+    sprintf(tS,"%d",perm);
+    
+    char* _1 = int_to_OctalPerm(tS[0]);
+    char* _2 = int_to_OctalPerm(tS[1]);
+    char* _3 = int_to_OctalPerm(tS[2]);
+
+    char* Act = int_to_OctalPerm(Action + 48);
+
+    //Is Owner
+    if(Omni->LoggedUser->ID == iN->i_uid){
+        return permaV(CMD,"PROPIETARIO",_1,Act);
+    }
+
+    //Belongs to Group
+    if(Omni->LoggedUser->GrpID == iN->i_gid){
+        return permaV(CMD,"INTEGRANTE DEL GRUPO",_2,Act);
+    }
+
+    //Is Other
+    return permaV(CMD,"OTROS",_3,Act);
+}
+
+int onFatherV(char* CMD,InfoCatcher* nwInf,int Action){
+    if(strcasecmp(Omni->LoggedUser->UsrName,"root") == 0){
+        return 1;
+    }
+
+    //char* FatherPath = Path_Get_Father(nwInf->_path);
+    //TheLast* tl = getTheLast(FatherPath);
+    Existence* ex = vFF_Exists(nwInf->_path);
+
+    Inode* iN = (Inode*)BinLoad_Str(ex->iNodeFather,"Inode");
+
+    return permissionV(CMD,iN,Action);    
+}
 
 
 
@@ -450,7 +523,7 @@ int destV(char* CMD,InfoCatcher* nwInf){
 
 int ErrorManager(InfoCatcher* nwInf,char* CMD){
 
-    int a = 6;
+
     // 1 = No Error = Ok
 
     //MKFS   ****************************************************************************************************** 
@@ -495,6 +568,7 @@ int ErrorManager(InfoCatcher* nwInf,char* CMD){
         if(pathV("MKFILE",nwInf) == 0) return 0;
         sizeV("MKFILE",nwInf);
         contV("MKFILE",nwInf);
+        if(onFatherV("MKFILE",nwInf,2) == 0) return 0;
         
         return 1;
     }

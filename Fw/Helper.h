@@ -84,6 +84,27 @@ DoublyGenericList* PathSeparate(char* CompletePathDir){
     return PathList;
 }
 
+char* Path_Get_Father(char* CompletePathDir){
+    DoublyGenericList* PathList = PathSeparate(CompletePathDir);
+
+    if(PathList->Length == 2){
+        return newString("/");
+    }
+
+    char* Op = (char*)Pop(PathList);
+    char* Path;
+
+    char* FileName = (char*)Pop(PathList);
+
+    int nwLn = strlen(CompletePathDir) - strlen(FileName) - 1;
+    char* tmp = newString(CompletePathDir);
+    tmp[nwLn] = '\0';
+    tmp = newString(tmp);
+    return tmp;
+
+
+}
+
 char* Path_Get_Isolated(char* CompletePathDir){
 
     DoublyGenericList* PathList = PathSeparate(CompletePathDir);

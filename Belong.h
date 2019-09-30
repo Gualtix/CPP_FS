@@ -1251,6 +1251,154 @@ char* getDefault_txtContent(int _size){
 }
 
 
+void Dips(int inF,int inC,int iNode_Bit_ID,char* Type,char* Qt,int Level){
+
+    if(strcasecmp(Type,"Inode") == 0){
+
+        Inode* Rt = (Inode*)BinLoad_Str(iNode_Bit_ID,"Inode");
+
+        int cnt = 0;
+        while(cnt < 15){
+            if(Rt->i_block[cnt] == -1){cnt++; continue;}
+
+            int Grandson_ID_Bit = Rt->i_block[cnt];
+
+            if(cnt >= 12){  
+
+                //Folder
+                if(Rt->i_type == 0){
+                    Dips(inF,inC,Grandson_ID_Bit,"PointerBlock","Folder",Level);
+                }
+
+                //File
+                if(Rt->i_type == 1){
+                    Dips(inF,inC,Grandson_ID_Bit,"PointerBlock","File",Level);
+                }
+                
+                cnt++; 
+                continue;
+            }
+
+            //Folder
+            if(Rt->i_type == 0){
+                Dips(inF,inC,Grandson_ID_Bit,"FolderBlock",NULL,Level);
+            }
+
+            //File
+            if(Rt->i_type == 1){
+                Dips(inF,inC,Grandson_ID_Bit,"FileBlock",NULL,Level);
+            }
+            cnt++;
+        }
+    }
+
+    if(strcasecmp(Type,"FileBlock") == 0){
+        return;
+    }
+
+    if(strcasecmp(Type,"FolderBlock") == 0){
+
+
+        //******* FolderBlock Tour ******
+        FolderBlock* Fb = (FolderBlock*)BinLoad_Str(iNode_Bit_ID,"FolderBlock");
+        int i = 0;
+        while(i < 4){
+            if(Fb->b_content[i].b_inodo == -1){i++; continue;}
+
+            char* iName  = newString(Fb->b_content[i].b_name);
+            int Next_ID_Bit = Fb->b_content[i].b_inodo; 
+            //char* NextName = getGraphStructName("Inode",Next_ID_Bit);
+
+            
+            if(strcasecmp(Fb->b_content[i].b_name,"iNodeFather") == 0){
+                //inF = Fb->b_content[0].b_inodo;
+                Fb->b_content[0].b_inodo = inF;
+            }
+            /*
+            if(strcasecmp(Fb->b_content[i].b_name,"iNodeCurent") == 0){
+                inC = Fb->b_content[1].b_inodo;
+            }
+            */
+
+            BinWrite_Struct(Fb,iNode_Bit_ID,"FolderBlock");
+            
+            if(Next_ID_Bit > -1 && strcasecmp(iName,"iNodeFather") != 0 && strcasecmp(iName,"iNodeCurent") != 0){
+                /*
+                if(strcasecmp(Fb->b_content[i].b_name,Name) == 0){
+                    nwSI->FB_Bit_ID = iNode_Bit_ID;
+                    nwSI->FB_Index  = i;
+                    nwSI->iNode_Bit_ID = Fb->b_content[i].b_inodo;
+
+                    nwSI->iNodeFather_Bit_ID = inF;
+                    nwSI->iCurent_Bit_ID     = inC;
+                    
+                    EnQueue(nwSI->Travel,newString(Fb->b_content[i].b_name));
+                    return;
+                }
+                */
+
+                //EnQueue(nwSI->Travel,newString(Fb->b_content[i].b_name));
+
+                if(Level < 2){
+                    Level++;
+                    Dips(inF,inC,Next_ID_Bit,"Inode",NULL,Level);   
+                }
+                else{
+                    return;
+                }
+                             
+            }
+            i++;
+        }
+    }
+
+    if(strcasecmp(Type,"PointerBlock") == 0){
+
+        //******* PointerBlock Tour ******
+        PointerBlock* Pb = (PointerBlock*)BinLoad_Str(iNode_Bit_ID,"PointerBlock");
+        int z = 0;
+        while(z < 16){
+            if(Pb->b_pointers[z] == -1){z++; continue;}
+
+            int Next_ID_Bit = Pb->b_pointers[z];
+
+            //Folder
+            if(strcasecmp(Qt,"Folder") == 0){
+                Dips(inF,inC,Next_ID_Bit,"FolderBlock",NULL,Level);
+            }
+
+            //File
+            if(strcasecmp(Qt,"File") == 0){
+                Dips(inF,inC,Next_ID_Bit,"FileBlock",NULL,Level);
+            }
+            z++;
+        }
+    }
+}
+
+void* FatherUpdate(int iFather_Bit_ID){
+
+    SeekInfo* nwSI = newSeekInfo();
+
+
+    if(iFather_Bit_ID == 0){
+        Dips(0,0,iFather_Bit_ID,"Inode",NULL,0);
+    }
+    else{
+        Inode* Rt = (Inode*)BinLoad_Str(iFather_Bit_ID,"Inode");
+        int dpi = Rt->i_block[0];
+        FolderBlock* Fb = (FolderBlock*)BinLoad_Str(dpi,"FolderBlock");
+        int inF = Fb->b_content[0].b_inodo;
+        int inC = Fb->b_content[1].b_inodo;
+        Dips(inF,inC,iFather_Bit_ID,"Inode",NULL,0);
+    }
+
+    if(nwSI->iNode_Bit_ID == -1){
+        return NULL;
+    }
+}
+
+
 void Tracker(SeekInfo* nwSI,int inF,int inC,char* Name,int iNode_Bit_ID,char* Type,char* Qt){
 
     if(strcasecmp(Type,"Inode") == 0){
@@ -1309,8 +1457,6 @@ void Tracker(SeekInfo* nwSI,int inF,int inC,char* Name,int iNode_Bit_ID,char* Ty
             int Next_ID_Bit = Fb->b_content[i].b_inodo; 
             //char* NextName = getGraphStructName("Inode",Next_ID_Bit);
 
-            
-
             if(strcasecmp(Fb->b_content[i].b_name,"iNodeFather") == 0){
                 inF = Fb->b_content[0].b_inodo;
             }
@@ -1319,7 +1465,6 @@ void Tracker(SeekInfo* nwSI,int inF,int inC,char* Name,int iNode_Bit_ID,char* Ty
                 inC = Fb->b_content[1].b_inodo;
             }
             
-
             if(Next_ID_Bit > -1 && strcasecmp(iName,"iNodeFather") != 0 && strcasecmp(iName,"iNodeCurent") != 0){
 
                 if(strcasecmp(Fb->b_content[i].b_name,Name) == 0){
@@ -1367,6 +1512,7 @@ void Tracker(SeekInfo* nwSI,int inF,int inC,char* Name,int iNode_Bit_ID,char* Ty
 
 
 SeekInfo* SuperSeeker(int iNode_Bit_ID,char* Name){
+
     SeekInfo* nwSI = newSeekInfo();
     if(strcasecmp(Name,"/") == 0){
         nwSI->iNode_Bit_ID = 0;
@@ -1382,18 +1528,14 @@ SeekInfo* SuperSeeker(int iNode_Bit_ID,char* Name){
         Tracker(nwSI,0,0,Name,iNode_Bit_ID,"Inode",NULL);
     }
     else{
-
         Inode* Rt = (Inode*)BinLoad_Str(iNode_Bit_ID,"Inode");
-
         int dpi = Rt->i_block[0];
         FolderBlock* Fb = (FolderBlock*)BinLoad_Str(dpi,"FolderBlock");
         int inF = Fb->b_content[0].b_inodo;
         int inC = Fb->b_content[1].b_inodo;
         Tracker(nwSI,inF,inC,Name,iNode_Bit_ID,"Inode",NULL);
-        
     }
 
-    //Tracker(nwSI,Name,iNode_Bit_ID,"Inode",NULL);
     if(nwSI->iNode_Bit_ID == -1){
         return NULL;
     }
@@ -1403,8 +1545,6 @@ SeekInfo* SuperSeeker(int iNode_Bit_ID,char* Name){
 char* getFF_AbsolutePath_From_iNode(int iFather,int iSon){
     
 }
-
-
 
 
 SeekInfo* CompleteSeeker(int iNodeCurent_Bit_ID,char* FileName){

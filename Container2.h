@@ -269,6 +269,7 @@ typedef struct GroupUserInfo
     char* GrpName;
     char* UsrName;
     char* Password;
+    int GrpID;
 
 }GroupUserInfo;
 
@@ -276,11 +277,13 @@ GroupUserInfo* newGrus(){
     GroupUserInfo* Row = (GroupUserInfo*)malloc(sizeof(GroupUserInfo));
 
     Row->ID       = -1;
+    Row->GrpID    = -1;
     Row->Type     = '\0';
     Row->GrpName  = NULL;
     Row->UsrName  = NULL;
     Row->Password = NULL;
-    Row;
+
+    return Row;
 }
 
 #endif // CONTAINER2_H

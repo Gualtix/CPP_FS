@@ -548,11 +548,11 @@ int ScanF2(char* Bf,InfoCatcher* nwInf){
     if(isLogged(Bf) == 0) return 0;
 
     if (strcasecmp(Bf, "LOGOUT") == 0){
-        Omni = newGLS();
         if(isRecovery == 0){
             AddJournal("LOGOUT",COMMS,664,"users.txt","Archivo");
             Print_Msg("LOGOUT","SUCCESS","Sesion Cerrada Exitosamente");
         }
+        Omni = newGLS();
         return 0;
     }
 

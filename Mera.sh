@@ -55,10 +55,17 @@ Mkusr -usr="user2" -grp="Compi2" -pwd=user2
 #Da error porque no existe ese grupo
 Mkusr -usr="user2" -grp=Arqui -pwd=user2
 
-rmusr -usr=user3
+#rmusr -usr=user3
+
+
+
 
 Mkdir -path=/home/wrm/Desktop/mia/fase1     -P  
-Mkdir -path=/home/wrm/Desktop/mia/fase2     -P  
+Mkdir -path=/home/wrm/Desktop/mia/fase2     -P 
+
+logout
+
+Login -pwd=user3 -usr=user3 -id=vda1
 #Mkdir -path=/home/wrm/Desktop/mia/carpeta2  -P  
 
 #Mkdir  -path=/home/wrm/Desktop/mia/carpeta2/a1
@@ -75,6 +82,8 @@ mkfile -path="/home/b1.txt" -size=75
 
 #Debe dar error ruta no existe
 mkfile -path="/home/Noexiste/b1.txt" -size=75 -P
+
+pause
 
 #Debe dar error size negativo
 #mkfile -path="/home/sfe/eee/wwe/fff/b1.txt" -size=45 -p

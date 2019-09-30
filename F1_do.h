@@ -446,7 +446,13 @@ void rmusr_do(InfoCatcher* nwInf){
 
 void login_do(InfoCatcher* nwInf){
     DoublyGenericList* usrList = getUsersList();
-    GroupUserInfo* gu = getUSR_by_Name(nwInf->_usr,usrList);
+    GroupUserInfo* gu  = getUSR_by_Name(nwInf->_usr,usrList);
+
+    DoublyGenericList* grpList = getGroupsList();
+    GroupUserInfo* tmp = getGRP_by_Name(gu->GrpName,grpList);
+
+    gu->GrpID = tmp->ID;
+
     Omni->LoggedUser = gu;
 }
 
@@ -512,6 +518,7 @@ void ren_do(InfoCatcher* nwInf){
 }
 
 int mkfile_do(InfoCatcher* nwInf){
+
     FileFolderInfo* ffInf = get_FFInfo(nwInf);
     int Deepest_Bit_ID = make_newFolder(nwInf);
     if(Deepest_Bit_ID > -1){
@@ -563,175 +570,7 @@ void mv_do(InfoCatcher* nwInf){
     pushMoved(Dest->iNode_Bit_ID,Origin->iNode_Bit_ID,tlSource->Name);
     
     //-------------------------------------->Actualizacion de Padre
-    /*
-
-    int iNode_Bit_ID = Dest->iNode_Bit_ID;
-
-    //Type 0 ---> Folder
-    //Type 1 ---> File
-
-    Inode* Rt = (Inode*)BinLoad_Str(iNode_Bit_ID,"Inode");
-    //AddInode(DotFl,iNode_Bit_ID);
-
-    //Father Link Name
-    //char* FatherName = getGraphStructName("Inode",iNode_Bit_ID);
-
-    int cnt = 0;
-    
-    //Direct
-    while(cnt < 12){
-        if(Rt->i_block[cnt] == -1){cnt++; continue;}
-
-        int Son_ID_Bit = Rt->i_block[cnt];
-
-        //Folder
-        if(Rt->i_type == 0){
-            //AddFolderBlock(DotFl,Son_ID_Bit);
-
-            //Son Link Name
-            //char* SonName = getGraphStructName("FolderBlock",Son_ID_Bit);
-
-            //Linking
-            //AddLink(DotFl,FatherName,SonName);
-
-            //******* FolderBlock Tour ******
-            FolderBlock* Fb = (FolderBlock*)BinLoad_Str(Son_ID_Bit,"FolderBlock");
-            int i = 0;
-            while(i < 4){
-                if(Fb->b_content[i].b_inodo == -1){i++; continue;}
-
-                char* iName  = newString(Fb->b_content[i].b_name);
-                int Next_ID_Bit = Fb->b_content[i].b_inodo; 
-                //char* NextName = getGraphStructName("Inode",Next_ID_Bit);
-
-                if(strcasecmp(iName,"iNodeFather") != 0 && strcasecmp(iName,"iNodeCurent") != 0){
-
-                    //Next Linking
-                    //AddLink(DotFl,SonName,NextName);
-                    //FileSystemTree(DotFl,Next_ID_Bit);
-                }
-
-                if(strcasecmp(iName,"iNodeFather") == 0){
-
-                    Fb->b_content[i].b_inodo = Dest->iNode_Bit_ID;
-                    BinWrite_Struct(Fb,Son_ID_Bit,"FolderBlock");
-                }
-                i++;
-            }
-        }
-
-        //File
-        if(Rt->i_type == 1){
-            //AddFileBlock(DotFl,Son_ID_Bit);
-
-            //Son Link Name
-            //char* SonName = getGraphStructName("FileBlock",Son_ID_Bit);
-
-            //Linking
-            //AddLink(DotFl,FatherName,SonName);
-        }
-        cnt++;
-    }
-
-    //Indirect
-    while(cnt < 15){
-        if(Rt->i_block[cnt] == -1){cnt++; continue;}
-
-        int Son_ID_Bit = Rt->i_block[cnt];
-        //AddPointerBlock(DotFl,Son_ID_Bit);
-
-        //Son Link Name
-        char* SonName = getGraphStructName("PointerBlock",Son_ID_Bit);
-
-        //Linking
-        //AddLink(DotFl,FatherName,SonName);
-        
-        //******* PointerBlock Tour ******
-        PointerBlock* Pb = (PointerBlock*)BinLoad_Str(Son_ID_Bit,"PointerBlock");
-        int z = 0;
-        while(z < 16){
-            if(Pb->b_pointers[z] == -1){z++; continue;}
-
-            int Next_ID_Bit = Pb->b_pointers[z];
-
-            char* NextName;
-            
-
-            //Folder
-            if(Rt->i_type == 0){
-                //AddFolderBlock(DotFl,Next_ID_Bit);
-                //NextName = getGraphStructName("FolderBlock",Next_ID_Bit);
-
-
-                //******* FolderBlock Tour ******
-                FolderBlock* Fb = (FolderBlock*)BinLoad_Str(Next_ID_Bit,"FolderBlock");
-                int i = 0;
-                while(i < 4){
-                    char* iName  = newString(Fb->b_content[i].b_name);
-                    int SuperNext_ID_Bit = Fb->b_content[i].b_inodo; 
-                    //char* SuperNextName = getGraphStructName("Inode",SuperNext_ID_Bit);
-
-                    if(strcasecmp(iName,"iNodeFather") != 0 && strcasecmp(iName,"iNodeCurent") != 0){
-                        //Next Linking
-                        //AddLink(DotFl,NextName,SuperNextName);
-                        //FileSystemTree(DotFl,SuperNext_ID_Bit);
-                    }
-
-                    if(strcasecmp(iName,"iNodeFather") == 0){
-
-                        Fb->b_content[i].b_inodo = Dest->iNode_Bit_ID;
-                        BinWrite_Struct(Fb,Next_ID_Bit,"FolderBlock");
-                    }
-                    i++;
-                }
-            }
-
-            //File
-            if(Rt->i_type == 1){
-                //AddFileBlock(DotFl,Next_ID_Bit);
-                //NextName = getGraphStructName("FileBlock",Next_ID_Bit);
-            }
-
-            //Linking
-            //AddLink(DotFl,SonName,NextName);
-
-            z++;
-        }
-
-        cnt++;
-    }    
-    */
-
-
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    //FatherUpdate(Dest->iNode_Bit_ID);
 
 }
 
@@ -745,26 +584,6 @@ void find_do(InfoCatcher* nwInf){
     SeekInfo* Ori = CompleteSeeker(0,"fase1");
     SeekInfo* Niu = SuperSeeker(0,"fase1");
 
-    Ori = CompleteSeeker(0,"b1.txt");
-    Niu = SuperSeeker(0,"b1.txt");
-
-    Ori = CompleteSeeker(0,"Noexiste");
-    Niu = SuperSeeker(0,"Noexiste");
-
-    Ori = CompleteSeeker(0,"sisi.txt");
-    Niu = SuperSeeker(0,"sisi.txt");
-
-    Ori = CompleteSeeker(0,"wazabi.txt");
-    Niu = SuperSeeker(0,"wazabi.txt");
-
-    Ori = CompleteSeeker(0,"users.txt");
-    Niu = SuperSeeker(0,"users.txt");
-
-    Ori = CompleteSeeker(0,"home.txt");
-    Niu = SuperSeeker(0,"home.txt");
-
-
- 
     /*
     while(nwSI->Travel->Length > 0){
         char* tmp = (char*)DeQueue(nwSI->Travel);
