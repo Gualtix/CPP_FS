@@ -28,7 +28,7 @@ int main()
         printf("(^< ............ ............ ............\n");
         printf("Ready to Execute:\n");
         //char *InputString = CatchCommandLine();
-        char *InputString = newString("exec -path=/home/wrm/Desktop/CPP_FS/marcou.sh");
+        char *InputString = newString("exec -path=/home/wrm/Desktop/CPP_FS/Mera.sh");
         //int Rs = strcasecmp(InputString, "exit\n");
         //if (Rs == 0){
             //break;

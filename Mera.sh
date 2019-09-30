@@ -110,23 +110,24 @@ mkfile -path="/sisi.txt" -size=15
 
 logout
 
-Login -pwd=user4 -usr=user4 -id=vda1
+Login -pwd=123 -usr=root -id=vda1
 
 cat -file="/sisi.txt"
 
-pause
+
 
 ren -Path=/home/wrm    -name=ziper
 ren -Path=/home/wrm    -name=ziper
 ren -Path=/home/ziper    -name=ziper
 ren -Path=/home/b1.txt -name=wazabi.txt
 
-cat -file="/home/wrazabi.txt"     
+cat -file="/home/wazabi.txt"     
 
 edit -Path=/home/wazabi.txt -cont=nomanchesmaxDlooljeje
 
-#mv -path=/home/Noexiste -dest=/
-#mv -path=/home/ziper    -dest=/
+mv -path=/home/Noexiste -dest=/
+mv -path=/home/ziper    -dest=/
+mv -path=/Noexiste/wazabi.txt    -dest=/
 
 find -path=/ -name=wazabi.txt
 

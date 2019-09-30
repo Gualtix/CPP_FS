@@ -570,6 +570,9 @@ void mv_do(InfoCatcher* nwInf){
     pushMoved(Dest->iNode_Bit_ID,Origin->iNode_Bit_ID,tlSource->Name);
     
     //-------------------------------------->Actualizacion de Padre
+    if(tlSource->istxt == 0){
+        setNewFather(Origin->iNode_Bit_ID,Dest->iNode_Bit_ID);
+    }
     //FatherUpdate(Dest->iNode_Bit_ID);
 
 }

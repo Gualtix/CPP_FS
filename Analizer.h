@@ -546,8 +546,6 @@ int ScanF2(char* Bf,InfoCatcher* nwInf){
         return 0;
     }
 
-    
-
     //(^< ............ ............ ............ Login Needed
     
     if(isLogged(Bf) == 0) return 0;
