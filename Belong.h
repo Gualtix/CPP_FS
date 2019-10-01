@@ -1511,7 +1511,7 @@ void Tracker(SeekInfo* nwSI,int inF,int inC,char* Name,int iNode_Bit_ID,char* Ty
 }
 
 
-SeekInfo* SuperSeeker(int iNode_Bit_ID,char* Name){
+SeekInfo* SuperSeeker(int iNode_Bit_ID,char* Name,void (*f)(int)){
 
     SeekInfo* nwSI = newSeekInfo();
     if(strcasecmp(Name,"/") == 0){
@@ -1521,6 +1521,7 @@ SeekInfo* SuperSeeker(int iNode_Bit_ID,char* Name){
         nwSI->iNodeFather_Bit_ID = -1;
         nwSI->iCurent_Bit_ID = -1;
         EnQueue(nwSI->Travel,newString("/"));
+        (*f)(iNode_Bit_ID);
         return nwSI;
     }
 
@@ -1542,9 +1543,25 @@ SeekInfo* SuperSeeker(int iNode_Bit_ID,char* Name){
     return nwSI;
 }
 
-char* getFF_AbsolutePath_From_iNode(int iFather,int iSon){
-    
+/*
+void printNuWmber(int nbr)  {
+    printf("%d\n", nbr);
 }
+
+void myFunction(void (*f)(int)){
+    for(int i = 0; i < 5; i++) {
+        (*f)(i);
+    }
+}
+
+char* getInodeList_From(Inode* iN){
+    DoublyGenericList* iList = new_DoublyGenericList();
+    EnQueue(iList,iN);
+    int as = 3;
+}
+*/
+
+
 
 
 SeekInfo* CompleteSeeker(int iNodeCurent_Bit_ID,char* FileName){

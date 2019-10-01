@@ -123,7 +123,13 @@ char *CatchCommandLine(){
 
 void mk_disk_cmd(InfoCatcher* nwInf){
     //Check
+    if(nwInf->_fit == NULL){
+        nwInf->_fit = newString("FF");
+    }
 
+    if(nwInf->_unit == NULL){
+        nwInf->_unit = newString("m");
+    }
     mkdisk_do(nwInf);
 }
 

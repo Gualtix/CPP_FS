@@ -582,10 +582,10 @@ void find_do(InfoCatcher* nwInf){
     //TheLast* tl = getTheLast(nwInf->_path);
     Existence* ex = vFF_Exists(nwInf->_path);
     //SeekInfo* nwSI = CompleteSeeker(ex->iNode,nwInf->_name);
-    SeekInfo* nwSI = SuperSeeker(ex->iNode,nwInf->_name);
+    //SeekInfo* nwSI = SuperSeeker(ex->iNode,nwInf->_name);
 
     SeekInfo* Ori = CompleteSeeker(0,"fase1");
-    SeekInfo* Niu = SuperSeeker(0,"fase1");
+    //SeekInfo* Niu = SuperSeeker(0,"fase1");
 
     /*
     while(nwSI->Travel->Length > 0){

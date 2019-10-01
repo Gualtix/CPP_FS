@@ -42,7 +42,7 @@ int idV(char* CMD,InfoCatcher* nwInf){
 int typeV(char* CMD,InfoCatcher* nwInf){
     //(^< ............ ............ ............ ............ ............ _type: Optional
     if(nwInf->_type == NULL){
-        nwInf->_type == "full";
+        nwInf->_type = "full";
         return 1;
     }
 

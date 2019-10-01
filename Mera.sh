@@ -127,7 +127,7 @@ edit -Path=/home/wazabi.txt -cont=nomanchesmaxDlooljeje
 
 mv -path=/home/Noexiste -dest=/
 mv -path=/home/ziper    -dest=/
-mv -path=/Noexiste/wazabi.txt    -dest=/
+#mv -path=/Noexiste/wazabi.txt    -dest=/
 
 find -path=/ -name=wazabi.txt
 
@@ -139,14 +139,11 @@ rep -id=vda1 -Path="/home/wrm/Desktop/reports2/users.txt" -ruta="users.txt" -nam
 #rep -id=vda1 -Path="/home/wrm/Desktop/reports2/desjour.jpg" -name=journaling
 pause
 
-
 #REMOVER
 #Carpeta Directos
 rem -path=/home/wrm/Desktop/mia/fase2/a46
 #Carpeta indirectos
 rem -path="/home/wrm/Desktop/mia/fase2/b1"
-
-
 
 #Reporte4 ::::(  ) 
 rep -id=vda1 -Path="/home/wrm/Desktop/reports2/reporte4_vda1_sb.pdf" -name=sb
@@ -156,7 +153,7 @@ pause
 
 #MOVER
 #debe dar error porque no existe
-mv mkdir  -path="/home/wrm/Desktop/no existe" -dest="/home"
+mv mkdir  -path="/home/wrm/Desktop/noexiste" -dest="/home"
 mv mkdir  -path="/home/wrm/Desktop/mia/fase2/b50" -dest="/home"
 
 #Reporte5 ::::(  ) 
