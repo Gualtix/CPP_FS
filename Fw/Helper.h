@@ -282,7 +282,18 @@ int Check_If_Is_txtFile(char* Name){
 }
 
 char* Write_txtFile(char* Path, char* Content){
-    FILE* Fl = fopen(Path,"w");
+
+    char* txtPath = newString(Path);
+
+    char* Type   = newString("txt");
+    int ln = strlen(txtPath);
+
+    txtPath[ln - 1] = Type[2];
+    txtPath[ln - 2] = Type[1];
+    txtPath[ln - 3] = Type[0];
+
+
+    FILE* Fl = fopen(txtPath,"w");
     if(Fl){
         int results = fputs(Content, Fl);
         fclose(Fl);
@@ -388,12 +399,12 @@ char* get_DotExt_Path(char* Path){
     DotPath[ln - 1] = Type[2];
     DotPath[ln - 2] = Type[1];
     DotPath[ln - 3] = Type[0];
-
     return DotPath;
-
 }
 
+/*
 void Generate_TypeFile_Rep(char* CompleteReportPathDir){
+
 
     char* DotPath = get_DotExt_Path(CompleteReportPathDir);
 
@@ -424,5 +435,6 @@ void Generate_TypeFile_Rep(char* CompleteReportPathDir){
 
     system(alt);
 }
+*/
 
 #endif // HELPER_H

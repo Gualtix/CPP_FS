@@ -213,7 +213,7 @@ rep -id=vda1 -Path="/home/archivos/reports2/ls.png" -ruta="/home/archivos/mia/fa
 #rep -id=vda1 -Path="/home/archivos/reports2/reporte2_vda1_sb.png" -name=sb
 #rep -id=vda1 -Path="/home/archivos/reports2/reporte2_vda1_tree.png" -name=tree
 
-pause
+
 
 logout
 loGin -usr=user1 -pwd=user1 -id=vda1
@@ -232,7 +232,7 @@ mkfile -path="/home/ahora/ya existe/b1.txt" -size=640
 rep -id=vda1 -Path="/home/archivos/reports2/reporte3_vda1_sb.png" -name=sb
 rep -id=vda1 -Path="/home/archivos/reports2/reporte3_vda1_tree.png" -name=tree
 
-pause
+
 
 #REMOVER
 #Carpeta Directos
@@ -244,7 +244,7 @@ rem -path="/home/archivos/mia/fase2/b1"
 rep -id=vda1 -Path="/home/archivos/reports2/reporte4_vda1_sb.png" -name=sb
 rep -id=vda1 -Path="/home/archivos/reports2/reporte4_vda1_tree.png" -name=tree
 
-pause
+
 
 #MOVER
 #debe dar error porque no existe
@@ -262,7 +262,7 @@ rep -id=vda1 -Path="/home/archivos/reports2/antesP/reporte5_vda1_block.png" -nam
 rep -id=vda1 -Path="/home/archivos/reports2/antesP/reporte5_vda1_bm_inode.png" -name=bm_inode
 rep -id=vda1 -Path="/home/archivos/reports2/antesP/reporte5_vda1_bm_block.png" -name=bm_block
 rep -id=vda1 -Path="/home/archivos/reports2/antesP/reporte5_vda1_journal.png" -name=journal
-pause
+
 
 #PERDIDA
 Loss -id=vda1
@@ -276,7 +276,7 @@ rep -id=vda1 -Path="/home/archivos/reports2/despuesP/reporte6_vda1_block.png" -n
 rep -id=vda1 -Path="/home/archivos/reports2/despuesP/reporte6_vda1_bm_inode.png" -name=bm_inode
 rep -id=vda1 -Path="/home/archivos/reports2/despuesP/reporte6_vda1_bm_block.png" -name=bm_block
 rep -id=vda1 -Path="/home/archivos/reports2/despuesP/reporte6_vda1_journal.png" -name=journal
-pause
+
 
 #Recovery
 Recovery -id=vda1
@@ -289,5 +289,5 @@ rep -id=vda1 -Path="/home/archivos/reports2/recov/reporte7_vda1_block.png" -name
 rep -id=vda1 -Path="/home/archivos/reports2/recov/reporte7_vda1_bm_inode.png" -name=bm_inode
 rep -id=vda1 -Path="/home/archivos/reports2/recov/reporte7_vda1_bm_block.png" -name=bm_block
 rep -id=vda1 -Path="/home/archivos/reports2/recov/reporte7_vda1_journal.png" -name=journal
-pause
+
 

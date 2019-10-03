@@ -156,7 +156,7 @@ rep -id=vda1 -ruta=/home -Path="/home/wrm/Desktop/reports2/eles.jpg"   -name=ls
 rep -id=vda1 -Path="/home/wrm/Desktop/reports2/destree.jpg"  -name=tree
 rep -id=vda1 -Path="/home/wrm/Desktop/reports2/users.txt" -ruta="users.txt" -name=file
 #rep -id=vda1 -Path="/home/wrm/Desktop/reports2/desjour.jpg" -name=journaling
-pause
+
 
 #REMOVER
 #Carpeta Directos
@@ -168,7 +168,7 @@ rem -path="/home/wrm/Desktop/mia/fase2/b1"
 #rep -id=vda1 -Path="/home/wrm/Desktop/reports2/reporte4_vda1_sb.pdf" -name=sb
 rep -id=vda1 -Path="/home/wrm/Desktop/reports2/reporte4_vda1_tree.jpg" -name=tree
 
-pause
+
 
 #MOVER
 #debe dar error porque no existe
@@ -186,7 +186,7 @@ rep -id=vda1 -Path="/home/wrm/Desktop/reports2/reporte5_vda1_block.pdf" -name=bl
 rep -id=vda1 -Path="/home/wrm/Desktop/reports2/reporte5_vda1_bm_inode.pdf" -name=bm_inode
 rep -id=vda1 -Path="/home/wrm/Desktop/reports2/reporte5_vda1_bm_block.pdf" -name=bm_block
 rep -id=vda1 -Path="/home/wrm/Desktop/reports2/reporte5_vda1_journal.pdf" -name=journal
-pause
+
 
 #PERDIDA
 Loss -id=vda1
@@ -200,7 +200,7 @@ rep -id=vda1 -Path="/home/wrm/Desktop/reports2/reporte6_vda1_block.pdf" -name=bl
 rep -id=vda1 -Path="/home/wrm/Desktop/reports2/reporte6_vda1_bm_inode.pdf" -name=bm_inode
 rep -id=vda1 -Path="/home/wrm/Desktop/reports2/reporte6_vda1_bm_block.pdf" -name=bm_block
 rep -id=vda1 -Path="/home/wrm/Desktop/reports2/reporte6_vda1_journal.pdf" -name=journal
-pause
+
 
 #Recovery
 Recovery -id=vda1
@@ -213,4 +213,4 @@ rep -id=vda1 -Path="/home/wrm/Desktop/reports2/reporte7_vda1_block.pdf" -name=bl
 rep -id=vda1 -Path="/home/wrm/Desktop/reports2/reporte7_vda1_bm_inode.pdf" -name=bm_inode
 rep -id=vda1 -Path="/home/wrm/Desktop/reports2/reporte7_vda1_bm_block.pdf" -name=bm_block
 rep -id=vda1 -Path="/home/wrm/Desktop/reports2/reporte7_vda1_journal.pdf" -name=journal
-pause
+

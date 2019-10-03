@@ -1003,7 +1003,7 @@ void txt_InodeBitMap(char* CompleteReportPathDir,char* VD){
     char* pps = Concat_Izq_with_Der(tim,txtContent,'s','s');
     strcpy(txtContent,pps);
 
-    char* Ext_ReportName = Path_Get_FileName(CompleteReportPathDir);
+    //char* Ext_ReportName = Path_Get_FileName(CompleteReportPathDir);
     char* Ext_ReportPath = Path_Get_Isolated(CompleteReportPathDir);
 
     CreatePathDir(Ext_ReportPath);
@@ -1617,7 +1617,7 @@ void FullViewRender(char* CompleteReportPathDir,char* Type,char* VD){
 
     //(^< ............ ............ ............   R E P O R T
     
-    char* ReportName = Path_Get_FileName(CompleteReportPathDir);
+    //char* ReportName = Path_Get_FileName(CompleteReportPathDir);
     char* ReportPath = Path_Get_Isolated(CompleteReportPathDir);
 
     CreatePathDir(ReportPath);
