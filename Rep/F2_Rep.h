@@ -1124,23 +1124,151 @@ void Add_LsRow(FILE* DotFl,int Bit_ID,char* Type,char* Name){
 
     char* Date = newString(25);
     sprintf(Date,"%d",tmp->i_mtime);
-    fprintf(DotFl,"\t\t\t\t\t\t<TR><TD>%s</TD><TD>%s</TD><TD>%s</TD><TD>%s</TD><TD>%s</TD><TD>%s</TD><TD>%s</TD></TR>\n",Permision,Owner,Group,Size_in_Bytes,Date,Type,Name);
+    fprintf(DotFl,"\t\t\t\t\t\t<TR><TD>%s</TD><TD>%i</TD><TD>%s</TD><TD>%s</TD><TD>%s</TD><TD>%s</TD><TD>%s</TD><TD>%s</TD></TR>\n",Permision,tmp->i_perm,Owner,Group,Size_in_Bytes,Date,Type,Name);
+}
+
+void Add_Father(FILE* DotFl,int Bit_ID,char* Type,char* Name){
+
+    Inode* tmp = (Inode*)BinLoad_Str(Bit_ID,"Inode");
+    char* Permision = getPermitString(tmp->i_perm);
+    GroupUserInfo* Usr = getUSR_by_ID(tmp->i_uid);
+    GroupUserInfo* Grp = getGRP_by_ID(tmp->i_gid);
+    char* Owner = newString(Usr->UsrName);
+    char* Group = newString(Usr->GrpName);
+
+    char* Size_in_Bytes = newString(25);
+    sprintf(Size_in_Bytes,"%d",tmp->i_size);
+
+    char* Date = newString(25);
+    sprintf(Date,"%d",tmp->i_mtime);
+    fprintf(DotFl,"\t\t\t\t\t\t<TR><TD bgcolor= \"#cc66ff\">%s</TD><TD bgcolor= \"#cc66ff\">%i</TD><TD bgcolor= \"#cc66ff\">%s</TD><TD bgcolor= \"#cc66ff\">%s</TD><TD bgcolor= \"#cc66ff\">%s</TD><TD bgcolor= \"#cc66ff\">%s</TD><TD bgcolor= \"#cc66ff\">%s</TD><TD bgcolor= \"#cc66ff\">%s</TD></TR>\n",Permision,tmp->i_perm,Owner,Group,Size_in_Bytes,Date,Type,Name);
 }
 
 void LsTravel(FILE* DotFl,int iNode_Bit_ID){
+
+    /*
+    //Type 0 ---> Folder
+    //Type 1 ---> File
+
+    Inode* Rt = (Inode*)BinLoad_Str(iNode_Bit_ID,"Inode");
+    //AddInode(DotFl,iNode_Bit_ID);
+
+    //Father Link Name
+    //char* FatherName = getGraphStructName("Inode",iNode_Bit_ID);
+
+    int cnt = 0;
+    
+    //Direct
+    while(cnt < 12){
+        if(Rt->i_block[cnt] == -1){cnt++; continue;}
+
+        int Son_ID_Bit = Rt->i_block[cnt];
+
+        //Folder
+        if(Rt->i_type == 0){
+            //Son Link Name
+            char* SonName = getGraphStructName("FolderBlock",Son_ID_Bit);
+            //******* FolderBlock Tour ******
+            FolderBlock* Fb = (FolderBlock*)BinLoad_Str(Son_ID_Bit,"FolderBlock");
+            int i = 0;
+            while(i < 4){
+                if(Fb->b_content[i].b_inodo == -1){i++; continue;}
+
+                char* iName  = newString(Fb->b_content[i].b_name);
+                int Next_ID_Bit = Fb->b_content[i].b_inodo; 
+
+
+                if(Next_ID_Bit > -1 && strcasecmp(iName,"iNodeFather") != 0 && strcasecmp(iName,"iNodeCurent") != 0){
+                    Inode* next_i_Node = (Inode*)BinLoad_Str(Next_ID_Bit,"Inode");
+                    if(next_i_Node->i_type == 0){
+                        //Folder
+                        Add_LsRow(DotFl,Next_ID_Bit,"Folder",iName);
+                        //LsTravel(DotFl,next_i_Node_Bit_ID);
+                    }
+                    else{
+                        Add_LsRow(DotFl,Next_ID_Bit,"Archivo",iName);
+                    }
+                }
+                i++;
+            }
+        }
+
+        //File
+        if(Rt->i_type == 1){
+
+        }
+        cnt++;
+    }
+
+    //Indirect
+    while(cnt < 15){
+        if(Rt->i_block[cnt] == -1){cnt++; continue;}
+
+        int Son_ID_Bit = Rt->i_block[cnt];
+        
+        //******* PointerBlock Tour ******
+        PointerBlock* Pb = (PointerBlock*)BinLoad_Str(Son_ID_Bit,"PointerBlock");
+        int z = 0;
+        while(z < 16){
+            if(Pb->b_pointers[z] == -1){z++; continue;}
+
+            int Next_ID_Bit = Pb->b_pointers[z];
+            char* NextName;
+            
+            //Folder
+            if(Rt->i_type == 0){
+
+                //******* FolderBlock Tour ******
+                FolderBlock* Fb = (FolderBlock*)BinLoad_Str(Son_ID_Bit,"FolderBlock");
+                int i = 0;
+                while(i < 4){
+                    if(Fb->b_content[i].b_inodo == -1){i++; continue;}
+
+                    char* iName  = newString(Fb->b_content[i].b_name);
+                    int Next_ID_Bit = Fb->b_content[i].b_inodo; 
+
+                    if(Next_ID_Bit > -1 && strcasecmp(iName,"iNodeFather") != 0 && strcasecmp(iName,"iNodeCurent") != 0){
+                        Inode* next_i_Node = (Inode*)BinLoad_Str(Next_ID_Bit,"Inode");
+                        if(next_i_Node->i_type == 0){
+                            //Folder
+                            Add_LsRow(DotFl,Next_ID_Bit,"Folder",iName);
+                            //LsTravel(DotFl,next_i_Node_Bit_ID);
+                        }
+                        else{
+                            Add_LsRow(DotFl,Next_ID_Bit,"Archivo",iName);
+                        }
+                    }
+                    i++;
+                }
+            }
+
+            //File
+            if(Rt->i_type == 1){
+
+            }
+            z++;
+        }
+
+        cnt++;
+    }
+
+    */    
+
+
     Inode* i_Node = (Inode*)BinLoad_Str(iNode_Bit_ID,"Inode");
     int i = 0;
     while (i < 12){
+
         if(i_Node->i_block[i] == -1) {i++; continue;}
 
         int FB_Bit_ID = i_Node->i_block[i];
         FolderBlock* FolderB = (FolderBlock*)BinLoad_Str(FB_Bit_ID,"FolderBlock");
 
         int j = 0;
-        int Empty = 0;
+        //int Empty = 0;
         while (j < 4){
             //Carpeta no Vacia solo con Empty carpeta4
-            if(FolderB->b_content[j].b_inodo == -1) {Empty++; j++; continue;}
+            if(FolderB->b_content[j].b_inodo == -1) {j++; continue;}
 
             int next_i_Node_Bit_ID = FolderB->b_content[j].b_inodo;
             char* tName = FolderB->b_content[j].b_name;
@@ -1153,7 +1281,6 @@ void LsTravel(FILE* DotFl,int iNode_Bit_ID){
             if(isFolder && isCurrent != 0 && isFather != 0){
                 //Folder
                 Add_LsRow(DotFl,next_i_Node_Bit_ID,"Folder",tName);
-                //LsTravel(DotFl,next_i_Node_Bit_ID);
             }
             else{
                 //File
@@ -1163,101 +1290,52 @@ void LsTravel(FILE* DotFl,int iNode_Bit_ID){
             }
             j++;
         }
-        i++;
-    }
 
-    
-    /*
-    Inode* i_Node = (Inode*)BinLoad_Str(Bit_ID,"Inode");
-
-    int i = 0;
-    while (i < 12){
-        if(i_Node->i_block[i] == -1) {i++; continue;}
-
-        int FB_Bit_ID = i_Node->i_block[i];
-        FolderBlock* FolderB = (FolderBlock*)BinLoad_Str(FB_Bit_ID,"FolderBlock");
-
-        int j = 0;
-        int Empty = 0;
-        while (j < 4){
-            //Carpeta no Vacia solo con Empty carpeta4
-            if(FolderB->b_content[j].b_inodo == -1) {Empty++; j++; continue;}
-
-            int next_i_Node_Bit_ID = FolderB->b_content[j].b_inodo;
-            char* tName = FolderB->b_content[j].b_name;
-            Inode* next_i_Node = (Inode*)BinLoad_Str(next_i_Node_Bit_ID,"Inode");
-
-            int isFolder  = !next_i_Node->i_type; 
-            int isCurrent = strcasecmp(FolderB->b_content[j].b_name,"iNodeFather");
-            int isFather  = strcasecmp(FolderB->b_content[j].b_name,"iNodeCurent");
-            
-            if(isFolder && isCurrent != 0 && isFather != 0){
-                //Folder
-                Add_LsRow(DotFl,next_i_Node_Bit_ID,"Folder",tName);
-                LsTravel(DotFl,next_i_Node_Bit_ID);
-                
-            }
-            else{
-                //File
-                if(isFolder == 0){
-                    Add_LsRow(DotFl,next_i_Node_Bit_ID,"Archivo",tName);
-                }
-            }
-            j++;
-        }
         i++;
     }
 
     while (i < 15){
+        if(i_Node->i_block[i] == -1) {i++; continue;}
+         int Son_ID_Bit = i_Node->i_block[i];
         
-        if(i_Node->i_block[i] == -1) {i++; continue;};
-        /*
-
-        int PB_Bit_ID = i_Node->i_block[i];
-        PointerBlock* PointerB = (PointerBlock*)BinLoad_Str(PB_Bit_ID,"PointerBlock");
-
-        int j = 0;
-        while (j < 16){
-            if(PointerB->b_pointers[j] == -1) {j++; continue;}
-
-            int FB_Bit_ID = i_Node->i_block[i];
+        //******* PointerBlock Tour ******
+        PointerBlock* Pb = (PointerBlock*)BinLoad_Str(Son_ID_Bit,"PointerBlock");
+        int z = 0;
+        while(z < 16){
+            if(Pb->b_pointers[z] == -1) {z++; continue;}
+            int FB_Bit_ID = Pb->b_pointers[z];
             FolderBlock* FolderB = (FolderBlock*)BinLoad_Str(FB_Bit_ID,"FolderBlock");
             
-            int k = 0;
-            while (k < 4){
-                if(FolderB->b_content[k].b_inodo == -1){k++; continue;}
-                
-                int next_i_Node_Bit_ID = FolderB->b_content[k].b_inodo;
-                char* tName = FolderB->b_content[k].b_name;
+            int j = 0;
+            //int Empty = 0;
+            while (j < 4){
+                //Carpeta no Vacia solo con Empty carpeta4
+                if(FolderB->b_content[j].b_inodo == -1) {j++; continue;}
+
+                int next_i_Node_Bit_ID = FolderB->b_content[j].b_inodo;
+                char* tName = FolderB->b_content[j].b_name;
                 Inode* next_i_Node = (Inode*)BinLoad_Str(next_i_Node_Bit_ID,"Inode");
 
                 int isFolder  = !next_i_Node->i_type; 
-                int isCurrent = strcasecmp(FolderB->b_content[k].b_name,"iNodeFather");
-                int isFather  = strcasecmp(FolderB->b_content[k].b_name,"iNodeCurent");
+                int isCurrent = strcasecmp(FolderB->b_content[j].b_name,"iNodeFather");
+                int isFather  = strcasecmp(FolderB->b_content[j].b_name,"iNodeCurent");
                 
                 if(isFolder && isCurrent != 0 && isFather != 0){
                     //Folder
-                    //Add_LsRow(DotFl,next_i_Node_Bit_ID,"Folder",tName);
-                    //LsTravel(DotFl,next_i_Node_Bit_ID);
-                    
+                    Add_LsRow(DotFl,next_i_Node_Bit_ID,"Folder",tName);
                 }
-                 else{
-                     //File
+                else{
+                    //File
                     if(isFolder == 0){
-                    
-                        //Add_LsRow(DotFl,next_i_Node_Bit_ID,"Archivo",tName);
+                        Add_LsRow(DotFl,next_i_Node_Bit_ID,"Archivo",tName);
                     }
                 }
-                k++;
+                j++;
             }
-        
-            j++;
+            z++;
         }
-        
         i++;
     }
-    */
-    
 }
 
 void Generate_Ls_Rep(char* CompleteReportPathDir,char* _ruta){
@@ -1296,7 +1374,7 @@ void Generate_Ls_Rep(char* CompleteReportPathDir,char* _ruta){
             fprintf(DotFl,"\t\t\t\t<\n");
                 fprintf(DotFl,"\t\t\t\t\t<TABLE BGCOLOR = \"#99c2ff\" BORDER = \"0\" CELLBORDER = \"1\" CELLSPACING = \"0\">\n");
 
-                fprintf(DotFl,"\t\t\t\t\t\t<TR><TD>Permision</TD><TD>Owner</TD><TD>Group</TD><TD>Size_in_Bytes</TD><TD>Date</TD><TD>Type</TD><TD>Name</TD></TR>\n");
+                
                 //SeekInfo* nsk = newSeekInfo();
                 //InfoCatcher* nwInf = newInfoCatcher();
                 int iNode_Bit_ID;
@@ -1310,10 +1388,14 @@ void Generate_Ls_Rep(char* CompleteReportPathDir,char* _ruta){
                 }
 
                 if(Check_If_Is_txtFile(ex->FFName)){
-                    Add_LsRow(DotFl,ex->iNode,"Archivo",ex->FFName);
+                    fprintf(DotFl,"\t\t\t\t\t\t<TR><TD bgcolor= \"#cc66ff\">Permission String</TD><TD bgcolor= \"#cc66ff\">Permission Int</TD><TD bgcolor= \"#cc66ff\">Owner</TD><TD bgcolor= \"#cc66ff\">Group</TD><TD bgcolor= \"#cc66ff\">Size_in_Bytes</TD><TD bgcolor= \"#cc66ff\">Date</TD><TD bgcolor= \"#cc66ff\">Type</TD><TD bgcolor= \"#cc66ff\">Name</TD></TR>\n");
+                    Add_Father(DotFl,ex->iNode,"Archivo",ex->FFName);
                 }
                 else{
-                    Add_LsRow(DotFl,iNode_Bit_ID,"Folder",ex->FFName);
+                    fprintf(DotFl,"\t\t\t\t\t\t<TR><TD bgcolor= \"#cc66ff\">Permission String</TD><TD bgcolor= \"#cc66ff\">Permission Int</TD><TD bgcolor= \"#cc66ff\">Owner</TD><TD bgcolor= \"#cc66ff\">Group</TD><TD bgcolor= \"#cc66ff\">Size_in_Bytes</TD><TD bgcolor= \"#cc66ff\">Date</TD><TD bgcolor= \"#cc66ff\">Type</TD><TD bgcolor= \"#cc66ff\">Name</TD></TR>\n");
+                    Add_Father(DotFl,iNode_Bit_ID,"Folder",ex->FFName);
+                    fprintf(DotFl,"\t\t\t\t\t\t<TR><TD bgcolor= \"#ffffff\" colspan=\"8\">- -</TD></TR>\n");
+                    fprintf(DotFl,"\t\t\t\t\t\t<TR><TD>Permission String</TD><TD>Permission Int</TD><TD>Owner</TD><TD>Group</TD><TD>Size_in_Bytes</TD><TD>Date</TD><TD>Type</TD><TD>Name</TD></TR>\n");
                     LsTravel(DotFl,iNode_Bit_ID);
                 }
                 fprintf(DotFl,"\t\t\t\t\t</TABLE>\n");

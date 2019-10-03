@@ -144,7 +144,13 @@ chmod -path=/home -ugo=444 -r
 
 chown -path=/home -usr=user1 -r
 
-pause
+logout
+
+Login -pwd=123 -usr=root -id=vda1
+
+chown -path=/home     -usr=user1 
+chown -path=/home/wrm -usr=user1
+
 
 rep -id=vda1 -ruta=/home -Path="/home/wrm/Desktop/reports2/eles.jpg"   -name=ls
 rep -id=vda1 -Path="/home/wrm/Desktop/reports2/destree.jpg"  -name=tree
