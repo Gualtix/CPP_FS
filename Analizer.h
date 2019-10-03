@@ -723,6 +723,22 @@ int ScanF2(char* Bf,InfoCatcher* nwInf){
     }
 
     if (strcasecmp(Bf, "CHOWN") == 0){
+        if(ErrorManager(nwInf,"CHOWN") == 1){
+            chown_do(nwInf);
+            if(isRecovery == 0){
+                char* FileName = Path_Get_FileName(nwInf->_path);
+                char* FolderName = Path_get_Last_FolderName(nwInf->_path);
+                if(FileName != NULL){
+                    Print_Long_Msg("CHOWN","SUCCESS","Archivo",FileName,"Propietario Cambiado Exitosamente");
+                    AddJournal("CHOWN",COMMS,664,FileName,"Archivo");
+                }
+                else{
+                    Print_Long_Msg("CHOWN","SUCCESS","Folder",FolderName,"Propietario Cambiado Exitosamente");
+                    AddJournal("CHOWN",COMMS,664,FolderName,"Folder");
+                }
+                
+            }
+        }
         return 0;
     }
 

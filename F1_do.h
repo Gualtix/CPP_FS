@@ -683,6 +683,67 @@ void chmod_do(InfoCatcher* nwInf){
     }
 }
 
+void chown_do(InfoCatcher* nwInf){
+    TheLast* tl = getTheLast(nwInf->_path);
+    Existence* ex = vFF_Exists(nwInf->_path);
+
+    Inode* iN  = (Inode*)BinLoad_Str(ex->iNode,"Inode");
+
+    DoublyGenericList* usrList = getUsersList();
+    GroupUserInfo* us = getUSR_by_Name(nwInf->_usr,usrList);
+
+    char* OldOwner = getUSR_by_ID(iN->i_uid)->UsrName;
+
+    if(nwInf->_R != 1){
+        
+        printf("\n");
+        printf("%s INFO: Propietario de %s:   -> %s <-   Ahora es Propiedad de:   -> %s <-   \n","CHOWN",tl->Name,OldOwner,us->UsrName);
+        iN->i_uid = us->ID;
+        BinWrite_Struct(iN,ex->iNode,"Inode");
+
+    }
+
+    if(nwInf->_R == 1 && tl->istxt == 1){
+        printf("\n");
+        printf("%s INFO: Propietario de %s:   -> %s <-   Ahora es Propiedad de:   -> %s <-   \n","CHOWN",tl->Name,OldOwner,us->UsrName);
+        iN->i_uid = us->ID;
+        BinWrite_Struct(iN,ex->iNode,"Inode");
+
+    }
+
+    if(nwInf->_R == 1){
+        SeekInfo* nwSi = SuperSeeker(ex->iNode,"distronone");
+
+        //Father Change
+        printf("\n");
+        printf("%s INFO: Propietario de %s:   -> %s <-   Ahora es Propiedad de:   -> %s <-   \n","CHOWN",tl->Name,OldOwner,us->UsrName);
+        iN->i_uid = us->ID;
+        BinWrite_Struct(iN,ex->iNode,"Inode");
+
+        while(iList->Length > 0){
+            
+            SeekInfo* tmp = (SeekInfo*)DeQueue(iList);
+
+            FolderBlock* Fb = (FolderBlock*)BinLoad_Str(tmp->FB_Bit_ID,"FolderBlock");            
+            Inode* inn = (Inode*)BinLoad_Str(Fb->b_content[tmp->FB_Index].b_inodo,"Inode");
+
+            OldOwner = getUSR_by_ID(inn->i_uid)->UsrName;
+
+            if(inn->i_uid != Omni->LoggedUser->ID && strcasecmp(Omni->LoggedUser->UsrName,"root") != 0){
+                printf("\n");
+                printf("%s ERROR: El Usuario Logeado No es Propietario de:   -> %s <-\n","CHOWN",Fb->b_content[tmp->FB_Index].b_name);
+                continue;
+            }
+
+            printf("\n");
+            printf("%s INFO: Propietario de %s:   -> %s <-   Ahora es Propiedad de:   -> %s <-   \n","CHOWN",Fb->b_content[tmp->FB_Index].b_name,OldOwner,us->UsrName);
+
+            inn->i_uid = us->ID;
+            BinWrite_Struct(inn,Fb->b_content[tmp->FB_Index].b_inodo,"Inode");
+        }
+    }
+}
+
 //(^< ............ ............ ............ ............ ............ ............ ............ ............ ............ ............
 //(^< ............ ............ ............ ............ ............ R E P
 //(^< ............ ............ ............ ............ ............ ............ ............ ............ ............ ............

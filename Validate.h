@@ -78,6 +78,14 @@ int usrV(char* CMD,InfoCatcher* nwInf){
     DoublyGenericList* usrList = getUsersList();
     int usr = usrExists(nwInf->_usr,usrList);
 
+    if(strcasecmp(CMD,"CHOWN") == 0){
+        if(usr == -1){
+            ErrorPrinter(CMD,"ERROR","-usr",nwInf->_usr,"El Usuario No Existe");
+            return 0;
+        }
+        return 1;
+    }
+
     if(strcasecmp(CMD,"CHGRP") == 0){
         if(usr == -1){
             ErrorPrinter(CMD,"ERROR","-usr",nwInf->_usr,"El Usuario No Existe");
@@ -305,6 +313,15 @@ int pathV(char* CMD,InfoCatcher* nwInf){
             ErrorPrinter(CMD,"ERROR","-path",ex->FFName,"La Carpeta Raiz No Existe");
             return 0;
         }
+    }
+
+    if(strcasecmp(CMD,"CHOWN") == 0){
+        if(ex->iNode == -1){
+            TheLast* tl = getTheLast(nwInf->_path);
+            ErrorPrinter(CMD,"ERROR","-path",nwInf->_path,"La Direccion para Cambiar Propietario No Existe");
+            return 0;
+        }
+        return 1;
     }
 
     if(strcasecmp(CMD,"CHMOD") == 0){
@@ -747,6 +764,22 @@ int ErrorManager(InfoCatcher* nwInf,char* CMD){
         return 1;
     }
 
+    //CHMOD   ****************************************************************************************************** 
+    if(strcasecmp(CMD,"CHMOD") == 0){
+        if(pathV("CHMOD",nwInf) == 0) return 0;
+        if(ugoV("CHMOD",nwInf) == 0) return 0;
+        if(isOwnerV("CHMOD",nwInf->_path,nwInf->_R) == 0) return 0;
+        return 1;
+    }
+
+    //CHOWN   ****************************************************************************************************** 
+    if(strcasecmp(CMD,"CHOWN") == 0){
+        if(pathV("CHOWN",nwInf) == 0) return 0;
+        if(usrV("CHOWN",nwInf) == 0) return 0;
+        if(isOwnerV("CHOWN",nwInf->_path,nwInf->_R) == 0) return 0;
+        return 1;
+    }
+
     //(^< ............ ............ ............ ............ ............ root use only
     if (strcasecmp(Omni->LoggedUser->UsrName,"root") != 0){
         ErrorPrinter(CMD,"ERROR","Usuario",Omni->LoggedUser->UsrName,"Solo root puede usar este Comando");
@@ -784,14 +817,6 @@ int ErrorManager(InfoCatcher* nwInf,char* CMD){
     if(strcasecmp(CMD,"CHGRP") == 0){
         if(usrV("CHGRP",nwInf) == 0) return 0;
         if(grpV("CHGRP",nwInf) == 0) return 0;
-        return 1;
-    }
-
-    //CHMOD   ****************************************************************************************************** 
-    if(strcasecmp(CMD,"CHMOD") == 0){
-        if(pathV("CHMOD",nwInf) == 0) return 0;
-        if(ugoV("CHMOD",nwInf) == 0) return 0;
-        if(isOwnerV("CHMOD",nwInf->_path,nwInf->_R) == 0) return 0;
         return 1;
     }
 }

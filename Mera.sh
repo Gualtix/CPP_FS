@@ -59,9 +59,6 @@ Mkusr -usr="user2" -grp=Arqui -pwd=user2
 
 #rmusr -usr=user3
 
-
-
-
 Mkdir -path=/home/wrm/Desktop/mia/fase1     -P  
 Mkdir -path=/home/wrm/Desktop/mia/fase2     -P 
 
@@ -108,9 +105,9 @@ mkfile -path="/home/Noexiste/b1.txt" -size=75 -P
 
 mkfile -path="/sisi.txt" -size=15
 
-logout
+#logout
 
-Login -pwd=123 -usr=root -id=vda1
+#Login -pwd=123 -usr=root -id=vda1
 
 cat -file="/sisi.txt"
 
@@ -144,6 +141,10 @@ chgrp -usr=user2 -grp=Archivos
 chmod -path=/home -ugo=655 -r
 chmod -path=/home -ugo=333 -r
 chmod -path=/home -ugo=444 -r
+
+chown -path=/home -usr=user1 -r
+
+pause
 
 rep -id=vda1 -ruta=/home -Path="/home/wrm/Desktop/reports2/eles.jpg"   -name=ls
 rep -id=vda1 -Path="/home/wrm/Desktop/reports2/destree.jpg"  -name=tree
