@@ -584,7 +584,7 @@ void find_do(InfoCatcher* nwInf){
     //SeekInfo* nwSI = CompleteSeeker(ex->iNode,nwInf->_name);
     //SeekInfo* nwSI = SuperSeeker(ex->iNode,nwInf->_name);
 
-    SeekInfo* Ori = CompleteSeeker(0,"fase1");
+    //SeekInfo* Ori = CompleteSeeker(0,"fase1");
     //SeekInfo* Niu = SuperSeeker(0,"fase1");
 
     /*
@@ -626,6 +626,61 @@ void chgrp_do(InfoCatcher* nwInf){
     //nwInf->_pwd = OldPassword;
     //mkusr_do(nwInf);
 
+}
+
+void chmod_do(InfoCatcher* nwInf){
+
+    TheLast* tl = getTheLast(nwInf->_path);
+    Existence* ex = vFF_Exists(nwInf->_path);
+
+    Inode* iN  = (Inode*)BinLoad_Str(ex->iNode,"Inode");
+
+    if(nwInf->_R != 1){
+        
+        printf("\n");
+        printf("%s INFO: Permisos de %s:   -> %i <-   Cambiados a:   -> %i <-   \n","CHMOD",tl->Name,iN->i_perm,nwInf->_ugo);
+        iN->i_perm = nwInf->_ugo;
+        BinWrite_Struct(iN,ex->iNode,"Inode");
+
+    }
+
+    if(nwInf->_R == 1 && tl->istxt == 1){
+        printf("\n");
+        printf("%s INFO: Permisos de %s:   -> %i <-   Cambiados a:   -> %i <-   \n","CHMOD",tl->Name,iN->i_perm,nwInf->_ugo);
+        iN->i_perm = nwInf->_ugo;
+        BinWrite_Struct(iN,ex->iNode,"Inode");
+
+    }
+
+    if(nwInf->_R == 1){
+        SeekInfo* nwSi = SuperSeeker(ex->iNode,"distronone");
+
+        //Father Change
+        printf("\n");
+        printf("%s INFO: Permisos de %s:   -> %i <-   Cambiados a:   -> %i <-   \n","CHMOD",tl->Name,iN->i_perm,nwInf->_ugo);
+        iN->i_perm = nwInf->_ugo;
+        BinWrite_Struct(iN,ex->iNode,"Inode");
+
+        while(iList->Length > 0){
+            
+            SeekInfo* tmp = (SeekInfo*)DeQueue(iList);
+
+            FolderBlock* Fb = (FolderBlock*)BinLoad_Str(tmp->FB_Bit_ID,"FolderBlock");            
+            Inode* inn = (Inode*)BinLoad_Str(Fb->b_content[tmp->FB_Index].b_inodo,"Inode");
+
+            if(inn->i_uid != Omni->LoggedUser->ID && strcasecmp(Omni->LoggedUser->UsrName,"root") != 0){
+                printf("\n");
+                printf("%s ERROR: El Usuario Logeado No es Propietario de:   -> %s <-\n","CHMOD",Fb->b_content[tmp->FB_Index].b_name);
+                continue;
+            }
+
+            printf("\n");
+            printf("%s INFO: Permisos de %s:   -> %i <-   Cambiados a:   -> %i <-   \n","CHMOD",Fb->b_content[tmp->FB_Index].b_name,inn->i_perm,nwInf->_ugo);
+
+            inn->i_perm = nwInf->_ugo;
+            BinWrite_Struct(inn,Fb->b_content[tmp->FB_Index].b_inodo,"Inode");
+        }
+    }
 }
 
 //(^< ............ ............ ............ ............ ............ ............ ............ ............ ............ ............

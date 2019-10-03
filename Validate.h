@@ -307,6 +307,15 @@ int pathV(char* CMD,InfoCatcher* nwInf){
         }
     }
 
+    if(strcasecmp(CMD,"CHMOD") == 0){
+        if(ex->iNode == -1){
+            TheLast* tl = getTheLast(nwInf->_path);
+            ErrorPrinter(CMD,"ERROR","-path",nwInf->_path,"La Direccion para Cambiar Permisos No Existe");
+            return 0;
+        }
+        return 1;
+    }
+
     if(strcasecmp(CMD,"FIND") == 0){
         if(ex->iNode == -1){
             TheLast* tl = getTheLast(nwInf->_path);
@@ -446,6 +455,13 @@ int destV(char* CMD,InfoCatcher* nwInf){
     }
 }
 
+int ugoV(char* CMD,InfoCatcher* nwInf){
+    if(nwInf->_ugo < 0 || nwInf->_ugo > 777){
+        ErrorPrinter(CMD,"ERROR","-ugo","","Valor de Permiso Invalido");
+        return 0;
+    }
+}
+
 //(^< ............ ............ ............ ............ ............ ............ ............ ............ ............ ............
 //(^< ............ ............ ............ ............ ............ Permissions
 //(^< ............ ............ ............ ............ ............ ............ ............ ............ ............ ............
@@ -538,6 +554,79 @@ int onFatherV(char* CMD,char* Path,int Action){
     return permissionV(CMD,iN,Action,tl->Name);    
 }
 
+int isOwnerV(char* CMD,char* Path,int _R){
+
+    if(strcasecmp(Omni->LoggedUser->UsrName,"root") == 0){
+        return 1;
+    }
+
+    TheLast* tl = getTheLast(Path);
+    Existence* ex = vFF_Exists(Path);
+
+    Inode* iN  = (Inode*)BinLoad_Str(ex->iNode,"Inode");
+
+    if(_R != 1){
+
+        if(iN->i_uid == Omni->LoggedUser->ID){
+            return 1;
+        }
+
+        if(tl->istxt == 1){
+            printf("\n");
+            printf("%s ERROR: El Usuario Logeado No es Propietario del Archivo:   -> %s <-\n",CMD,tl->Name);
+            return 0;   
+        }
+        else{
+            printf("\n");
+            printf("%s ERROR: El Usuario Logeado No es Propietario de la Carpeta:   -> %s <-\n",CMD,tl->Name);
+            return 0;   
+            
+        }
+    }
+
+    if(_R == 1 && tl->istxt == 1){
+        if(iN->i_uid == Omni->LoggedUser->ID){
+            return 1;
+        }
+
+        printf("\n");
+        printf("%s ERROR: El Usuario Logeado No es Propietario del Archivo:   -> %s <-\n",CMD,tl->Name);
+        return 0;   
+    }
+
+    if(_R == 1 && tl->istxt == 0){
+        if(iN->i_uid == Omni->LoggedUser->ID){
+            return 1;
+        }
+        printf("\n");
+        printf("%s ERROR: El Usuario Logeado No es Propietario de la Carpeta Raiz:   -> %s <-\n",CMD,tl->Name);
+        return 0;   
+        
+    }
+
+    return 1;
+
+    /*
+
+    if(_R == 1){
+        SeekInfo* nwSi = SuperSeeker(ex->iNode,"distronone");
+        while(iList->Length > 0){
+            SeekInfo* tmp = (SeekInfo*)DeQueue(iList);
+            FolderBlock* Fb = (FolderBlock*)BinLoad_Str(tmp->FB_Bit_ID,"FolderBlock");
+
+            Inode* inn = (Inode*)BinLoad_Str(Fb->b_content[tmp->FB_Index].b_inodo,"Inode");
+
+            if(inn->i_uid != Omni->LoggedUser->ID){
+                printf("\n");
+                printf("%s ERROR: El Usuario Logeado No es Propietario de:   -> %s <-\n",CMD,Fb->b_content[tmp->FB_Index].b_name);
+                return 0;  
+            }
+        }
+        return 1;
+    }
+    */
+}
+
 
 
 //(^< ............ ............ ............ ............ ............ ............ ............ ............ ............ ............
@@ -546,7 +635,6 @@ int onFatherV(char* CMD,char* Path,int Action){
 
 
 int ErrorManager(InfoCatcher* nwInf,char* CMD){
-
 
     // 1 = No Error = Ok
 
@@ -696,6 +784,14 @@ int ErrorManager(InfoCatcher* nwInf,char* CMD){
     if(strcasecmp(CMD,"CHGRP") == 0){
         if(usrV("CHGRP",nwInf) == 0) return 0;
         if(grpV("CHGRP",nwInf) == 0) return 0;
+        return 1;
+    }
+
+    //CHMOD   ****************************************************************************************************** 
+    if(strcasecmp(CMD,"CHMOD") == 0){
+        if(pathV("CHMOD",nwInf) == 0) return 0;
+        if(ugoV("CHMOD",nwInf) == 0) return 0;
+        if(isOwnerV("CHMOD",nwInf->_path,nwInf->_R) == 0) return 0;
         return 1;
     }
 }

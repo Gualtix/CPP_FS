@@ -121,6 +121,13 @@ ren -Path=/home/wrm    -name=ziper
 ren -Path=/home/ziper    -name=ziper
 ren -Path=/home/b1.txt -name=wazabi.txt
 
+mkdir -path="/home/wrm/Desktop/user/mia/carpeta2/a5" -p
+mkdir -path="/home/wrm/Desktop/user/mia/carpeta2/a6"
+mkdir -path="/home/wrm/Desktop/user/mia/carpeta2/a7"
+mkdir -path="/home/wrm/Desktop/user/mia/carpeta2/a8"
+mkdir -path="/home/wrm/Desktop/user/mia/carpeta2/a9" 
+mkdir -path="/home/wrm/Desktop/user/mia/carpeta2/a10" 
+
 cat -file="/home/wazabi.txt"     
 
 edit -Path=/home/wazabi.txt -cont=nomanchesmaxDlooljeje
@@ -133,7 +140,12 @@ find -path=/ -name=wazabi.txt
 
 chgrp -usr=user2 -grp=Archivos
 
-#rep -id=vda1 -ruta=/home/ahora/yaexiste -Path="/home/wrm/Desktop/reports2/eles.jpg"   -name=ls
+
+chmod -path=/home -ugo=655 -r
+chmod -path=/home -ugo=333 -r
+chmod -path=/home -ugo=444 -r
+
+rep -id=vda1 -ruta=/home -Path="/home/wrm/Desktop/reports2/eles.jpg"   -name=ls
 rep -id=vda1 -Path="/home/wrm/Desktop/reports2/destree.jpg"  -name=tree
 rep -id=vda1 -Path="/home/wrm/Desktop/reports2/users.txt" -ruta="users.txt" -name=file
 #rep -id=vda1 -Path="/home/wrm/Desktop/reports2/desjour.jpg" -name=journaling
@@ -146,7 +158,7 @@ rem -path=/home/wrm/Desktop/mia/fase2/a46
 rem -path="/home/wrm/Desktop/mia/fase2/b1"
 
 #Reporte4 ::::(  ) 
-rep -id=vda1 -Path="/home/wrm/Desktop/reports2/reporte4_vda1_sb.pdf" -name=sb
+#rep -id=vda1 -Path="/home/wrm/Desktop/reports2/reporte4_vda1_sb.pdf" -name=sb
 rep -id=vda1 -Path="/home/wrm/Desktop/reports2/reporte4_vda1_tree.jpg" -name=tree
 
 pause

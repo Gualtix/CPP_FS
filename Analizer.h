@@ -641,6 +641,22 @@ int ScanF2(char* Bf,InfoCatcher* nwInf){
     }
 
     if (strcasecmp(Bf, "CHMOD") == 0){
+        if(ErrorManager(nwInf,"CHMOD") == 1){
+            chmod_do(nwInf);
+            if(isRecovery == 0){
+                char* FileName = Path_Get_FileName(nwInf->_path);
+                char* FolderName = Path_get_Last_FolderName(nwInf->_path);
+                if(FileName != NULL){
+                    Print_Long_Msg("CHMOD","SUCCESS","Archivo",FileName,"Permisos Modificados Exitosamente");
+                    AddJournal("CHMOD",COMMS,664,FileName,"Archivo");
+                }
+                else{
+                    Print_Long_Msg("CHMOD","SUCCESS","Folder",FolderName,"Permisos Modificados Exitosamente");
+                    AddJournal("CHMOD",COMMS,664,FolderName,"Folder");
+                }
+                
+            }
+        }
         return 0;
     }
 

@@ -1475,11 +1475,30 @@ void Tracker(SeekInfo* nwSI,int inF,int inC,char* Name,int iNode_Bit_ID,char* Ty
                     nwSI->iNodeFather_Bit_ID = inF;
                     nwSI->iCurent_Bit_ID     = inC;
                     
-                    EnQueue(nwSI->Travel,newString(Fb->b_content[i].b_name));
+                    //EnQueue(nwSI->Travel,newString(Fb->b_content[i].b_name));
+                    SeekInfo* niu = newSeekInfo();
+                    niu->FB_Bit_ID          = iNode_Bit_ID;
+                    niu->FB_Index           = i;
+                    niu->iNode_Bit_ID       = Fb->b_content[i].b_inodo;
+
+                    niu->iNodeFather_Bit_ID = inF;
+                    niu->iCurent_Bit_ID     = inF;                    
+                    
+                    EnQueue(iList,niu);
                     return;
                 }
 
-                EnQueue(nwSI->Travel,newString(Fb->b_content[i].b_name));
+                //EnQueue(nwSI->Travel,newString(Fb->b_content[i].b_name));
+
+                SeekInfo* niu = newSeekInfo();
+                niu->FB_Bit_ID          = iNode_Bit_ID;
+                niu->FB_Index           = i;
+                niu->iNode_Bit_ID       = Fb->b_content[i].b_inodo;
+
+                niu->iNodeFather_Bit_ID = inF;
+                niu->iCurent_Bit_ID     = inF;  
+
+                EnQueue(iList,niu);
                 Tracker(nwSI,inF,inC,Name,Next_ID_Bit,"Inode",NULL);                
             }
             i++;
@@ -1511,9 +1530,10 @@ void Tracker(SeekInfo* nwSI,int inF,int inC,char* Name,int iNode_Bit_ID,char* Ty
 }
 
 
-SeekInfo* SuperSeeker(int iNode_Bit_ID,char* Name,void (*f)(int)){
+SeekInfo* SuperSeeker(int iNode_Bit_ID,char* Name){
 
     SeekInfo* nwSI = newSeekInfo();
+    iList = new_DoublyGenericList();
     if(strcasecmp(Name,"/") == 0){
         nwSI->iNode_Bit_ID = 0;
         nwSI->FB_Bit_ID = -1;
@@ -1521,7 +1541,8 @@ SeekInfo* SuperSeeker(int iNode_Bit_ID,char* Name,void (*f)(int)){
         nwSI->iNodeFather_Bit_ID = -1;
         nwSI->iCurent_Bit_ID = -1;
         EnQueue(nwSI->Travel,newString("/"));
-        (*f)(iNode_Bit_ID);
+        EnQueue(iList,nwSI);
+        //(*f)(iNode_Bit_ID);
         return nwSI;
     }
 
@@ -1542,26 +1563,6 @@ SeekInfo* SuperSeeker(int iNode_Bit_ID,char* Name,void (*f)(int)){
     }
     return nwSI;
 }
-
-/*
-void printNuWmber(int nbr)  {
-    printf("%d\n", nbr);
-}
-
-void myFunction(void (*f)(int)){
-    for(int i = 0; i < 5; i++) {
-        (*f)(i);
-    }
-}
-
-char* getInodeList_From(Inode* iN){
-    DoublyGenericList* iList = new_DoublyGenericList();
-    EnQueue(iList,iN);
-    int as = 3;
-}
-*/
-
-
 
 
 SeekInfo* CompleteSeeker(int iNodeCurent_Bit_ID,char* FileName){

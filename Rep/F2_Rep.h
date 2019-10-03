@@ -45,6 +45,13 @@ InfoCatcher* fillInfoCatcher(DoublyGenericList* CommandList,InfoCatcher** nwInf)
             continue;
         }
 
+        //(^< ............ ............ ............   _ugo
+        if(strcasecmp(Prm_Izq,"-ugo") == 0){
+            int Nm = atoi(Prm_Der);
+            (*nwInf)->_ugo =  atoi(Prm_Der);
+            continue;
+        }
+
         //(^< ............ ............ ............   _fit
         if(strcasecmp(Prm_Izq,"-fit") == 0){
             (*nwInf)->_fit = newString(Prm_Der);
@@ -130,7 +137,9 @@ InfoCatcher* fillInfoCatcher(DoublyGenericList* CommandList,InfoCatcher** nwInf)
         //(^< ............ ............ ............   _R
         if(!strcasecmp(Prm_Izq,"-R")){
             (*nwInf)->_R = 1;
-            FrontInsert(CommandList,Prm_Der);
+            if(Prm_Der != NULL){
+                FrontInsert(CommandList,Prm_Der);
+            }
             continue;
         }
 

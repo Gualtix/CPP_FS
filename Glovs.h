@@ -16,6 +16,7 @@ GLS*  Omni;
 char* COMMS;
 int   isRecovery;
 int   JourColor;
+DoublyGenericList* iList;
 
 
 
