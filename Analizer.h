@@ -661,6 +661,21 @@ int ScanF2(char* Bf,InfoCatcher* nwInf){
     }
 
     if (strcasecmp(Bf, "REM") == 0){
+        if(ErrorManager(nwInf,"REM") == 1){
+            rem_do(nwInf);
+            if(isRecovery == 0){
+                char* FileName = Path_Get_FileName(nwInf->_path);
+                char* FolderName = Path_get_Last_FolderName(nwInf->_path);
+                if(FileName != NULL){
+                    Print_Long_Msg("REM","SUCCESS","Archivo",FileName,"Eliminado Exitosamente");
+                    AddJournal("REM",COMMS,664,FileName,"Archivo");
+                }
+                else{
+                    Print_Long_Msg("REM","SUCCESS","Folder",FolderName,"Eliminado Exitosamente");
+                    AddJournal("REM",COMMS,664,FolderName,"Folder");
+                }
+            }
+        }
         return 0;
     }
 
@@ -677,7 +692,7 @@ int ScanF2(char* Bf,InfoCatcher* nwInf){
         return 0;
     }
 
-    if (strcasecmp(Bf, "REN") == 0){
+    if(strcasecmp(Bf, "REN") == 0){
         if(ErrorManager(nwInf,"REN") == 1){
             ren_do(nwInf);
             if(isRecovery == 0){

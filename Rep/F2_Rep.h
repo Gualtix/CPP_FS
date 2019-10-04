@@ -1532,6 +1532,23 @@ void Add_Jr_Body(FILE* DotFl){
                     Cnt = Concat_Izq_with_Der(Cnt,&nwInf->_R,'s','i');
                 }
 
+                if(strcasecmp(CMD,"chown") == 0){
+                    Cnt = Concat_Izq_with_Der(newString("path = "),nwInf->_path,'s','s');
+                    Cnt = Concat_Izq_with_Der(Cnt,newString("<br/>\n"),'s','s');
+                    
+                    Cnt = Concat_Izq_with_Der(Cnt,newString("usr = "),'s','s');
+                    Cnt = Concat_Izq_with_Der(Cnt,nwInf->_usr,'s','s');
+                    Cnt = Concat_Izq_with_Der(Cnt,newString("<br/>\n"),'s','s');
+
+                    Cnt = Concat_Izq_with_Der(Cnt,newString("r = "),'s','s');
+                    Cnt = Concat_Izq_with_Der(Cnt,&nwInf->_R,'s','i');
+                }
+
+                if(strcasecmp(CMD,"rem") == 0){
+                    Cnt = Concat_Izq_with_Der(newString("path = "),nwInf->_path,'s','s');
+                    Cnt = Concat_Izq_with_Der(Cnt,newString("<br/>\n"),'s','s');
+                }
+
                 char* cls = newString("\"#33ff33\"");
                 if(JourColor % 2 == 0){
                     cls = newString("\"#00ace6\"");

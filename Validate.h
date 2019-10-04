@@ -389,6 +389,26 @@ int pathV(char* CMD,InfoCatcher* nwInf){
         return 1;
     }
 
+    if(strcasecmp(CMD,"REM") == 0){
+
+        if(strcasecmp(nwInf->_path,"/") == 0){
+            ErrorPrinter(CMD,"ERROR","-path","/","La Carpeta Root No Puede ser Eliminada");
+            return 0;
+        }
+
+        if(ex->iNode == -1){
+            TheLast* tl = getTheLast(nwInf->_path);
+            if(tl->istxt){
+                ErrorPrinter(CMD,"ERROR","-path",tl->Name,"El Archivo No Existe");
+            }
+            else{
+                ErrorPrinter(CMD,"ERROR","-path",tl->Name,"El Folder No Existe");
+            }
+            return 0;
+        }
+        return 1;
+    }
+
     if(strcasecmp(CMD,"MKDIR") == 0){
         if(ex->iNode > -1){
             ErrorPrinter(CMD,"ERROR","-path",ex->FFName,"La Carpeta Ya Existe");
@@ -644,6 +664,49 @@ int isOwnerV(char* CMD,char* Path,int _R){
     */
 }
 
+int inDeepV(char* CMD,char* Path,int Action){
+
+    if(strcasecmp(Omni->LoggedUser->UsrName,"root") == 0){
+        return 1;
+    }
+
+    TheLast* tl = getTheLast(Path);
+    Existence* ex = vFF_Exists(Path);
+
+    Inode* iN  = (Inode*)BinLoad_Str(ex->iNode,"Inode");
+
+    if(tl->istxt == 1){
+        int pm = permissionV(CMD,iN,Action,tl->Name);  
+        return pm;
+    }
+    else{
+
+        SeekInfo* nwSi = SuperSeeker(ex->iNode,tl->Name);
+        if(iList->Length == 0){
+            int pm = permissionV(CMD,iN,Action,tl->Name); 
+            return pm;
+        }
+
+        int isOk = 1;
+        
+        while(iList->Length > 0){
+            SeekInfo* tmp = (SeekInfo*)DeQueue(iList);
+            FolderBlock* Fb = (FolderBlock*)BinLoad_Str(tmp->FB_Bit_ID,"FolderBlock");
+
+            Inode* inn = (Inode*)BinLoad_Str(Fb->b_content[tmp->FB_Index].b_inodo,"Inode");
+            char* tname = Fb->b_content[tmp->FB_Index].b_name;
+
+            int am = permissionV(CMD,inn,Action,tname);
+
+            if(am == 0){
+                printf("\n");
+                printf("%s ERROR: Permiso de Escritura Denegado En:   -> %s <-\n",CMD,tname);  
+                isOk = 0;
+            }
+        }
+        return isOk;
+    }
+}
 
 
 //(^< ............ ............ ............ ............ ............ ............ ............ ............ ............ ............
@@ -654,6 +717,7 @@ int isOwnerV(char* CMD,char* Path,int _R){
 int ErrorManager(InfoCatcher* nwInf,char* CMD){
 
     // 1 = No Error = Ok
+    int mse = 4;
 
     //MKFS   ****************************************************************************************************** 
     if(strcasecmp(CMD,"MKFS") == 0){
@@ -721,11 +785,6 @@ int ErrorManager(InfoCatcher* nwInf,char* CMD){
         return 1;
     }
 
-    //REM   ****************************************************************************************************** 
-    if(strcasecmp(CMD,"REM") == 0){
-        return 1;
-    }
-
     //CAT   ****************************************************************************************************** 
     if(strcasecmp(CMD,"CAT") == 0){
         nwInf->_path = newString(nwInf->_file);
@@ -777,6 +836,13 @@ int ErrorManager(InfoCatcher* nwInf,char* CMD){
         if(pathV("CHOWN",nwInf) == 0) return 0;
         if(usrV("CHOWN",nwInf) == 0) return 0;
         if(isOwnerV("CHOWN",nwInf->_path,nwInf->_R) == 0) return 0;
+        return 1;
+    }
+
+    //REM   ****************************************************************************************************** 
+    if(strcasecmp(CMD,"REM") == 0){
+        if(pathV("REM",nwInf) == 0) return 0;
+        if(inDeepV("REM",nwInf->_path,2) == 0) return 0;
         return 1;
     }
 
